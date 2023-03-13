@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Breakpoint, { BreakpointProvider, setDefaultBreakpoints } from 'react-socks';
+import { Breakpoint, BreakpointProvider, setDefaultBreakpoints } from 'react-socks';
 import { Link, useNavigate } from 'react-router-dom';
 import useOnclickOutside from 'react-cool-onclickoutside';
 import { useBlockchainContext } from '../../context';

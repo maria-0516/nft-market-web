@@ -7,7 +7,7 @@ import { useBlockchainContext } from '../../context';
 
 const NewNotable = () => {
     const navigate = useNavigate();
-    const [state] = useBlockchainContext();
+    const [state] = useBlockchainContext() as any;
     const settings = {
         infinite: true,
         speed: 500,
@@ -59,13 +59,13 @@ const NewNotable = () => {
         ]
     };
 
-    const handle = (address) => {
+    const handle = (address: any) => {
         navigate(`/collection/${address}`);
     };
 
     return (
         <div className="nft-big">
-            <Slider {...settings}>
+            <Slider /* {...settings} */>
                 {(state as any).collectionNFT.slice(-5).map((item: any, index: any) => (
                     <div /* index={index + 1} */ key={index}>
                         <div className="nft_pic" onClick={() => handle(item.address)}>

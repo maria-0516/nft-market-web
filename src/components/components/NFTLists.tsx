@@ -2,9 +2,15 @@ import React, { useMemo } from 'react';
 import { useBlockchainContext } from '../../context';
 import NFTList from './nfts';
 
-export default function NFTLists(props) {
-    const { filter1, filter2, filter3, sortBy } = props;
-    const [state, {}] = useBlockchainContext();
+interface Props {
+    filter1: any
+    filter2: any
+    filter3: any
+    sortBy: any
+}
+
+const NFTLists = ({filter1, filter2, filter3, sortBy}: Props) => {
+    const [state, {}] = useBlockchainContext() as any;
 
     const NFTs = useMemo(() => {
         return state.allNFT.filter(filter1).filter(filter2).filter(filter3).sort(sortBy);
@@ -21,3 +27,5 @@ export default function NFTLists(props) {
         </div>
     );
 }
+
+export default NFTLists

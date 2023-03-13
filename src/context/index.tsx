@@ -29,7 +29,7 @@ export function useBlockchainContext() {
     return useContext(BlockchainContext);
 }
 
-function reducer(state, { type, payload }) {
+function reducer(state: any, { type, payload }: {type: any, payload: any}) {
     return {
         ...state,
         [type]: payload
@@ -67,7 +67,7 @@ const INIT_STATE = {
     addresses: addresses
 };
 
-export default function Provider({ children }) {
+export default function Provider({ children }: {children: any}) {
     const location = useLocation();
     const [state, dispatch] = useReducer(reducer, INIT_STATE);
     const wallet = useWallet();
@@ -222,7 +222,7 @@ export default function Provider({ children }) {
     }, [activityData, activityLoading, activityError]);
 
     // set language
-    const setLanguage = (props) => {
+    const setLanguage = (props: any) => {
         const { newLang } = props;
         dispatch({
             type: 'lang',
@@ -232,12 +232,12 @@ export default function Provider({ children }) {
         localStorage.setItem('lang', newLang);
     };
 
-    const translateLang = (txt) => {
-        return translations[state.lang][txt];
+    const translateLang = (txt: any) => {
+        return (translations as any)[state.lang][txt];
     };
 
     // auth
-    const updateAuth = (data) => {
+    const updateAuth = (data: any) => {
         dispatch({
             type: 'auth',
             payload: {
@@ -261,7 +261,7 @@ export default function Provider({ children }) {
     const getCurrency = (tokenaddress = '') => {
         try {
             let currency = state.currencies.filter(
-                (c) => c.value.toLowerCase() === tokenaddress.toLowerCase()
+                (c: any) => c.value.toLowerCase() === tokenaddress.toLowerCase()
             );
             if (currency.length === 0) {
                 throw new Error('unsupported currency');
@@ -276,7 +276,7 @@ export default function Provider({ children }) {
     };
 
     /* ------------ NFT Section ------------- */
-    const mintNFT = async (url, collection) => {
+    const mintNFT = async (url: any, collection: any) => {
         const NFTContract1 = getNFTContract(collection);
 
         const signedNFTContract1 = NFTContract1.connect(state.signer);
@@ -285,7 +285,7 @@ export default function Provider({ children }) {
     };
 
     // NFT on sale
-    const onsaleNFT = async (props) => {
+    const onsaleNFT = async (props: any) => {
         try {
             const { nftAddress, assetId, currency, price, expiresAt } = props;
 
@@ -307,7 +307,7 @@ export default function Provider({ children }) {
         }
     };
 
-    const approveNFT = async (props) => {
+    const approveNFT = async (props: any) => {
         try {
             const { assetId, nftAddress } = props;
 
@@ -324,7 +324,7 @@ export default function Provider({ children }) {
         }
     };
 
-    const checkNFTApprove = async (props) => {
+    const checkNFTApprove = async (props: any) => {
         try {
             const { assetId, nftAddress } = props;
 
@@ -342,7 +342,7 @@ export default function Provider({ children }) {
     };
 
     // on sale lazy nfts
-    const onsaleLazyNFT = async (props) => {
+    const onsaleLazyNFT = async (props: any) => {
         const { tokenId, priceGwei, currency, expiresAt, singature } = props;
         const signedLazyContract = storeFontContract.connect(state.signer);
 
@@ -359,7 +359,7 @@ export default function Provider({ children }) {
         return true;
     };
 
-    const cancelOrder = async (props) => {
+    const cancelOrder = async (props: any) => {
         const { nftAddress, assetId } = props;
 
         const signedMarketplaceContract = marketplaceContract.connect(state.signer);
@@ -368,7 +368,7 @@ export default function Provider({ children }) {
     };
 
     // NFT buy and bid
-    const buyNFT = async (props) => {
+    const buyNFT = async (props: any) => {
         const { nftAddress, assetId, price, acceptedToken } = props;
 
         const signedMarketplaceContract = marketplaceContract.connect(state.signer);
@@ -400,7 +400,7 @@ export default function Provider({ children }) {
         }
     };
 
-    const bidNFT = async (props) => {
+    const bidNFT = async (props: any) => {
         const { nftAddress, assetId, price, expiresAt, acceptedToken } = props;
 
         const signedMarketplaceContract = marketplaceContract.connect(state.signer);
@@ -434,7 +434,7 @@ export default function Provider({ children }) {
         }
     };
 
-    const bidApprove = async (props) => {
+    const bidApprove = async (props: any) => {
         const { address, id, price } = props;
 
         const signedMarketplaceContract = marketplaceContract.connect(state.signer);

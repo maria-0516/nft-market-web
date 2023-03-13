@@ -4,10 +4,13 @@ import { useBlockchainContext } from '../../context';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import React from 'react';
 
-export default function NFTList(props) {
-    const { data } = props;
+interface Props {
+    data: any
+}
+
+const NFTList = ({data}: Props) => {
     const navigate = useNavigate();
-    const [state, { getCurrency }] = useBlockchainContext();
+    const [state, { getCurrency }] = useBlockchainContext() as any;
     const [renderCount, setRenderCount] = useState(10);
     const [hasMore, setHasMore] = useState(false);
 
@@ -21,7 +24,7 @@ export default function NFTList(props) {
         return result;
     }, [data, renderCount]);
 
-    const handleItem = (item) => {
+    const handleItem = (item: any) => {
         navigate(`/ItemDetail/${item.collectionAddress}/${item.tokenID}`);
     };
 
@@ -33,7 +36,7 @@ export default function NFTList(props) {
             loader={<h4 style={{ textAlign: 'center' }}>Loading...</h4>}
             style={{ overflowX: 'hidden' }}>
             <div className="row">
-                {NFTs.map((nft, index) => (
+                {NFTs.map((nft: any, index: any) => (
                     <div
                         key={index}
                         className="d-item col-2-5 col-lg-3 col-md-4 col-sm-6 col-xs-12"
@@ -64,7 +67,7 @@ export default function NFTList(props) {
                                 <div className="spacer-20"></div>
                                 <span>
                                     <Link to={`/collection/${nft.collectionAddress}`}>
-                                        {state.collectionNFT.map((item) => {
+                                        {state.collectionNFT.map((item: any) => {
                                             if (item.address === nft.collectionAddress)
                                                 return item.metadata.name;
                                         })}
@@ -101,3 +104,5 @@ export default function NFTList(props) {
         </InfiniteScroll>
     );
 }
+
+export default NFTList

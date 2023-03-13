@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import DateTimeField from '@1stquad/react-bootstrap-datetimepicker';
+
 import moment from 'moment';
 import { useBlockchainContext } from '../../context';
-import { NotificationManager } from 'react-notifications';
 import { useNavigate } from 'react-router-dom';
 import Action from '../../service';
 import { toBigNum } from '../../utils';
+import { toast } from 'react-toastify';
 
-export default function Responsive(props) {
+const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
+
+interface Props {
+    id: any 
+    collection: any
+}
+
+export default function Responsive({id, collection}: Props) {
     const navigate = useNavigate();
-    const { id, collection } = props;
     const [state, { onsaleNFT, onsaleLazyNFT, translateLang, approveNFT, checkNFTApprove }] =
-        useBlockchainContext();
+        useBlockchainContext() as any;
     const [correctCollection, setCorrectCollection] = useState<any>(null);
     const [price, setPrice] = useState('');
     const [date, setDate] = useState(new Date());
@@ -41,7 +47,7 @@ export default function Responsive(props) {
     useEffect(() => {
         for (let i = 0; i < state.collectionNFT.length; i++) {
             if (state.collectionNFT[i].address === collection) {
-                var itemData = state.collectionNFT[i].items.find((item) => item.tokenID === id);
+                var itemData = state.collectionNFT[i].items.find((item: any) => item.tokenID === id);
                 if (!itemData) navigate('/Auction');
                 else setCorrectCollection(itemData);
                 break;
@@ -49,7 +55,7 @@ export default function Responsive(props) {
         }
     }, [state.collectionNFT]);
 
-    const handle = (newDate) => {
+    const handle = (newDate: any) => {
         setDate(newDate);
     };
 
@@ -69,9 +75,13 @@ export default function Responsive(props) {
                 });
 
                 if (txOnSale) {
-                    NotificationManager.success(translateLang('listing_success'));
+                    // NotificationManager.success(translateLang('listing_success'));
+                    toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
                     navigate('/explore');
-                } else NotificationManager.error(translateLang('listingerror'));
+                } else {
+                    // NotificationManager.error(translateLang('listingerror'));
+                    toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
+                }
                 setLoading(false);
             } else {
                 const lazyAction = await Action.lazy_onsale({
@@ -84,7 +94,8 @@ export default function Responsive(props) {
 
                 if (!lazyAction.success) {
                     setLoading(false);
-                    NotificationManager.error(translateLang('listingerror'));
+                    // NotificationManager.error(translateLang('listingerror'));
+                    toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
                     return;
                 }
 
@@ -96,15 +107,20 @@ export default function Responsive(props) {
                 });
 
                 if (txOnSale) {
-                    NotificationManager.success(translateLang('listing_success'));
+                    // NotificationManager.success(translateLang('listing_success'));
+                    toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
                     navigate('/explore');
-                } else NotificationManager.error(translateLang('listingerror'));
+                } else {
+                    // NotificationManager.error(translateLang('listingerror'));
+                    toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
+                }
                 setLoading(false);
             }
         } catch (err) {
             console.log(err);
             setLoading(false);
-            NotificationManager.error(translateLang('operation_error'));
+            // NotificationManager.error(translateLang('operation_error'));
+            toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
         }
     };
 
@@ -116,9 +132,13 @@ export default function Responsive(props) {
         });
 
         if (txOnSale) {
-            NotificationManager.success('Successfully Approve');
+            // NotificationManager.success('Successfully Approve');
+            toast('Successfully Approve', {position: "top-right", autoClose: 2000})
             setApproveFlag(true);
-        } else NotificationManager.error('Failed Approve');
+        } else {
+            // NotificationManager.error('Failed Approve');
+            toast('Failed Approve', {position: "top-right", autoClose: 2000})
+        }
         setLoading(false);
     };
 
@@ -162,7 +182,7 @@ export default function Responsive(props) {
                                                     onChange={(e) => {
                                                         setCurrency(e.target.value);
                                                     }}>
-                                                    {state.currencies.map((currency, index) => (
+                                                    {state.currencies.map((currency: any, index: any) => (
                                                         <option value={currency.value} key={index}>
                                                             {currency.label}
                                                         </option>

@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaFacebookSquare, FaTwitterSquare } from 'react-icons/fa';
-import { NotificationManager } from 'react-notifications';
 import axios from 'axios';
 import { useBlockchainContext } from '../../context';
 import { copyToClipboard } from '../../utils';
 import Jazzicon from 'react-jazzicon';
+import { toast } from 'react-toastify';
 
 const SocialTab = styled.div`
     display: flex;
@@ -48,10 +48,12 @@ export default function Profile() {
     const handleaddressCopy = () => {
         copyToClipboard(state.auth.address)
             .then((res) => {
-                NotificationManager.success(translateLang('addresscopy_success'));
+                // NotificationManager.success(translateLang('addresscopy_success'));
+                toast(translateLang('addresscopy_success'), {position: "top-right", autoClose: 2000})
             })
             .catch((err) => {
-                NotificationManager.success(translateLang('operation_error'));
+                // NotificationManager.success(translateLang('operation_error'));
+                toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
             });
     };
 
@@ -73,10 +75,12 @@ export default function Profile() {
             var res = await axios.post('/api/user-update', formData);
             updateAuth(res.data.data);
 
-            NotificationManager.success(translateLang('update_success'));
+            // NotificationManager.success(translateLang('update_success'));
+            toast(translateLang('update_success'), {position: "top-right", autoClose: 2000})
         } catch (err) {
             console.log(err);
-            NotificationManager.error(translateLang('operation_error'));
+            // NotificationManager.error(translateLang('operation_error'));
+            toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
             setLoadItem(false);
         }
         setLoadItem(false);
@@ -98,7 +102,8 @@ export default function Profile() {
                 setLogoSeletedFile(newImage);
             } catch (err) {
                 console.log(err);
-                NotificationManager.error(translateLang('imageloading_error'));
+                // NotificationManager.error(translateLang('imageloading_error'));
+                toast(translateLang('imageloading_error'), {position: "top-right", autoClose: 2000})
             }
         }
     };
@@ -111,7 +116,8 @@ export default function Profile() {
                 setBannerSeletedFile(newImage);
             } catch (err) {
                 console.log(err);
-                NotificationManager.error(translateLang('imageloading_error'));
+                // NotificationManager.error(translateLang('imageloading_error'));
+                toast(translateLang('imageloading_error'), {position: "top-right", autoClose: 2000})
             }
         }
     };

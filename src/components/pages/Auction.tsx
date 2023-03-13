@@ -6,7 +6,7 @@ import { useBlockchainContext } from '../../context';
 
 export default function Auction() {
     const { id, collection } = useParams();
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
 
     return (
         <div style={{ paddingBottom: '500px' }}>

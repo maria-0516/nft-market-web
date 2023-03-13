@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
-import DateTimeField from '@1stquad/react-bootstrap-datetimepicker';
-import { NotificationManager } from 'react-notifications';
-import { useBlockchainContext } from '../../context';
 import moment from 'moment';
 import { useWallet } from 'use-wallet';
+import { toast } from 'react-toastify';
+import { useBlockchainContext } from '../../context';
 
-export default function BuyModal(props) {
+const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
+
+interface Props {
+    show: any
+    setShow: any 
+    correctItem: any
+}
+
+const BuyModal = ({show, setShow, correctItem}: Props) => {
     const wallet = useWallet();
-    const { show, setShow, correctItem } = props;
-    const [state, { bidNFT, translateLang }] = useBlockchainContext();
+    const [state, { bidNFT, translateLang }] = useBlockchainContext() as any;
     const [price, setPrice] = useState(0);
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handle = (newDate) => {
+    const handle = (newDate: any) => {
         setDate(newDate);
     };
 
@@ -30,7 +36,8 @@ export default function BuyModal(props) {
                 return;
             }
             if (price < Number(correctItem?.marketdata.bidPrice)) {
-                NotificationManager.warning(translateLang('increasebid_warn'));
+                // NotificationManager.warning(translateLang('increasebid_warn'));
+                toast(translateLang('increasebid_warn'), {position: "top-right", autoClose: 2000})
                 return;
             }
 
@@ -42,12 +49,14 @@ export default function BuyModal(props) {
                 acceptedToken: correctItem?.marketdata.acceptedToken,
                 expiresAt: moment(date).valueOf()
             });
-            NotificationManager.success(translateLang('bid_success'));
+            // NotificationManager.success(translateLang('bid_success'));
+            toast(translateLang('bid_success'), {position: "top-right", autoClose: 2000})
             setLoading(false);
             setShow(false);
-        } catch (err) {
+        } catch (err: any) {
             console.log(err.message);
-            NotificationManager.error(translateLang('bid_error'));
+            // NotificationManager.error(translateLang('bid_error'));
+            toast(translateLang('bid_error'), {position: "top-right", autoClose: 2000})
             setLoading(false);
         }
     };
@@ -121,3 +130,5 @@ export default function BuyModal(props) {
         </Modal>
     );
 }
+
+export default BuyModal

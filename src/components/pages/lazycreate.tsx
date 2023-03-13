@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NotificationManager } from 'react-notifications';
-
 import Footer from '../menu/footer';
 import Action from '../../service';
 import { useBlockchainContext } from '../../context';
+import { toast } from 'react-toastify';
 
 export default function LazyCreate() {
     const [state, { translateLang }] = useBlockchainContext() as any;
@@ -25,15 +24,18 @@ export default function LazyCreate() {
     const handleSubmit = async () => {
         try {
             if (!selectedFile) {
-                NotificationManager.error(translateLang('chooseimage_error'));
+                // NotificationManager.error(translateLang('chooseimage_error'));
+                toast(translateLang('chooseimage_error'), {position: "top-right", autoClose: 2000})
                 return;
             }
             if (selectedFile.size > 1024 * 1024 * 100) {
-                NotificationManager.error(translateLang('bigfileupload_error'));
+                // NotificationManager.error(translateLang('bigfileupload_error'));
+                toast(translateLang('bigfileupload_error'), {position: "top-right", autoClose: 2000})
                 return;
             }
             if (name.trim() === '') {
-                NotificationManager.error(translateLang('fillname'));
+                // NotificationManager.error(translateLang('fillname'));
+                toast(translateLang('fillname'), {position: "top-right", autoClose: 2000});
                 (document.getElementById('item_name') as any).focus();
                 return;
             }
@@ -42,13 +44,15 @@ export default function LazyCreate() {
                     if (attrItem[x].key === '' && attrItem[x].value === '') {
                     } else {
                         if (attrItem[x].key === '' || attrItem[x].value === '') {
-                            NotificationManager.error(translateLang('fillattribute'));
+                            // NotificationManager.error(translateLang('fillattribute'));
+                            toast(translateLang('fillattribute'), {position: "top-right", autoClose: 2000})
                             return;
                         }
                     }
                 } else {
                     if (attrItem[x].key === '' || attrItem[x].value === '') {
-                        NotificationManager.error(translateLang('fillattribute'));
+                        // NotificationManager.error(translateLang('fillattribute'));
+                        toast(translateLang('fillattribute'), {position: "top-right", autoClose: 2000})
                         return;
                     }
                 }
@@ -66,20 +70,25 @@ export default function LazyCreate() {
 
             const uploadData = await Action.lazy_mint(formData);
             if (uploadData.success) {
-                NotificationManager.success(translateLang('imageupload_success'));
+                // NotificationManager.success(translateLang('imageupload_success'));
+                toast(translateLang('imageupload_success'), {position: "top-right", autoClose: 2000})
                 reset();
             } else {
-                NotificationManager.error(translateLang('uploadfail'));
+                // NotificationManager.error(translateLang('uploadfail'));
+                toast(translateLang('uploadfail'), {position: "top-right", autoClose: 2000})
             }
             setLoading(false);
         } catch (err: any) {
             console.log(err.code);
             if (err.code === 4001) {
-                NotificationManager.error(translateLang('uploadreject'));
+                // NotificationManager.error(translateLang('uploadreject'));
+                toast(translateLang('uploadreject'), {position: "top-right", autoClose: 2000})
             } else if (err.code === 'UNPREDICTABLE_GAS_LIMIT') {
-                NotificationManager.error(translateLang('checkBalance'));
+                // NotificationManager.error(translateLang('checkBalance'));
+                toast(translateLang('checkBalance'), {position: "top-right", autoClose: 2000})
             } else {
-                NotificationManager.error(translateLang('operation_error'));
+                // NotificationManager.error(translateLang('operation_error'));
+                toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
             }
             setLoading(false);
         }
@@ -111,7 +120,8 @@ export default function LazyCreate() {
                 setSeletedFile(newImage);
             } catch (err) {
                 console.log(err);
-                NotificationManager.error(translateLang('imageloading_error'));
+                // NotificationManager.error(translateLang('imageloading_error'));
+                toast(translateLang('imageloading_error'), {position: "top-right", autoClose: 2000})
             }
         }
     };

@@ -80,7 +80,7 @@ export default function Author() {
                             style={{
                                 backgroundColor: `rgb(${
                                     Math.round(
-                                        (Number(address) /
+                                        (Number(address || '') /
                                             Number(
                                                 '0xffffffffffffffffffffffffffffffffffffffffff'
                                             )) *
@@ -88,7 +88,7 @@ export default function Author() {
                                     ) % 255
                                 }, ${
                                     Math.round(
-                                        (Number(address) /
+                                        (Number(address || '') /
                                             Number(
                                                 '0xffffffffffffffffffffffffffffffffffffffffff'
                                             )) *
@@ -96,7 +96,7 @@ export default function Author() {
                                     ) % 200
                                 }, ${
                                     Math.round(
-                                        (Number(address) /
+                                        (Number(address || '') /
                                             Number(
                                                 '0xffffffffffffffffffffffffffffffffffffffffff'
                                             )) *
@@ -114,7 +114,7 @@ export default function Author() {
                         <Jazzicon
                             diameter={100}
                             seed={Math.round(
-                                (Number(address) /
+                                (Number(address || '') /
                                     Number('0xffffffffffffffffffffffffffffffffffffffffff')) *
                                     10000000
                             )}
@@ -188,13 +188,13 @@ export default function Author() {
                     <Tab eventKey="forsale" title="For sale">
                         <div className="spacer-20"></div>
                         <div id="zero0" className="onStep fadeIn">
-                            <SaledNFTs address={address} />
+                            <SaledNFTs address={address || ''} />
                         </div>
                     </Tab>
                     <Tab eventKey="collected" title="Collected">
                         <div className="spacer-20"></div>
                         <div id="zero1" className="onStep fadeIn">
-                            <MyNFT address={address} />
+                            <MyNFT address={address || ''} />
                         </div>
                     </Tab>
                     <Tab eventKey="activity" title="Activity">

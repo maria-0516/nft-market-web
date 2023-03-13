@@ -17,7 +17,7 @@ const fadeInUp = keyframes`
 `;
 
 const Featurebox = () => {
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
 
     return (
         <div className="row gy-5">

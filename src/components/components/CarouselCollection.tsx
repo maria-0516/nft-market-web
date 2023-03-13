@@ -58,9 +58,9 @@ const settings = {
 
 export default function CarouselCollection() {
     const navigate = useNavigate();
-    const [state, {}] = useBlockchainContext();
+    const [state, {}] = useBlockchainContext() as any;
 
-    const NFTItem = (props) => {
+    const NFTItem = (props: any) => {
         const { title, coverImage, id, address, nftsCount } = props;
 
         const handle = () => {
@@ -98,7 +98,7 @@ export default function CarouselCollection() {
     return (
         <div>
             <Slider {...settings}>
-                {state.collectionNFT.slice(0, 4).map((item, index) => (
+                {state.collectionNFT.slice(0, 4).map((item: any, index: any) => (
                     <NFTItem
                         key={index}
                         id={index}

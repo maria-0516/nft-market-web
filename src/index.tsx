@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { NotificationContainer } from 'react-notifications';
+import ReactDOM from "react-dom/client";
 
 import '@1stquad/react-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css';
 import 'react-notifications/lib/notifications.css';
@@ -13,13 +12,14 @@ import './assets/animated.css';
 import './assets/style.scss';
 
 import App from './components/app';
+import { ToastContainer } from 'react-toastify';
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
 	<>
         <App />
-        <NotificationContainer />
+        <ToastContainer />
     </>
 )
 

@@ -48,7 +48,7 @@ function copyToClipboard(textToCopy: any) {
         textArea.select();
         return new Promise((res, rej) => {
             // here the magic happens
-            document.execCommand('copy') ? res() : rej();
+            document.execCommand('copy') ? /* res() */rej() : rej();
             textArea.remove();
         });
     }

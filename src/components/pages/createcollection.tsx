@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NotificationManager } from 'react-notifications';
+import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios';
 
 import { FaDiscord } from 'react-icons/fa';
@@ -27,7 +27,8 @@ export default function CreateCollection() {
 
     const handleVerify = async () => {
         if (address.trim() === '') {
-            NotificationManager.error('Please enter contract address');
+            // NotificationManager.error('Please enter contract address');
+            toast('Please enter contract address', {position: "top-right", autoClose: 2000})
             return;
         }
 
@@ -41,13 +42,16 @@ export default function CreateCollection() {
             );
             if (result.data.success) {
                 setVerify(result.data.success);
-                NotificationManager.success('Successfully Verified');
+                // NotificationManager.success('Successfully Verified');
+                toast('Successfully Verified', {position: "top-right", autoClose: 2000})
             } else {
-                NotificationManager.error('Invalid address');
+                // NotificationManager.error('Invalid address');
+                toast('Invalid address', {position: "top-right", autoClose: 2000})
             }
             setLoading(false);
         } catch (err) {
-            NotificationManager.error('Server Error');
+            // NotificationManager.error('Server Error');
+            toast('Server Error', {position: "top-right", autoClose: 2000})
             setLoading(false);
         }
     };
@@ -55,23 +59,28 @@ export default function CreateCollection() {
     const handleSubmit = async () => {
         try {
             if (!verify) {
-                NotificationManager.error('Please verify contract address');
+                // NotificationManager.error('Please verify contract address');
+                toast('Please verify contract address', {position: "top-right", autoClose: 2000})
                 return;
             }
             if (address.trim() === '') {
-                NotificationManager.error('Please enter contract address');
+                // NotificationManager.error('Please enter contract address');
+                toast('Please enter contract address', {position: "top-right", autoClose: 2000})
                 return;
             }
             if (!selectedLogoFile) {
-                NotificationManager.error(translateLang('chooselogo_error'));
+                // NotificationManager.error(translateLang('chooselogo_error'));
+                toast(translateLang('chooselogo_error'), {position: "top-right", autoClose: 2000})
                 return;
             }
             if (!selectedBannerFile) {
-                NotificationManager.error(translateLang('choosebanner_error'));
+                // NotificationManager.error(translateLang('choosebanner_error'));
+                toast(translateLang('choosebanner_error'), {position: "top-right", autoClose: 2000})
                 return;
             }
             if (name.trim() === '') {
-                NotificationManager.error(translateLang('fillcollection_error'));
+                // NotificationManager.error(translateLang('fillcollection_error'));
+                toast(translateLang('fillcollection_error'), {position: "top-right", autoClose: 2000})
                 return;
             }
             setLoading(true);
@@ -89,16 +98,19 @@ export default function CreateCollection() {
 
             const uploadData = await Action.create_collection(formData);
             if (uploadData) {
-                NotificationManager.success(translateLang('createcollection_success'));
+                // NotificationManager.success(translateLang('createcollection_success'));
+                toast(translateLang('createcollection_success'), {position: "top-right", autoClose: 2000})
                 reset();
             } else {
-                NotificationManager.error(translateLang('createcollection_error'));
+                // NotificationManager.error(translateLang('createcollection_error'));
+                toast(translateLang('createcollection_error'), {position: "top-right", autoClose: 2000})
             }
             setLoading(false);
         } catch (err) {
             setLoading(false);
             console.log(err);
-            NotificationManager.error(translateLang('operation_error'));
+            // NotificationManager.error(translateLang('operation_error'));
+            toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
         }
     };
 
@@ -128,7 +140,8 @@ export default function CreateCollection() {
                 setSeletedLogoFile(newImage);
             } catch (err) {
                 console.log(err);
-                NotificationManager.error(translateLang('imageloading_error'));
+                // NotificationManager.error(translateLang('imageloading_error'));
+                toast(translateLang('imageloading_error'), {position: "top-right", autoClose: 2000})
             }
         }
     };
@@ -145,7 +158,8 @@ export default function CreateCollection() {
                 setSeletedBannerFile(newImage);
             } catch (err) {
                 console.log(err);
-                NotificationManager.error(translateLang('imageloading_error'));
+                // NotificationManager.error(translateLang('imageloading_error'));
+                toast(translateLang('imageloading_error'), {position: "top-right", autoClose: 2000})
             }
         }
     };

@@ -6,10 +6,10 @@ import M_itemdetailRedux from '../components/M_ItemdetailRedex';
 import { useBlockchainContext } from '../../context';
 import BuyModal from '../components/BuyModal';
 import { styledAddress } from '../../utils';
-import { NotificationManager } from 'react-notifications';
 import { useWallet } from 'use-wallet';
 import Action from '../../service';
 import Jazzicon from 'react-jazzicon';
+import { toast } from 'react-toastify';
 
 export default function Colection() {
     const wallet = useWallet();
@@ -116,11 +116,13 @@ export default function Colection() {
                 price: itemData?.marketdata.price,
                 acceptedToken: itemData?.marketdata.acceptedToken
             });
-            NotificationManager.success(translateLang('buynft_success'));
+            // NotificationManager.success(translateLang('buynft_success'));
+            toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
             setLoading(false);
         } catch (err: any) {
             console.log(err.message);
-            NotificationManager.error(translateLang('buynft_error'));
+            // NotificationManager.error(translateLang('buynft_error'));
+            toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
             setLoading(false);
         }
     };
@@ -135,13 +137,15 @@ export default function Colection() {
                     id: id,
                     price: itemData.marketdata.bidPrice
                 });
-                NotificationManager.success(translateLang('approve_succeess'));
+                // NotificationManager.success(translateLang('approve_succeess'));
+                toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
                 setLoading(false);
             }
         } catch (err: any) {
             console.log(err.message);
             setLoading(false);
-            NotificationManager.error(translateLang('approve_error'));
+            // NotificationManager.error(translateLang('approve_error'));
+            toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
         }
     };
 
@@ -157,12 +161,14 @@ export default function Colection() {
                     nftAddress: collection,
                     assetId: id
                 });
-                NotificationManager.success(translateLang('cancelorder_success'));
+                // NotificationManager.success(translateLang('cancelorder_success'));
+                toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
 
                 setLoading(false);
             } catch (err: any) {
                 console.log(err.message);
-                NotificationManager.error(translateLang('cancelorder_error'));
+                // NotificationManager.error(translateLang('cancelorder_error'));
+                toast(translateLang('cancelorder_error'), {position: "top-right", autoClose: 2000})
                 setLoading(false);
             }
         }

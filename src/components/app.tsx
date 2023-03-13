@@ -20,7 +20,7 @@ import Auction from './pages/Auction';
 import Collections from './pages/collections';
 import { useBlockchainContext } from '../context';
 import Provider from '../context';
-import { NotificationManager } from 'react-notifications';
+import { ToastContainer, toast } from 'react-toastify';
 
 const httpLink = createHttpLink({
     uri: process.env.REACT_APP_GRAPQLENDPOINT
@@ -43,26 +43,27 @@ const client = new ApolloClient({
     cache: new InMemoryCache()
 });
 
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children }: {children: any}) => {
     const location = useLocation();
 
     const [state, {}] = useBlockchainContext() as any;
 
     if (!state.auth.isAuth) {
-        NotificationManager.warning('Please connect wallet');
+        // NotificationManager.warning('Please connect wallet');
+        toast('Please connect wallet', {position: "top-right", autoClose: 2000})
         return <Navigate to="/" replace state={{ from: location }} />;
     }
 
     return children;
 };
 
-export default function App() {
+function App() {
     return (
         <div className="wraper">
             <Router>
                 <ApolloProvider client={client}>
                     <UseWalletProvider
-                        chainId={250}
+                        // chainId={250}s
                         connectors={{
                             walletconnect: {
                                 rpcUrl: 'https://rpc.testnet.fantom.network/'
@@ -135,3 +136,5 @@ const GlobalStyles = createGlobalStyle`
     scroll-behavior: unset;
   }
 `;
+
+export default App;

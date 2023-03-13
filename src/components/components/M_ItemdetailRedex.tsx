@@ -1,8 +1,12 @@
 import React from "react";
 
-const M_ItemdetailRedex = (props) => {
-    const { type, percent, per } = props;
+interface Props {
+    type: any
+    percent: any
+    per: any
+}
 
+const M_ItemdetailRedex = ({type, percent, per}: Props) => {
     return (
         <div className="col-lg-4 col-md-6 col-sm-6">
             <div className="nft_attr">

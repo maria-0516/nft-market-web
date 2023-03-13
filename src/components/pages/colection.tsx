@@ -6,10 +6,10 @@ import CoulmnOne from '../components/CoulmnOne';
 import Footer from '../menu/footer';
 import { useBlockchainContext } from '../../context';
 import { copyToClipboard } from '../../utils';
-import { NotificationManager } from 'react-notifications';
 import { BsTwitter, BsFacebook, BsInstagram } from 'react-icons/bs';
 import { Tab, Tabs } from 'react-bootstrap';
 import Acitivity from './Activity';
+import { toast } from 'react-toastify';
 
 export default function Collection() {
     const navigate = useNavigate();
@@ -83,10 +83,12 @@ export default function Collection() {
     const handleaddressCopy = () => {
         copyToClipboard(correctItem.address)
             .then((res) => {
-                NotificationManager.success(translateLang('addresscopy_success'));
+                // NotificationManager.success(translateLang('addresscopy_success'));
+                toast(translateLang('addresscopy_success'), {position: "top-right", autoClose: 2000})
             })
             .catch((err) => {
-                NotificationManager.error(translateLang('operation_error'));
+                // NotificationManager.error(translateLang('operation_error'));
+                toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
             });
     };
 

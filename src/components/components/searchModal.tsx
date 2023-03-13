@@ -1,8 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function SearchModal(props) {
-    const { className, collectionDatas, nftDatas } = props;
+interface Props {
+    className?: any
+    collectionDatas: any
+    nftDatas: any
+}
+
+const SearchModal = ({className, collectionDatas, nftDatas}: Props) => {
 
     return (
         <div className={'searchModal ' + className}>
@@ -10,7 +15,7 @@ export default function SearchModal(props) {
             <hr />
             <div className="spacer-10"></div>
             <div className="row">
-                {collectionDatas.map((item, index) => (
+                {collectionDatas.map((item: any, index: any) => (
                     <CollectionItem
                         image={item.metadata.image}
                         address={item.address}
@@ -23,7 +28,7 @@ export default function SearchModal(props) {
             <hr />
             <div className="spacer-10"></div>
             <div className="row">
-                {nftDatas.map((item, index) => (
+                {nftDatas.map((item: any, index: any) => (
                     <NFTItem
                         image={item.metadata.image}
                         name={item.metadata.name}
@@ -76,3 +81,5 @@ const NFTItem = (props: any) => {
         </div>
     );
 };
+
+export default SearchModal

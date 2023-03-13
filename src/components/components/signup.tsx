@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { NotificationManager } from 'react-notifications';
 import Action from '../../service';
 import { useBlockchainContext } from '../../context';
+import { toast } from 'react-toastify';
 
-const SignUp = (props) => {
-    const { auth } = props;
+interface Props {
+    auth: any
+}
+
+const SignUp = ({auth}: Props) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPass] = useState('');
     const [passConfirm, setConfirm] = useState('');
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
 
     const userName = (val: any) => {
         setName(val);
@@ -35,11 +38,13 @@ const SignUp = (props) => {
             };
             const upload = await Action.user_create(info);
             if (upload.status) {
-                NotificationManager.success(translateLang('createaccount_success'));
+                // NotificationManager.success(translateLang('createaccount_success'));
+                toast(translateLang('createaccount_success'), {position: "top-right", autoClose: 2000})
                 toSignIn();
             }
         } else {
-            NotificationManager.error(translateLang('checkallinfo_error'));
+            // NotificationManager.error(translateLang('checkallinfo_error'));
+            toast(translateLang('checkallinfo_error'), {position: "top-right", autoClose: 2000})
         }
     };
 

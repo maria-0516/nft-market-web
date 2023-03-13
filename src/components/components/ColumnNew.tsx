@@ -3,12 +3,12 @@ import { useBlockchainContext } from '../../context';
 import NFTList from './nfts';
 
 export default function Responsive() {
-    const [state] = useBlockchainContext();
+    const [state] = useBlockchainContext() as any;
     const [filter, setFilter] = useState(null);
 
     const NFTs = useMemo(() => {
         return state.allNFT.filter(
-            (item) => item.owner.toLowerCase() == state.addresses.Marketplace.toLowerCase()
+            (item: any) => item.owner.toLowerCase() == state.addresses.Marketplace.toLowerCase()
         );
     }, [state.allNFT, filter]);
 

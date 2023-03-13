@@ -17,14 +17,17 @@ const fadeInUp = keyframes`
   }
 `;
 
-export default function ColumnZero(props) {
-    const { correctItem } = props;
-    const [state] = useBlockchainContext();
+interface Props {
+    correctItem: any
+}
+
+const ColumnZero = ({correctItem}: Props) => {
+    const [state] = useBlockchainContext() as any;
     const [filter, setFilter] = useState(null);
 
     const NFTs = useMemo(() => {
         return correctItem.items.filter(
-            (item) => item.owner.toLowerCase() === state.addresses.Marketplace.toLowerCase()
+            (item: any) => item.owner.toLowerCase() === state.addresses.Marketplace.toLowerCase()
         );
     }, [correctItem, filter]);
 
@@ -40,3 +43,5 @@ export default function ColumnZero(props) {
         </Reveal>
     );
 }
+
+export default ColumnZero

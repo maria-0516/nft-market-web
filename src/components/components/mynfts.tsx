@@ -2,12 +2,15 @@ import React, { useMemo } from 'react';
 import { useBlockchainContext } from '../../context';
 import NFTList from './nfts';
 
-export default function MyNFTs(props) {
-    const { address } = props;
-    const [state, {}] = useBlockchainContext();
+interface Props {
+    address: string
+}
+
+const MyNFTs = ({address}: Props) => {
+    const [state, {}] = useBlockchainContext() as any;
 
     const mynfts = useMemo(() => {
-        return state.allNFT.filter((item) => {
+        return state.allNFT.filter((item: any) => {
             if (item.owner === address) {
                 return item;
             }
@@ -24,3 +27,5 @@ export default function MyNFTs(props) {
         </div>
     );
 }
+
+export default MyNFTs;
