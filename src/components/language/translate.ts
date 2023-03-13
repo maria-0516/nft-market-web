@@ -114,7 +114,7 @@ export const translations = {
 
         // Profile
         mynft: 'My NFTs',
-        profile: 'Profile',
+        // profile: 'Profile',
         mybalance: 'My balance',
         walletaddress: 'Wallet Address',
         language: 'Language',
@@ -281,7 +281,7 @@ export const translations = {
 
         // Profile
         mynft: '俺の アイテム',
-        profile: 'プロフィル',
+        // profile: 'プロフィル',
         mybalance: '俺の バランス',
         walletaddress: '財布 住所',
         language: '言語',

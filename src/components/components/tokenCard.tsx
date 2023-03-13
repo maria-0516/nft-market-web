@@ -1,4 +1,6 @@
-export default function TokenCard(props) {
+import React from "react";
+
+const TokenCard = (props: any) => {
     const { balance, label } = props;
     return (
         <div className="form-control tokencard">
@@ -10,3 +12,5 @@ export default function TokenCard(props) {
         </div>
     );
 }
+
+export default TokenCard;

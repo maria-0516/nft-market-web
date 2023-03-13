@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import SliderCarousel from '../components/SliderCarouselsingle';
 // import FeatureBox from '../components/FeatureBox';
 import CarouselCollection from '../components/CarouselCollection';
@@ -69,13 +69,13 @@ const GlobalStyles = createGlobalStyle`
 
 export default function Homethree() {
     const navigate = useNavigate();
-    const [state, { translateLang, getCurrency }] = useBlockchainContext();
-    const [floorPrice, setFloorPrice] = useState(0);
+    const [state, { translateLang, getCurrency }] = useBlockchainContext() as any;
+    const [floorPrice, setFloorPrice] = useState<any>(0);
 
     useEffect(() => {
-        let bump = [];
-        state.collectionNFT.map((collectionItem) => {
-            let floorBump = [];
+        let bump = [] as any;
+        state.collectionNFT.map((collectionItem: any) => {
+            let floorBump = [] as any;
             for (let i = 0; i < collectionItem.items.length; i++) {
                 if (collectionItem.items[i].marketdata.price !== '') {
                     floorBump.push(Number(collectionItem.items[i].marketdata.price));
@@ -83,12 +83,12 @@ export default function Homethree() {
             }
             floorBump.sort();
             if (floorBump.length === 0) bump.push(0);
-            else bump.push(parseFloat(floorBump[0].toFixed(2)));
+            else bump.push(parseFloat((floorBump[0] as any).toFixed(2)));
         });
         setFloorPrice(bump);
     }, [state.collectionNFT]);
 
-    const handleClick = (nft) => {
+    const handleClick = (nft: any) => {
         navigate(`/ItemDetail/${nft.collectionAddress}/${nft.tokenID}`);
     };
 
@@ -155,7 +155,7 @@ export default function Homethree() {
                 <h2 className="style-2">Top collections</h2>
                 <div className="spacer-20"></div>
                 <div className="row top_collection">
-                    {state.collectionNFT.slice(0, 15).map((item, index) => (
+                    {state.collectionNFT.slice(0, 15).map((item: any, index: any) => (
                         <div className="col-md-6 col-lg-4" key={index}>
                             <Link to={`/collection/${item.address}`}>
                                 <div className="top_coll_item">
@@ -183,11 +183,11 @@ export default function Homethree() {
                 <h2 className="style-2">{'Discover the latest'}</h2>
                 <div className="row">
                     {state.allNFT
-                        .filter((item) => {
+                        .filter((item: any) => {
                             return item.marketdata.price !== '';
                         })
                         .slice(0, 10)
-                        .map((nft, index) => (
+                        .map((nft: any, index: any) => (
                             <div
                                 key={index}
                                 className="d-item col-2-5 col-lg-3 col-md-6 col-sm-6 col-xs-12">
@@ -204,7 +204,7 @@ export default function Homethree() {
                                     <div className="nft__item_info">
                                         <div className="spacer-10"></div>
                                         <span>
-                                            {state.collectionNFT.map((item) => {
+                                            {state.collectionNFT.map((item: any) => {
                                                 if (item.address === nft.collectionAddress)
                                                     return item.metadata.name;
                                             })}
@@ -227,7 +227,7 @@ export default function Homethree() {
                                             id={'like' + index}
                                             style={
                                                 nft.likes.indexOf(state.auth.address) === -1
-                                                    ? null
+                                                    ? undefined
                                                     : { color: '#c5a86a' }
                                             }>
                                             <i className="fa fa-heart"></i>

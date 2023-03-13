@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useBlockchainContext } from '../../context';
 import { Link } from 'react-router-dom';
 import { styledText } from '../../utils';
@@ -14,9 +14,12 @@ const StyledSpan = styled.span`
     gap: 5px;
 `;
 
-export default function Acitivity(props) {
-    const { activitiesData } = props;
-    const [state, { getCurrency }] = useBlockchainContext();
+interface Props {
+    activitiesData: any
+}
+
+const Acitivity = ({activitiesData}: Props) => {
+    const [state, { getCurrency }] = useBlockchainContext() as any;
     const [renderCount, setRenderCount] = useState(6);
     const [hasMore, setHasMore] = useState(false);
 
@@ -38,11 +41,11 @@ export default function Acitivity(props) {
                 <div className="row activity">
                     <table>
                         <tbody>
-                            {activeData.map((item, index) => (
+                            {activeData.map((item: any, index: any) => (
                                 <tr key={index}>
                                     <td>
                                         <div className="active_info">
-                                            {state.collectionNFT.map((collect) => {
+                                            {(state as any).collectionNFT.map((collect: any) => {
                                                 if (collect.address === item.contractAddress) {
                                                     return (
                                                         <img
@@ -62,7 +65,7 @@ export default function Acitivity(props) {
                                                 </Link>
                                                 <Link
                                                     to={`/ItemDetail/${item.contractAddress}/${item.tokenID}`}>
-                                                    {state.collectionNFT.map((collect) => {
+                                                    {(state as any).collectionNFT.map((collect: any) => {
                                                         if (
                                                             collect.address === item.contractAddress
                                                         )
@@ -108,10 +111,10 @@ export default function Acitivity(props) {
                                     <td>
                                         <Link to={`/${item.userAddress}`}>
                                             <div className="active_user">
-                                                {state.usersInfo[item.userAddress]?.image ? (
+                                                {(state as any).usersInfo[item.userAddress]?.image ? (
                                                     <img
                                                         src={
-                                                            state.usersInfo[item.userAddress].image
+                                                            (state as any).usersInfo[item.userAddress].image
                                                         }
                                                         alt=""
                                                     />
@@ -151,3 +154,5 @@ export default function Acitivity(props) {
         </div>
     );
 }
+
+export default Acitivity

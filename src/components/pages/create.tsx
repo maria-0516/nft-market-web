@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { NotificationManager } from 'react-notifications';
+
 import { FaDiscord } from 'react-icons/fa';
 
 import Footer from '../menu/footer';
 import Action from '../../service';
 import { useBlockchainContext } from '../../context';
 import Addresses from '../../contracts/contracts/addresses.json';
+const { NotificationManager } = require('react-notifications');
 
 export default function Createpage() {
-    const [state, { mintNFT, translateLang }] = useBlockchainContext();
+    const [state, { mintNFT, translateLang }] = useBlockchainContext() as any;
     const [image, _setImage] = useState(null);
-    const [selectedFile, setSeletedFile] = useState(null);
+    const [selectedFile, setSeletedFile] = useState<any>(null);
     const [name, setName] = useState('');
     const [extLink1, setExtLink1] = useState('');
     const [extLink2, setExtLink2] = useState('');
@@ -18,9 +19,9 @@ export default function Createpage() {
     const [extLink4, setExtLink4] = useState('');
     const [extLink5, setExtLink5] = useState('');
     const [desc, setDesc] = useState('');
-    const [attrItem, setAttrItem] = useState({ 0: { key: '', value: '' } });
+    const [attrItem, setAttrItem] = useState<any>({ 0: { key: '', value: '' } });
     const [count, setCount] = useState(1);
-    const [collections, setCollections] = useState([]);
+    const [collections, setCollections] = useState<any>([]);
     const [loading, setLoading] = useState(false);
     const [currentCollection, setCurrentCollection] = useState(Addresses.NFT1);
 
@@ -38,7 +39,7 @@ export default function Createpage() {
                     name: state.collectionNFT[i].metadata.name,
                     owner: state.collectionNFT[i].address
                 };
-                setCollections((state) => [...state, data]);
+                setCollections((state: any) => [...state, data]);
             }
         }
     }, [state]);
@@ -55,7 +56,7 @@ export default function Createpage() {
             }
             if (name.trim() === '') {
                 NotificationManager.error(translateLang('fillname'));
-                document.getElementById('item_name').focus();
+                (document.getElementById('item_name') as any).focus();
                 return;
             }
             for (let x in attrItem) {
@@ -95,7 +96,7 @@ export default function Createpage() {
                 NotificationManager.error(translateLang('uploadfail'));
             }
             setLoading(false);
-        } catch (err) {
+        } catch (err: any) {
             console.log(err.code);
             if (err.code === 4001) {
                 NotificationManager.error(translateLang('uploadreject'));
@@ -122,7 +123,7 @@ export default function Createpage() {
         setAttrItem({ 0: { key: '', value: '' } });
     };
 
-    const handleImgChange = async (event) => {
+    const handleImgChange = async (event: any) => {
         if (image) {
             setImage(null);
             setSeletedFile(null);
@@ -139,15 +140,15 @@ export default function Createpage() {
         }
     };
 
-    const handleCollectionChange = async (e) => {
+    const handleCollectionChange = async (e: any) => {
         setCurrentCollection(e.target.value);
     };
 
     const cleanup = () => {
-        URL.revokeObjectURL(image);
+        URL.revokeObjectURL(image || '');
     };
 
-    const setImage = (newImage) => {
+    const setImage = (newImage: any) => {
         if (image) {
             cleanup();
         }
@@ -162,7 +163,7 @@ export default function Createpage() {
         });
     };
 
-    const deleteItem = (param) => {
+    const deleteItem = (param: any) => {
         let bump = Object.assign({}, attrItem);
         if (Object.keys(attrItem).length > 1) {
             delete bump[param];
@@ -323,7 +324,7 @@ export default function Createpage() {
                                 <select
                                     className="form-control"
                                     onChange={(e) => handleCollectionChange(e)}>
-                                    {collections.map((item, index) => (
+                                    {collections.map((item: any, index: any) => (
                                         <option key={index} value={item.owner}>
                                             {item.name}
                                         </option>

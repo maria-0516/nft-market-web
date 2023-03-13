@@ -1,3 +1,4 @@
+import React from 'react';
 import { useWallet } from 'use-wallet';
 import Footer from '../menu/footer';
 

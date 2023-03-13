@@ -7,16 +7,18 @@ import Action from '../../service';
 import { useBlockchainContext } from '../../context';
 
 export default function LazyCreate() {
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
     const [image, _setImage] = useState(null);
-    const [selectedFile, setSeletedFile] = useState(null);
+    const [selectedFile, setSeletedFile] = useState<any>(null);
     const [name, setName] = useState('');
     const [extLink1, setExtLink1] = useState('');
     const [extLink2, setExtLink2] = useState('');
     const [extLink3, setExtLink3] = useState('');
     const [extLink4, setExtLink4] = useState('');
     const [desc, setDesc] = useState('');
-    const [attrItem, setAttrItem] = useState({ 0: { key: '', value: '' } });
+    const [attrItem, setAttrItem] = useState<any>({
+        0: { key: '', value: '' }
+    });
     const [count, setCount] = useState(1);
     const [loading, setLoading] = useState(false);
 
@@ -32,7 +34,7 @@ export default function LazyCreate() {
             }
             if (name.trim() === '') {
                 NotificationManager.error(translateLang('fillname'));
-                document.getElementById('item_name').focus();
+                (document.getElementById('item_name') as any).focus();
                 return;
             }
             for (let x in attrItem) {
@@ -70,7 +72,7 @@ export default function LazyCreate() {
                 NotificationManager.error(translateLang('uploadfail'));
             }
             setLoading(false);
-        } catch (err) {
+        } catch (err: any) {
             console.log(err.code);
             if (err.code === 4001) {
                 NotificationManager.error(translateLang('uploadreject'));
@@ -97,7 +99,7 @@ export default function LazyCreate() {
         setAttrItem({ 0: { key: '', value: '' } });
     };
 
-    const handleImgChange = async (event) => {
+    const handleImgChange = async (event: any) => {
         if (image) {
             setImage(null);
             setSeletedFile(null);
@@ -115,10 +117,10 @@ export default function LazyCreate() {
     };
 
     const cleanup = () => {
-        URL.revokeObjectURL(image);
+        URL.revokeObjectURL(image || '');
     };
 
-    const setImage = (newImage) => {
+    const setImage = (newImage: any) => {
         if (image) {
             cleanup();
         }
@@ -133,7 +135,7 @@ export default function LazyCreate() {
         });
     };
 
-    const deleteItem = (param) => {
+    const deleteItem = (param: any) => {
         let bump = Object.assign({}, attrItem);
         if (Object.keys(attrItem).length > 1) {
             delete bump[param];

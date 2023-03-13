@@ -8,7 +8,7 @@ import Footer from '../menu/footer';
 import { useBlockchainContext } from '../../context';
 
 const customStyles = {
-    option: (base, state) => ({
+    option: (base: any, state: any) => ({
         ...base,
         background: '#fff',
         color: '#000',
@@ -17,17 +17,17 @@ const customStyles = {
             background: '#ddd'
         }
     }),
-    menu: (base) => ({
+    menu: (base: any) => ({
         ...base,
         background: '#fff !important',
         borderRadius: '20px',
         marginTop: 0
     }),
-    menuList: (base) => ({
+    menuList: (base: any) => ({
         ...base,
         padding: 0
     }),
-    control: (base, state) => ({
+    control: (base: any, state: any) => ({
         ...base,
         padding: 2
     })
@@ -48,15 +48,15 @@ const options2 = [
 ];
 
 export default function Explore() {
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
     const [searchWord, setSearchWord] = useState('');
 
-    const [selectedOption2, setSelectedOption2] = useState(options2[0]);
+    const [selectedOption2, setSelectedOption2] = useState<any>(options2[0]);
     const [option1, setOption1] = useState('forsale');
 
     // status filter
     const filter1 = useCallback(
-        (item) => {
+        (item: any) => {
             switch (option1) {
                 case 'forsale':
                     return (
@@ -73,13 +73,13 @@ export default function Explore() {
         [option1]
     );
 
-    const filter2 = useCallback((item) => {
+    const filter2 = useCallback((item: any) => {
         return true;
     }, []);
 
     //search filter
     const filter3 = useCallback(
-        (item) => {
+        (item: any) => {
             const searchParams = ['owner', 'name', 'description', 'collectionAddress'];
             return searchParams.some((newItem) => {
                 return (
@@ -97,7 +97,7 @@ export default function Explore() {
 
     // sort option
     const sortBy = useCallback(
-        (a, b) => {
+        (a: any, b: any) => {
             let res = true;
             switch (selectedOption2.value) {
                 case 'Rating':
@@ -159,7 +159,7 @@ export default function Explore() {
                 <Tabs
                     activeKey={option1}
                     onSelect={(k) => {
-                        setOption1(k);
+                        setOption1(k || '');
                     }}
                     className="mb-3">
                     <Tab eventKey="forsale" title="For Sale">

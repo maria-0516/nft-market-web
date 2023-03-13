@@ -22,7 +22,7 @@ export default function Author() {
     const { address } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const [state] = useBlockchainContext();
+    const [state] = useBlockchainContext() as any;
     const [openMenu, setOpenMenu] = useState('forsale');
     const [openShare, setOpenShare] = useState(false);
     const [copyStatus, setCopyStatus] = useState('Copy');
@@ -34,7 +34,7 @@ export default function Author() {
     }, [address, state.auth.address]);
 
     const activitiesData = useMemo(() => {
-        return state.activities.filter((item) => {
+        return state.activities.filter((item: any) => {
             if (item.userAddress === address) {
                 return item;
             }
@@ -70,8 +70,8 @@ export default function Author() {
             <GlobalStyles />
 
             <div className="profile_image">
-                {state.usersInfo[address]?.bannerImage ? (
-                    <img src={state.usersInfo[address]?.bannerImage} alt="" />
+                {state.usersInfo[address || '']?.bannerImage ? (
+                    <img src={state.usersInfo[address || '']?.bannerImage} alt="" />
                 ) : (
                     <>
                         <img
@@ -108,8 +108,8 @@ export default function Author() {
                     </>
                 )}
                 <div>
-                    {state.usersInfo[address]?.image ? (
-                        <img src={state.usersInfo[address]?.image || ''} alt="" />
+                    {state.usersInfo[address || '']?.image ? (
+                        <img src={state.usersInfo[address || '']?.image || ''} alt="" />
                     ) : (
                         <Jazzicon
                             diameter={100}
@@ -126,7 +126,7 @@ export default function Author() {
                 <div className="spacer-40"></div>
                 <div className="profile_name">
                     <div>
-                        <h2>{state.usersInfo[address]?.name || 'unknown'}</h2>
+                        <h2>{state.usersInfo[address || '']?.name || 'unknown'}</h2>
                         <div
                             onBlur={() =>
                                 setTimeout(() => {
@@ -148,14 +148,14 @@ export default function Author() {
                                             <FaCopy />
                                             <p>Copy Link</p>
                                         </span>
-                                        {state.usersInfo[address]?.link2 && (
-                                            <a href={state.usersInfo[address]?.link2}>
+                                        {state.usersInfo[address || '']?.link2 && (
+                                            <a href={state.usersInfo[address || '']?.link2}>
                                                 <FaFacebook />
                                                 <p>Share on Facebook</p>
                                             </a>
                                         )}
-                                        {state.usersInfo[address]?.link1 && (
-                                            <a href={state.usersInfo[address]?.link1}>
+                                        {state.usersInfo[address || '']?.link1 && (
+                                            <a href={state.usersInfo[address || '']?.link1}>
                                                 <FaTwitter />
                                                 <p>Share on Twitter</p>
                                             </a>
@@ -168,11 +168,11 @@ export default function Author() {
                     <span className="profile_wallet">
                         <div onClick={HandleAddressCopy}>
                             <span>{copyStatus}</span>
-                            {address.slice(0, 6) + '...' + address.slice(-4)}
+                            {(address || '').slice(0, 6) + '...' + (address || '').slice(-4)}
                         </div>
                     </span>
                     <span className="profile_username">
-                        {state.usersInfo[address]?.bio === '' ? '' : state.usersInfo[address]?.bio}
+                        {state.usersInfo[address || '']?.bio === '' ? '' : state.usersInfo[address || '']?.bio}
                     </span>
                 </div>
                 <div className="spacer-20"></div>
@@ -182,7 +182,7 @@ export default function Author() {
                 <Tabs
                     activeKey={openMenu}
                     onSelect={(k) => {
-                        setOpenMenu(k);
+                        setOpenMenu(k || '');
                     }}
                     className="mb-3">
                     <Tab eventKey="forsale" title="For sale">

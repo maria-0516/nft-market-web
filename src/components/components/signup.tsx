@@ -11,16 +11,16 @@ const SignUp = (props) => {
     const [passConfirm, setConfirm] = useState('');
     const [state, { translateLang }] = useBlockchainContext();
 
-    const userName = (val) => {
+    const userName = (val: any) => {
         setName(val);
     };
-    const userEmail = (val) => {
+    const userEmail = (val: any) => {
         setEmail(val);
     };
-    const passWord = (val) => {
+    const passWord = (val: any) => {
         setPass(val);
     };
-    const confirmPassword = (val) => {
+    const confirmPassword = (val: any) => {
         setConfirm(val);
     };
     const toSignIn = () => {

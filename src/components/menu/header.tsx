@@ -9,10 +9,10 @@ import { changeNetwork } from '../../utils';
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 
-const NavLink = (props) => (
+const NavLink = (props: any) => (
     <Link
         {...props}
-        getProps={({ isCurrent }) => {
+        getProps={({ isCurrent }: {isCurrent: any}) => {
             // the object returned here is passed to the
             // anchor element's props
             return {
@@ -22,8 +22,10 @@ const NavLink = (props) => (
     />
 );
 
-export default function Header() {
-    const [state, { dispatch, translateLang }] = useBlockchainContext();
+
+
+const Header = () => {
+    const [state, { dispatch, translateLang }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
     const [openMenu2, setOpenMenu2] = useState(false);
     const [openMenu3, setOpenMenu3] = useState(false);
@@ -44,7 +46,7 @@ export default function Header() {
     }, [searchKey, focused]);
 
     const collectionFilter = useCallback(
-        (item) => {
+        (item: any) => {
             const searchParams = ['address', 'name', 'description'];
             return searchParams.some((newItem) => {
                 try {
@@ -63,7 +65,7 @@ export default function Header() {
     );
 
     const nftFilter = useCallback(
-        (item) => {
+        (item: any) => {
             const searchParams = ['owner', 'name', 'description', 'collectionAddress'];
             return searchParams.some((newItem) => {
                 try {
@@ -114,7 +116,7 @@ export default function Header() {
                     bannerImage: null
                 }
             });
-            localStorage.setItem('isConnected', false);
+            localStorage.setItem('isConnected', "0");
         } else {
             wallet.connect().then((res) => {
                 (async () => {
@@ -129,9 +131,9 @@ export default function Header() {
                                 wallet.connect();
                             }
                         }
-                        localStorage.setItem('isConnected', true);
+                        localStorage.setItem('isConnected', "1");
                     } catch (err) {
-                        console.log(err.message);
+                        console.log((err as any).message);
                     }
                 })();
             });
@@ -167,34 +169,38 @@ export default function Header() {
     });
 
     useEffect(() => {
-        if (localStorage.getItem('isConnected')) {
+        if (localStorage.getItem('isConnected')==="1") {
             wallet.connect();
         }
     }, []);
 
     const [showmenu, btn_icon] = useState(false);
 
+
     useEffect(() => {
-        const header = document.getElementById('myHeader');
-        const totop = document.getElementById('scroll-to-top');
-        const sticky = header.offsetTop;
-        const scrollCallBack = window.addEventListener('scroll', () => {
-            btn_icon(false);
-            if (window.pageYOffset > sticky) {
-                header.classList.add('sticky');
-                totop.classList.add('show');
-            } else {
-                header.classList.remove('sticky');
-                totop.classList.remove('show');
-            }
-            if (window.pageYOffset > sticky) {
-                closeMenu1();
-            }
-        });
+        
+        window.addEventListener('scroll', onScroll);
         return () => {
-            window.removeEventListener('scroll', scrollCallBack);
+            window.removeEventListener('scroll', onScroll);
         };
     }, []);
+
+    const onScroll = () => {
+        btn_icon(false);
+        const header = document.getElementById('myHeader');
+        const totop = document.getElementById('scroll-to-top');
+        const sticky = (header as any).offsetTop;
+        if (window.pageYOffset > sticky) {
+            (header as any).classList.add('sticky');
+            (totop as any).classList.add('show');
+        } else {
+            (header as any).classList.remove('sticky');
+            (totop as any).classList.remove('show');
+        }
+        if (window.pageYOffset > sticky) {
+            closeMenu1();
+        }
+    }
 
     return (
         <>
@@ -409,7 +415,7 @@ export default function Header() {
                                         <div
                                             className="switch_network"
                                             onBlur={() =>
-                                                setTimeout(() => setSwitchFocus(false), [100])
+                                                setTimeout(() => setSwitchFocus(false), 100)
                                             }>
                                             <button
                                                 className="btn-main"
@@ -447,3 +453,5 @@ export default function Header() {
         </>
     );
 }
+
+export default Header

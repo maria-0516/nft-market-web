@@ -3,7 +3,7 @@ import axios from 'axios';
 axios.defaults.baseURL = process.env.REACT_APP_SERVERENDPOINT;
 
 // NFT manage
-const create_collection = async (formData) => {
+const create_collection = async (formData: any) => {
     try {
         var res = await axios.post('/api/create-collection', formData);
 
@@ -18,7 +18,7 @@ const create_collection = async (formData) => {
     }
 };
 
-const nft_mint = async (formData) => {
+const nft_mint = async (formData: any) => {
     try {
         var res = await axios.post('/api/mint-nft', formData);
 
@@ -32,7 +32,7 @@ const nft_mint = async (formData) => {
     }
 };
 
-const nft_like = async (data) => {
+const nft_like = async (data: any) => {
     try {
         var res = await axios.post('/api/nft-like', data);
 
@@ -46,7 +46,7 @@ const nft_like = async (data) => {
     }
 };
 
-const lazy_mint = async (data) => {
+const lazy_mint = async (data: any) => {
     try {
         var res = await axios.post('/api/lazy-mint', data);
 
@@ -60,7 +60,7 @@ const lazy_mint = async (data) => {
     }
 };
 
-const lazy_onsale = async (data) => {
+const lazy_onsale = async (data: any) => {
     try {
         var res = await axios.post('/api/lazy-onsale', data);
 
@@ -75,7 +75,7 @@ const lazy_onsale = async (data) => {
 };
 
 // User Manage
-const user_create = async (account) => {
+const user_create = async (account: any) => {
     try {
         var res = await axios.post('/api/user-create', { account: account });
         if (!res.data.status) {
@@ -84,12 +84,12 @@ const user_create = async (account) => {
 
         return res.data;
     } catch (err) {
-        console.log(err.message);
+        console.log(err);
         return false;
     }
 };
 
-const user_login = async (account) => {
+const user_login = async (account: any) => {
     try {
         var res = await axios.post('/api/user-login', { address: account });
         if (res.data.status) {
@@ -102,7 +102,7 @@ const user_login = async (account) => {
     }
 };
 
-const buy_credit = async (param) => {
+const buy_credit = async (param: any) => {
     try {
         var res = await axios.post('/api/payment/session-initiate', param);
 

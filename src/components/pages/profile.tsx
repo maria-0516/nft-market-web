@@ -21,19 +21,19 @@ const SocialItemTab = styled.div`
 `;
 
 export default function Profile() {
-    const [state, { updateAuth, setLanguage, translateLang }] = useBlockchainContext();
+    const [state, { updateAuth, setLanguage, translateLang }] = useBlockchainContext() as any;
     const [newName, setNewName] = useState('');
     const [newBio, setNewBio] = useState('');
     const [newEmail, setNewEmail] = useState('');
     const [link1, setLink1] = useState('');
     const [link2, setLink2] = useState('');
-    const [logoImage, _setLogoImage] = useState(null);
-    const [bannerImage, _setBannerImage] = useState(null);
-    const [logoSelectedFile, setLogoSeletedFile] = useState(null);
-    const [bannerSelectedFile, setBannerSeletedFile] = useState(null);
+    const [logoImage, _setLogoImage] = useState<any>(null);
+    const [bannerImage, _setBannerImage] = useState<any>(null);
+    const [logoSelectedFile, setLogoSeletedFile] = useState<any>(null);
+    const [bannerSelectedFile, setBannerSeletedFile] = useState<any>(null);
     const [loading, setLoadItem] = useState(false);
-    const logoRef = useRef(null);
-    const bannerRef = useRef(null);
+    const logoRef = useRef<HTMLInputElement>(null)
+    const bannerRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         init(
@@ -61,8 +61,8 @@ export default function Profile() {
             const signMessage = await state.signer.signMessage(newName);
 
             var formData = new FormData();
-            formData.append('image', logoSelectedFile);
-            formData.append('bannerImage', bannerSelectedFile);
+            formData.append('image', logoSelectedFile || '');
+            formData.append('bannerImage', bannerSelectedFile || '');
             formData.append('name', newName);
             formData.append('bio', newBio);
             formData.append('email', newEmail);
@@ -82,7 +82,7 @@ export default function Profile() {
         setLoadItem(false);
     };
 
-    const init = (p1, p2, p3, p4, p5) => {
+    const init = (p1: any, p2: any, p3: any, p4: any, p5: any) => {
         setNewName(p1);
         setNewBio(p2);
         setNewEmail(p3);
@@ -90,7 +90,7 @@ export default function Profile() {
         setLink2(p5);
     };
 
-    const handleLogoChange = async (event) => {
+    const handleLogoChange = async (event: any) => {
         const newImage = event.target?.files?.[0];
         if (newImage) {
             try {
@@ -103,7 +103,7 @@ export default function Profile() {
         }
     };
 
-    const handleBannerChange = async (event) => {
+    const handleBannerChange = async (event: any) => {
         const newImage = event.target?.files?.[0];
         if (newImage) {
             try {
@@ -223,15 +223,15 @@ export default function Profile() {
                         <div>
                             <h5>Profile Image</h5>
                             {logoSelectedFile ? (
-                                <div onClick={() => logoRef.current.click()}>
+                                <div onClick={() => logoRef?.current?.click()}>
                                     <img
-                                        src={logoImage}
+                                        src={logoImage || ''}
                                         className="lazy nft__item_preview noselect"
                                         alt=""
                                     />
                                 </div>
                             ) : state.auth.image ? (
-                                <div onClick={() => logoRef.current.click()}>
+                                <div onClick={() => logoRef?.current?.click()}>
                                     <img
                                         src={state.auth.image}
                                         className="lazy nft__item_preview noselect"
@@ -239,7 +239,7 @@ export default function Profile() {
                                     />
                                 </div>
                             ) : (
-                                <div onClick={() => logoRef.current.click()}>
+                                <div onClick={() => logoRef?.current?.click()}>
                                     <Jazzicon
                                         diameter={100}
                                         seed={Math.round(
@@ -265,15 +265,15 @@ export default function Profile() {
                         <div>
                             <h5>Profile Banner</h5>
                             {bannerSelectedFile ? (
-                                <div onClick={() => bannerRef.current.click()}>
+                                <div onClick={() => bannerRef?.current?.click()}>
                                     <img
-                                        src={bannerImage}
+                                        src={bannerImage || ''}
                                         className="lazy nft__item_preview noselect"
                                         alt=""
                                     />
                                 </div>
                             ) : state.auth.bannerImage ? (
-                                <div onClick={() => bannerRef.current.click()}>
+                                <div onClick={() => bannerRef?.current?.click()}>
                                     <img
                                         src={state.auth.bannerImage}
                                         className="lazy nft__item_preview noselect"
@@ -281,7 +281,7 @@ export default function Profile() {
                                     />
                                 </div>
                             ) : (
-                                <div onClick={() => bannerRef.current.click()}>
+                                <div onClick={() => bannerRef?.current?.click()}>
                                     <img
                                         src="../img/background/bg-shape-1.png"
                                         alt=""

@@ -8,7 +8,7 @@ import Action from '../../service';
 import { useBlockchainContext } from '../../context';
 
 export default function CreateCollection() {
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
 
     const [logoImage, _setLogoImage] = useState(null);
     const [selectedLogoFile, setSeletedLogoFile] = useState(null);
@@ -103,7 +103,7 @@ export default function CreateCollection() {
     };
 
     const reset = () => {
-        cleanup();
+        cleanup('');
         _setLogoImage(null);
         _setBannerImage(null);
         setSeletedLogoFile(null);
@@ -116,7 +116,7 @@ export default function CreateCollection() {
         setVerify(false);
     };
 
-    const handleLogoImgChange = async (event) => {
+    const handleLogoImgChange = async (event: any) => {
         if (logoImage) {
             setLogoImage(null);
             setSeletedLogoFile(null);
@@ -133,7 +133,7 @@ export default function CreateCollection() {
         }
     };
 
-    const handleBannerImgChange = async (event) => {
+    const handleBannerImgChange = async (event: any) => {
         if (bannerImage) {
             setBannerImage(null);
             setSeletedBannerFile(null);
@@ -150,22 +150,22 @@ export default function CreateCollection() {
         }
     };
 
-    const cleanup = (index) => {
+    const cleanup = (index: any) => {
         if (index === 1) {
-            URL.revokeObjectURL(logoImage);
+            URL.revokeObjectURL(logoImage || '');
         } else {
-            URL.revokeObjectURL(bannerImage);
+            URL.revokeObjectURL(bannerImage || '');
         }
     };
 
-    const setLogoImage = (newImage) => {
+    const setLogoImage = (newImage: any) => {
         if (logoImage) {
             cleanup(1);
         }
         _setLogoImage(newImage);
     };
 
-    const setBannerImage = (newImage) => {
+    const setBannerImage = (newImage: any) => {
         if (bannerImage) {
             cleanup(2);
         }

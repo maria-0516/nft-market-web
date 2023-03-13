@@ -46,7 +46,7 @@ const client = new ApolloClient({
 const PrivateRoute = ({ children }) => {
     const location = useLocation();
 
-    const [state, {}] = useBlockchainContext();
+    const [state, {}] = useBlockchainContext() as any;
 
     if (!state.auth.isAuth) {
         NotificationManager.warning('Please connect wallet');
@@ -72,24 +72,15 @@ export default function App() {
                             <GlobalStyles />
                             <Header />
                             <Routes>
-                                <Route exact path="/" element={<Home />} />
+                                <Route path="/" element={<Home />} />
                                 <Route path="/explore" element={<Explore />} />
                                 <Route path="/Collections" element={<Collections />} />
                                 {/* <Route path="/signPage" element={<Wallet />} /> */}
-                                <Route
-                                    exact
-                                    path="/collection/:collection"
-                                    element={<Collection />}
-                                />
+                                <Route path="/collection/:collection" element={<Collection />}/>
 
-                                <Route
-                                    exact
-                                    path="/ItemDetail/:collection/:id"
-                                    element={<ItemDetail />}
-                                />
-                                <Route exact path="/:address" element={<Author />} />
-                                <Route
-                                    path="/account/profile"
+                                <Route path="/ItemDetail/:collection/:id" element={<ItemDetail />}/>
+                                <Route path="/:address" element={<Author />} />
+                                <Route path="/account/profile"
                                     element={
                                         <PrivateRoute>
                                             <Profile />
@@ -121,7 +112,6 @@ export default function App() {
                                     }
                                 />
                                 <Route
-                                    exact
                                     path="/Auction/:collection/:id"
                                     element={
                                         <PrivateRoute>

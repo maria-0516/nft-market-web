@@ -14,10 +14,12 @@ import './assets/style.scss';
 
 import App from './components/app';
 
-ReactDOM.render(
-    <React.StrictMode>
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+root.render(
+	<>
         <App />
         <NotificationContainer />
-    </React.StrictMode>,
-    document.getElementById('root')
-);
+    </>
+)
+

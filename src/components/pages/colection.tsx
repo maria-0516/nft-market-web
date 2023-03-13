@@ -14,8 +14,9 @@ import Acitivity from './Activity';
 export default function Collection() {
     const navigate = useNavigate();
     const { collection } = useParams();
-    const [state, { translateLang }] = useBlockchainContext();
-    const [correctItem, setCorrectItem] = useState(null);
+    const [state, _state] = useBlockchainContext() as any;
+    const {translateLang} = _state as any
+    const [correctItem, setCorrectItem] = useState<any>(null);
     const [owners, setOwners] = useState([]);
     const [avgAmount, setAvgAmount] = useState(0);
     const [floorPrice, setFloorPrice] = useState(0);
@@ -25,10 +26,10 @@ export default function Collection() {
     useEffect(() => {
         if (state.orderList.length !== 0) {
             let bump = 0;
-            const currentVolumn = state.orderList.filter((item) => {
+            const currentVolumn = state.orderList.filter((item: any) => {
                 return item.contractAddress === collection && item.status === 'success';
             });
-            currentVolumn.map((item) => {
+            currentVolumn.map((item: any) => {
                 bump += Number(item.price);
             });
             setVolumn(parseFloat(bump.toFixed(3)));
@@ -38,7 +39,7 @@ export default function Collection() {
     useEffect(() => {
         if (!collection) return;
         let itemData;
-        state.collectionNFT.map((item) => {
+        state.collectionNFT.map((item: any) => {
             if (item.address === collection) {
                 itemData = item;
             }
@@ -49,16 +50,16 @@ export default function Collection() {
 
     useEffect(() => {
         if (correctItem !== null) {
-            let bump = [];
+            let bump = [] as any;
             let count = 0;
             let sum = 0;
-            let floorBump = [];
+            let floorBump = [] as number[];
             for (let i = 0; i < correctItem.items.length; i++) {
                 if (bump.indexOf(correctItem.items[i].owner) === -1) {
                     bump.push(correctItem.items[i].owner);
                 }
                 if (correctItem.items[i].marketdata.price !== '') {
-                    floorBump.push(Number(correctItem.items[i].marketdata.price));
+                    floorBump.push(Number(correctItem.items[i].marketdata.price || 0));
                     sum += Number(correctItem.items[i].marketdata.price);
                     count++;
                 }
@@ -72,7 +73,7 @@ export default function Collection() {
     }, [correctItem]);
 
     const activitiesData = useMemo(() => {
-        return state.activities.filter((item) => {
+        return state.activities.filter((item: any) => {
             if (item.contractAddress === collection) {
                 return item;
             }
@@ -190,7 +191,7 @@ export default function Collection() {
                                     <Tabs
                                         activeKey={option1}
                                         onSelect={(k) => {
-                                            setOption1(k);
+                                            setOption1(k || '');
                                         }}
                                         className="mb-3">
                                         <Tab eventKey="OnSaled" title="For sale">

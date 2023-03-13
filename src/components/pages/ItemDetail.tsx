@@ -16,8 +16,8 @@ export default function Colection() {
     const { id, collection } = useParams();
     const navigate = useNavigate();
     const [state, { buyNFT, cancelOrder, translateLang, bidApprove, getCurrency }] =
-        useBlockchainContext();
-    const [correctCollection, setCorrectCollection] = useState(null);
+        useBlockchainContext() as any;
+    const [correctCollection, setCorrectCollection] = useState<any>(null);
     const [pageFlag, setPageFlag] = useState(0); // 1 is mine, 2 is saled mine, 3 is others, 4 is saled others
     const [modalShow, setModalShow] = useState(false);
     const [expireTime, setExpireTime] = useState([]);
@@ -25,7 +25,7 @@ export default function Colection() {
     const [loading, setLoading] = useState(false);
 
     // item data
-    const [itemData, setItemData] = useState(null);
+    const [itemData, setItemData] = useState<any>(null);
 
     useEffect(() => {
         if (itemData !== null)
@@ -37,9 +37,9 @@ export default function Colection() {
                     if (endTime < nowTime) setTimeFlag(true);
                     else {
                         let ms = moment(endTime.diff(nowTime));
-                        let bump = [];
-                        bump.push(Math.floor(moment.duration(ms).asHours() / 24));
-                        bump.push(Math.floor(moment.duration(ms).asHours()) % 24);
+                        let bump = [] as any;
+                        bump.push(Math.floor(moment.duration(ms as any).asHours() / 24));
+                        bump.push(Math.floor(moment.duration(ms as any).asHours()) % 24);
                         bump.push(moment.utc(ms).format('mm'));
                         bump.push(moment.utc(ms).format('ss'));
                         setExpireTime(bump);
@@ -71,11 +71,11 @@ export default function Colection() {
         for (let i = 0; i < state.collectionNFT.length; i++) {
             if (state.collectionNFT[i].address === collection) {
                 setCorrectCollection(state.collectionNFT[i]);
-                var itemData = state.collectionNFT[i].items.find((item) => item.tokenID === id);
+                var itemData = state.collectionNFT[i].items.find((item: any) => item.tokenID === id);
 
-                let attributeRarityies = itemData?.metadata?.attributes.map((attribute, index) => {
-                    let itemsWithSameAttributes = state.collectionNFT[i].items.filter((item) => {
-                        let hasSameAttribute = item.metadata?.attributes.find((itemAttribute) => {
+                let attributeRarityies = itemData?.metadata?.attributes.map((attribute: any, index: any) => {
+                    let itemsWithSameAttributes = state.collectionNFT[i].items.filter((item: any) => {
+                        let hasSameAttribute = item.metadata?.attributes.find((itemAttribute: any) => {
                             if (
                                 (itemAttribute.key === attribute.key ||
                                     itemAttribute.trait_type === attribute.trait_type) &&
@@ -118,7 +118,7 @@ export default function Colection() {
             });
             NotificationManager.success(translateLang('buynft_success'));
             setLoading(false);
-        } catch (err) {
+        } catch (err: any) {
             console.log(err.message);
             NotificationManager.error(translateLang('buynft_error'));
             setLoading(false);
@@ -138,7 +138,7 @@ export default function Colection() {
                 NotificationManager.success(translateLang('approve_succeess'));
                 setLoading(false);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.log(err.message);
             setLoading(false);
             NotificationManager.error(translateLang('approve_error'));
@@ -160,7 +160,7 @@ export default function Colection() {
                 NotificationManager.success(translateLang('cancelorder_success'));
 
                 setLoading(false);
-            } catch (err) {
+            } catch (err: any) {
                 console.log(err.message);
                 NotificationManager.error(translateLang('cancelorder_error'));
                 setLoading(false);
@@ -268,7 +268,7 @@ export default function Colection() {
                                 <div className="item_info">
                                     {/* end time */}
                                     <Link to={`/collection/${correctCollection.address}`}>
-                                        {state.collectionNFT.map((item) => {
+                                        {state.collectionNFT.map((item: any) => {
                                             if (item.address === itemData.collectionAddress)
                                                 return item.metadata.name;
                                         })}
@@ -397,7 +397,7 @@ export default function Colection() {
                                     )}
                                     <div className="de_tab">
                                         <div className="row">
-                                            {itemData?.metadata?.attributes.map((item, index) => (
+                                            {itemData?.metadata?.attributes.map((item: any, index: any) => (
                                                 <M_itemdetailRedux
                                                     key={index}
                                                     type={item.key || item.trait_type}
@@ -421,7 +421,7 @@ export default function Colection() {
                                                     <div className="de_tab_content">
                                                         <div className="tab-1 onStep fadeIn">
                                                             {itemData?.marketdata?.bidders.map(
-                                                                (bidder, index) => (
+                                                                (bidder: any, index: any) => (
                                                                     <>
                                                                         <div className="p_list">
                                                                             <div className="p_list_pp">

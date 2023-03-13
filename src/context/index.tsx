@@ -23,7 +23,7 @@ import Action from '../service';
 import { translations } from '../components/language/translate';
 import { useWallet } from 'use-wallet';
 
-const BlockchainContext = createContext();
+const BlockchainContext = createContext({});
 
 export function useBlockchainContext() {
     return useContext(BlockchainContext);

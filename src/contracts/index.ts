@@ -33,10 +33,10 @@ const marketplaceContract = new ethers.Contract(Addresses.Marketplace, Abis.Mark
 
 const storeFontContract = new ethers.Contract(Addresses.StoreFront, Abis.StoreFront, provider);
 
-const getNFTContract = (address) => {
+const getNFTContract = (address: any) => {
     return new ethers.Contract(address, Abis.NFT, provider);
 };
-const getTokenContract = (address) => {
+const getTokenContract = (address: any) => {
     return new ethers.Contract(address, Abis.TestToken, provider);
 };
 

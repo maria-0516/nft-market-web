@@ -5,7 +5,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
 
-export default function NewNotable() {
+const NewNotable = () => {
     const navigate = useNavigate();
     const [state] = useBlockchainContext();
     const settings = {
@@ -66,8 +66,8 @@ export default function NewNotable() {
     return (
         <div className="nft-big">
             <Slider {...settings}>
-                {state.collectionNFT.slice(-5).map((item, index) => (
-                    <div index={index + 1} key={index}>
+                {(state as any).collectionNFT.slice(-5).map((item: any, index: any) => (
+                    <div /* index={index + 1} */ key={index}>
                         <div className="nft_pic" onClick={() => handle(item.address)}>
                             <span>
                                 <span className="nft_pic_info">
@@ -91,3 +91,6 @@ export default function NewNotable() {
         </div>
     );
 }
+
+export default NewNotable;
+

@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Footer from '../menu/footer';
 import { useNavigate } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
 
 export default function Collections() {
-    const [state, { translateLang }] = useBlockchainContext();
+    const [state, { translateLang }] = useBlockchainContext() as any;
     const navigate = useNavigate();
     const [floorPrice, setFloorPrice] = useState(0);
     const [volumns, setVolumns] = useState([]);
@@ -12,13 +12,13 @@ export default function Collections() {
     useEffect(() => {
         if (state.orderList.length !== 0) {
             let bump = 0;
-            let bumpArr = [];
-            state.collectionNFT.map((collectionItem) => {
-                const currentVolumn = state.orderList.filter((item) => {
+            let bumpArr = [] as any;
+            state.collectionNFT.map((collectionItem: any) => {
+                const currentVolumn = state.orderList.filter((item: any) => {
                     return item.contractAddress === collectionItem && item.status === 'success';
                 });
 
-                currentVolumn.map((item) => {
+                currentVolumn.map((item: any) => {
                     bump += Number(item.price);
                 });
                 bumpArr.push(parseFloat(bump.toFixed(3)));
@@ -29,9 +29,9 @@ export default function Collections() {
     }, [state.orderList]);
 
     useEffect(() => {
-        let bump = [];
-        state.collectionNFT.map((collectionItem) => {
-            let floorBump = [];
+        let bump = [] as any;
+        state.collectionNFT.map((collectionItem: any) => {
+            let floorBump = [] as any;
             for (let i = 0; i < collectionItem.items.length; i++) {
                 if (collectionItem.items[i].marketdata.price !== '') {
                     floorBump.push(Number(collectionItem.items[i].marketdata.price));
@@ -41,10 +41,10 @@ export default function Collections() {
             if (floorBump.length === 0) bump.push(0);
             else bump.push(parseFloat(floorBump[0].toFixed(3)));
         });
-        setFloorPrice(bump);
+        setFloorPrice(bump as any);
     }, [state.collectionNFT]);
 
-    const handle = (address) => {
+    const handle = (address: any) => {
         navigate(`/collection/${address}`);
     };
 
@@ -69,7 +69,7 @@ export default function Collections() {
                             </tr>
                         </thead>
                         <tbody>
-                            {state.collectionNFT.map((item, index) => (
+                            {state.collectionNFT.map((item: any, index: any) => (
                                 <tr key={index} onClick={() => handle(item.address)}>
                                     <td style={{ padding: '5px 30px' }}>{index + 1}</td>
                                     <td>
@@ -85,7 +85,7 @@ export default function Collections() {
                                         </div>
                                     </td>
                                     <td>{volumns[index]} FTM</td>
-                                    <td>{floorPrice[index]} FTM</td>
+                                    <td>{(floorPrice as any)[index]} FTM</td>
                                     <td>{item.items.length}</td>
                                 </tr>
                             ))}

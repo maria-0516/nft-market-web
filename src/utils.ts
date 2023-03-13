@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-function delay(delayTimes) {
+function delay(delayTimes: any) {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve(2);
@@ -7,11 +7,11 @@ function delay(delayTimes) {
     });
 }
 
-function toBigNum(value, d = 18) {
+function toBigNum(value: any, d = 18) {
     return ethers.utils.parseUnits(String(value), d);
 }
 
-function fromBigNum(value, d = 18) {
+function fromBigNum(value: any, d = 18) {
     try {
         return parseFloat(ethers.utils.formatUnits(value, d));
     } catch (err) {
@@ -25,12 +25,12 @@ const styledAddress = (s = '') => {
     else return s;
 };
 
-const styledText = (s) => {
+const styledText = (s: any) => {
     if (s.length > 20) return s.slice(0, 15) + '...';
     else return s;
 };
 
-function copyToClipboard(textToCopy) {
+function copyToClipboard(textToCopy: any) {
     // navigator clipboard api needs a secure context (https)
     if (navigator.clipboard && window.isSecureContext) {
         // navigator clipboard api method'
@@ -117,13 +117,13 @@ const networks = {
         blockExplorerUrls: ['https://bscscan.com']
     }
 };
-const changeNetwork = async (networkName) => {
+const changeNetwork = async (networkName: any) => {
     if (!window.ethereum) throw new Error('No crypto wallet found');
     await window.ethereum.request({
         method: 'wallet_addEthereumChain',
         params: [
             {
-                ...networks[networkName]
+                ...(networks as any)[networkName]
             }
         ]
     });
