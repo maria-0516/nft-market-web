@@ -10,7 +10,7 @@ export default function Wallet() {
     };
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
+        <div>
             <section className="jumbotron breadcumb no-bg">
                 <div className="mainbreadcumb">
                     <div className="container">
@@ -34,8 +34,6 @@ export default function Wallet() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

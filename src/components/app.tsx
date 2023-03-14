@@ -17,11 +17,12 @@ import CreateCollection from './pages/createcollection';
 import Create from './pages/create';
 import LazyCreate from './pages/lazycreate';
 import Auction from './pages/Auction';
-import Collections from './pages/collections';
+import ListedDomains from './pages/ListedDomains';
 import { useBlockchainContext } from '../context';
 import Provider from '../context';
 import { ToastContainer, toast } from 'react-toastify';
 import config from '../config.json'
+import Footer from './menu/footer';
 
 const httpLink = createHttpLink({
     uri: process.env.REACT_APP_GRAPQLENDPOINT
@@ -76,7 +77,7 @@ function App() {
                             <Routes>
                                 <Route path="/" element={<Home />} />
                                 <Route path="/explore" element={<Explore />} />
-                                <Route path="/Collections" element={<Collections />} />
+                                <Route path="/listed-domains" element={<ListedDomains />} />
                                 {/* <Route path="/signPage" element={<Wallet />} /> */}
                                 <Route path="/collection/:collection" element={<Collection />}/>
 
@@ -123,6 +124,7 @@ function App() {
                                 />
                                 <Route path="*" element={<Navigate to={'/'} />} />
                             </Routes>
+                            <Footer />
                             <ScrollToTopBtn />
                         </Provider>
                     </UseWalletProvider>

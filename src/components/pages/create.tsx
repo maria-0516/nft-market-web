@@ -179,7 +179,7 @@ export default function Createpage() {
     };
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
+        <div>
             <section className="jumbotron breadcumb no-bg">
                 <div className="mainbreadcumb">
                     <div className="container">
@@ -438,8 +438,6 @@ export default function Createpage() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

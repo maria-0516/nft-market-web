@@ -93,7 +93,7 @@ export default function Homethree() {
     };
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
+        <div>
             <GlobalStyles />
             <section className="jumbotron no-bg">
                 <div className="container">
@@ -244,7 +244,260 @@ export default function Homethree() {
                 <h2 className="style-2">New and notable</h2>
                 <NewNotable />
             </section>
-            <Footer />
         </div>
+        // <section className="price-area rtbgprefix-cover bg-elements-parent" style={{backgroundImage: 'url(assets/images/all-img/section-bg-1.png)'}}>
+        //     <div className=" rt-spacer-xs-50"></div>
+        //     <div className="rt-bg-elemtnts rt-shape-ani-1">
+        //         <div className="spin-container">
+        //             <div className="shape">
+        //                 <div className="bd border_bg-1"></div>
+        //             </div>
+        //         </div>
+        //     </div>
+        //     <div className="rt-bg-elemtnts rt-shape-ani-2">
+        //         <div className="spin-container">
+        //             <div className="shape">
+        //                 <div className="bd border_bg-2"></div>
+        //             </div>
+        //         </div>
+        //     </div>
+        //     <div className="rt-bg-elemtnts rt-shape-ani-3">
+        //         <div className="spin-container">
+        //             <div className="shape">
+        //                 <div className="bd border_bg-3"></div>
+        //             </div>
+        //         </div>
+        //     </div>
+        //     <div className="container">
+        //         <div className="row">
+        //             <div className="col-xl-12 col-lg-8 mx-auto text-center wow fade-in-bottom" data-wow-duration="1s">
+        //                 <h2 className="rt-section-title">
+        //                     Listed Crypto Domains
+        //                 </h2>
+        //                 <p className="rt-mb-0 rt-light3 line-height-34 section-paragraph">
+        //                 </p>
+        //             </div>
+        //         </div>
+        //         <div className="rt-spacer-60"></div>
+        //         <div className="row">
+        //             <div className="col-lg-6 col-md-6 mx-auto rt-mb-30 wow fade-in-bottom">
+        //                 <div className="rt-price-1">
+        //                     <div className="price-hrader text-center rt-mb-30">
+        //                         <img src="assets/images/all-img/price-1.png" alt="price image" draggable="false" />
+        //                         <h3 className="f-size-36  f-size-xs-32 rt-normal">
+        //                             Auctions
+        //                         </h3>
+        //                         <p className="rt-light3 f-size-xs-22 section-p-content">
+        //                         </p>
+        //                     </div>
+        //                     <div className="price-body rt-pt-10">
+        //                         <ul className="rt-list">
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.net
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.shop
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.be
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.eu
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                         </ul>
+        //                     </div>
+        //                     <div className="price-footer rt-mt-30 text-center">
+        //                         <a href="#">View More </a>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //             <div className="col-lg-6 col-md-6 mx-auto rt-mb-30 wow fade-in-bottom">
+        //                 <div className="rt-price-1">
+        //                     <div className="price-hrader text-center rt-mb-30">
+        //                         <img src="assets/images/all-img/price-2.png" alt="price image" draggable="false" />
+        //                         <h3 className="f-size-36  f-size-xs-32 rt-normal">
+        //                             Fixed Price
+        //                         </h3>
+        //                         <p className="rt-light3 f-size-xs-22 section-p-content">
+        //                         </p>
+        //                     </div>
+        //                     <div className="price-body rt-pt-10">
+        //                         <ul className="rt-list">
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix ">
+        //                                 <a href="#">
+        //                                     domain.com
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.net
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.shop
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.be
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                             <li className="clearfix">
+        //                                 <a href="#">
+        //                                     domain.eu
+        //                                     <span className="float-right">
+        //                                         $245.00
+        //                                     </span>
+        //                                 </a>
+        //                             </li>
+        //                         </ul>
+        //                     </div>
+        //                     <div className="price-footer rt-mt-30 text-center">
+        //                         <a href="#">View More </a>
+        //                     </div>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </section>
     );
 }

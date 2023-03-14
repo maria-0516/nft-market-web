@@ -66,8 +66,8 @@ export default function Author() {
     };
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
-            <GlobalStyles />
+        <div>
+            {/* <GlobalStyles />
 
             <div className="profile_image">
                 {state.usersInfo[address || '']?.bannerImage ? (
@@ -208,9 +208,216 @@ export default function Author() {
                         </div>
                     </Tab>
                 </Tabs>
-            </section>
+            </section> */}
+            
+            <section className="page-content-area">
+                <div className="container">
+                    <div className="rt-spacer-40"></div>
+                    <div className="row align-items-center justify-content-center">
+                        <div className="col-10">
+                            <div className="tab-content" id="myTabContent">
+                                <div className="tab-pane fade-in-bottom show active" id="rt-tab-1" role="tabpanel"
+                                    aria-labelledby="rt-tab-1-tab">
+                                    <div className="table-responsive">
+                                        <table className="table domain-table">
+                                            <thead>
+                                                <tr className="rt-light-gray">
+                                                    <th className="text-323639 rt-strong f-size-18">Domain</th>
+                                                    <th className="text-323639 rt-strong f-size-18">Network</th>
+                                                    <th className="text-323639 rt-strong f-size-18">Fixed Price (Last Bid)</th>
+                                                    <th className="text-323639 rt-strong f-size-18 text-right"></th>
+                                                </tr>
+                                            </thead>
 
-            <Footer />
+                                            <tbody>
+                                                <tr>
+                                                    <th className="f-size-18 f-size-md-18 rt-semiblod text-234">31capital.com</th>
+                                                    <td className="f-size-18 f-size-md-18 rt-semiblod text-605">Ethereum</td>
+                                                    <td className="f-size-18 f-size-md-18 rt-semiblod text-338">2 ETH</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm4 pill">List it now!</a></td>
+                                                </tr>
+                                                <tr className="rt-light-gray">
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-18 f-size-md-18 rt-semiblod text-234">4avril.com</th>
+                                                    <td className="f-size-18 f-size-md-18 rt-semiblod text-605">Ethereum</td>
+                                                    <td className="f-size-18 f-size-md-18 rt-semiblod text-338">1.3 ETH</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm4 pill">Listed</a></td>
+                                                </tr>
+                                            
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div className="tab-pane fade-in-bottom" id="rt-tab-2" role="tabpanel" aria-labelledby="rt-tab-2-tab">
+                                    <div className="table-responsive">
+                                        <table className="table domain-table">
+                                            <thead>
+                                                <tr className="rt-light-gray">
+                                                    <th className="text-323639 rt-strong f-size-18">DOMAIN</th>
+                                                    <th className="text-323639 rt-strong f-size-18">Views</th>
+                                                    <th className="text-323639 rt-strong f-size-18">Price</th>
+                                                    <th className="text-323639 rt-strong f-size-18">PLACE BID</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">31capital.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr className="rt-light-gray">
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">4avril.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">golriat.com</th>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">whatwas.net</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">kmcgcourt.org</th>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">digimills.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">raro.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">raro.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">ions.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">brillant.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div className="tab-pane fade-in-bottom" id="rt-tab-3" role="tabpanel" aria-labelledby="rt-tab-3-tab">
+                                    <div className="table-responsive">
+                                        <table className="table domain-table">
+                                            <thead>
+                                                <tr className="rt-light-gray">
+                                                    <th className="text-323639 rt-strong f-size-18">DOMAIN</th>
+                                                    <th className="text-323639 rt-strong f-size-18">Views</th>
+                                                    <th className="text-323639 rt-strong f-size-18">Price</th>
+                                                    <th className="text-323639 rt-strong f-size-18">PLACE BID</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">31capital.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr className="rt-light-gray">
+                                                    
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">4avril.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">golriat.com</th>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">whatwas.net</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">kmcgcourt.org</th>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">digimills.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">raro.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">raro.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">ions.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+                                                <tr>
+                                                    <th className="f-size-24 f-size-md-18 rt-semiblod text-234">brillant.com</th>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-605">10</td>
+                                                    <td className="f-size-24 f-size-md-18 rt-semiblod text-338">$120</td>
+                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm3 pill">Place Bid</a></td>
+                                                </tr>
+
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }

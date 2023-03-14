@@ -158,7 +158,7 @@ export default function LazyCreate() {
     };
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
+        <div>
             <section className="jumbotron breadcumb no-bg">
                 <div className="mainbreadcumb">
                     <div className="container">
@@ -404,8 +404,6 @@ export default function LazyCreate() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

@@ -195,13 +195,13 @@ export default function Colection() {
     };
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
-            <section className="container">
+        <div>
+            <section className="container domain-detail">
                 {correctCollection === null ? (
                     'Loading...'
                 ) : (
                     <>
-                        <div className="row mt-md-5 pt-md-4">
+                        {/* <div className="row mt-md-5 pt-md-4">
                             <div className="col-md-5 text-center">
                                 <div style={{ position: 'sticky', top: '120px' }}>
                                     <img
@@ -233,7 +233,7 @@ export default function Colection() {
                                                 <i className="fa fa-pinterest-square"></i>
                                             </a>
                                         )}
-                                    </div> */}
+                                    </div>
                                     <div className="item_info_like">
                                         <div onClick={HandleLike} className="like">
                                             <i className="fa fa-heart"></i>
@@ -269,10 +269,8 @@ export default function Colection() {
                                     </div>
                                 </div>
                             </div>
-                            {/* main panel */}
                             <div className="col-md-7">
                                 <div className="item_info">
-                                    {/* end time */}
                                     <Link to={`/collection/${correctCollection.address}`}>
                                         {state.collectionNFT.map((item: any) => {
                                             if (item.address === itemData.collectionAddress)
@@ -554,13 +552,125 @@ export default function Colection() {
                                 </div>
                             </div>
                         </div>
+                        <BuyModal show={modalShow} setShow={setModalShow} correctItem={itemData} /> */}
+                        <section className="page-content-area">
+                            <div className="container">
+                            <div className="row">
+                                <div className="col-lg-7">
+                                        <div className="imil-box rt-mb-30">
+                                            <div className="rt-box-style-2">
+                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData?.metadata?.name}</h4>   
+                                                <h5 className="f-size-18 rt-light3">is for sale</h5>
+                                            
+                                            Network: Ethereum
+                                                <div className="row rt-mt-50">
+                                                    <div className="domain-border col-lg-4">
+                                                        <span className="d-block f-size-24 rt-semiblod">2 Months</span>
+                                                        <span className="d-block f-size-16 rt-light3">Age</span>
+                                                    </div>
+                                                    <div className="domain-border col-lg-4">
+                                                        <span className="d-block f-size-24 rt-semiblod">ENS Service</span>
+                                                        <span className="d-block f-size-16 rt-light3">Provider</span>
+                                                    </div>
+                                                    <div className="col-lg-4">
+                                                        <span className="d-block f-size-24 rt-semiblod">8 Months</span>
+                                                        <span className="d-block f-size-16 rt-light3">Expires</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    
+                                        </div>
+                                        <div className="rt-box-style-2 rt-mb-30 rt-dorder-off">
+                                            <span className="f-size-18"><span className="rt-strong">Ads: </span>Do you want to post your advertisement here? Contact us!</span>
+                                        </div>
+                                        <div className="rt-box-style-2 rt-mb-30">
+                                            <div className="f-size-18 rt-light3 line-height-34" style={{display: 'flex', gap: '1em'}}>
+                                                <div>Seller:</div>
+                                                <div style={{display: 'flex', gap: '0.5em', cursor: 'pointer'}} onClick={() => navigate(`/${itemData?.owner}`)}>
+                                                    {state.usersInfo[itemData?.owner]?.image ? (
+                                                        <img
+                                                            className="lazy"
+                                                            src={state.usersInfo[itemData?.owner].image}
+                                                            alt=""
+                                                            style={{width: 32, height: 32, borderRadius: '50%'}}
+                                                        />
+                                                    ) : (
+                                                        <Jazzicon
+                                                            diameter={100}
+                                                            seed={Math.round(
+                                                                (Number(itemData?.owner) /
+                                                                    Number(
+                                                                        '0xffffffffffffffffffffffffffffffffffffffffff'
+                                                                    )) *
+                                                                    10000000
+                                                            )}
+                                                        />
+                                                    )}
+                                                    <div className="author_list_info">
+                                                        <span>{styledAddress(itemData?.owner)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                </div>
+                                <div className="col-lg-5">
+                                        <div className="rt-box-style-3">
+                                            <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
+                                                This domain is in auction (or Fixed Price)
+                                            </div>
+                                            <div className="rt-p-30">
+                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                
+                                                    <span className="f-size-20 rt-light3">Current price:</span>
+                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">1.5</span></span><span
+                                                            className="f-size-24"> ETH</span></span>
+                                                
+                                                </div>
+                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                
+                                                <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
+                                                    <span className="f-size-20 rt-light3 ">0.075 ETH (5%)</span>
+                                                
+                                                </div>
+                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                
+                                                <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
+                                                    <span className="f-size-20 rt-light3 ">1.575 ETH</span>
+                                                
+                                                </div>
+                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                
+                                                    <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
+                                                    <span className="f-size-20 rt-light3 text-eb7">1 day,10 hours</span>
+                                                
+                                                </div>
+                                                <form action="#" className="rt-form ">
+                                                    <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" />
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button>
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
 
-                        <BuyModal show={modalShow} setShow={setModalShow} correctItem={itemData} />
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button>
+                                                    
+                                                    <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button>
+
+                                            
+                                                </form>
+                                            </div>
+                                        </div>
+                                    
+                                    
+                                    
+                            
+                                    
+                                </div>
+                            </div>
+                            </div>
+                        </section>
                     </>
                 )}
             </section>
-
-            <Footer />
         </div>
     );
 }

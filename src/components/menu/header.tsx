@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Breakpoint, BreakpointProvider, setDefaultBreakpoints } from 'react-socks';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useOnclickOutside from 'react-cool-onclickoutside';
 import { useBlockchainContext } from '../../context';
 import { useWallet } from 'use-wallet';
@@ -33,7 +33,14 @@ const Header = () => {
     const [searchKey, setSearchKey] = useState('');
     const [focused, setFocused] = useState(false);
     const [switchFocus, setSwitchFocus] = useState(false);
+    const [headerClass, setHeaderClass] = useState("main-header rt-sticky");
+    const [mobileMenu, setMobileMenu] = useState({
+		main: false,
+		sub1: false,
+		sub2: false
+	});
     const wallet = useWallet();
+	const location = useLocation()
 
     useEffect(() => {
         if (searchKey.trim() !== '' && focused) {
@@ -181,9 +188,6 @@ const Header = () => {
         }
     }, [wallet.status]);
 
-    const [showmenu, btn_icon] = useState(false);
-
-
     useEffect(() => {
         
         window.addEventListener('scroll', onScroll);
@@ -193,16 +197,11 @@ const Header = () => {
     }, []);
 
     const onScroll = () => {
-        btn_icon(false);
-        const header = document.getElementById('myHeader');
-        const totop = document.getElementById('scroll-to-top');
-        const sticky = (header as any).offsetTop;
+        const sticky = 170
         if (window.pageYOffset > sticky) {
-            (header as any).classList.add('sticky');
-            (totop as any).classList.add('show');
+			setHeaderClass("main-header rt-sticky rt-sticky-active fadeInDown animated")
         } else {
-            (header as any).classList.remove('sticky');
-            (totop as any).classList.remove('show');
+			setHeaderClass("main-header rt-sticky")
         }
         if (window.pageYOffset > sticky) {
             closeMenu1();
@@ -211,7 +210,7 @@ const Header = () => {
 
     return (
         <>
-            <header id="myHeader" className="navbar white">
+            {/* <header id="myHeader" className="navbar white">
                 <div className="container">
                     <div className="row w-100-nav">
                         <div className="logo px-0">
@@ -332,7 +331,7 @@ const Header = () => {
                                             <span className="lines"></span>
                                         </NavLink>
                                     </div> */}
-                                        <div className="spacer-single"></div>
+                                    {/*  <div className="spacer-single"></div>
                                         <div className="search">
                                             <input
                                                 type="text"
@@ -454,7 +453,144 @@ const Header = () => {
                         <div className="menu-line2 white"></div>
                     </button>
                 </div>
-            </header>
+            </header> */}
+            <header className='rt-site-header rt-fixed-top white-menu'>
+				<div className="top-header">
+				<div className="container">
+					<div className="row align-items-center">
+						<div className="col-md-9">
+							
+							<ul className="text-center text-md-left top-social">
+								<li><span><a href="#" className="f-size-14 text-white"><img src="assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</a></span></li>
+								<li>
+									<select className="rt-selectactive select2-hidden-accessible" name="from" style={{width: '100%'}}>
+										<option value="eng">EN</option>
+									
+									</select>
+									<span className="select-arrwo"><i className="icofont-thin-down"></i></span>
+								</li>
+			
+								<li><a href="#"><i className="icofont-telegram"></i></a></li>
+								<li><a href="#"><i className="icofont-twitter"></i></a></li>
+			
+							</ul>
+						</div>
+						<div className="col-md-3 text-center text-md-right" style={{display: 'flex', justifyContent: 'center'}}>
+							{wallet.status == 'connected' && (
+								<div
+									className="switch_network"
+									onBlur={() =>
+										setTimeout(() => setSwitchFocus(false), 100)
+									}>
+									<button
+										className="rt-btn rt-gradient pill text-uppercase"
+										onClick={() => setSwitchFocus(!switchFocus)}>
+										Switch Network
+									</button>
+									{switchFocus && (
+										<ul>
+											<li>Bitcoin evm</li>
+											<li>Spagetti testnet</li>
+											<li>Fantom</li>
+										</ul>
+									)}
+								</div>
+							)}
+							<button className="rt-btn rt-gradient pill text-uppercase" onClick={handleConnect}>
+								{wallet.status==='connecting' ? 'Connecting...' : (
+									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect'
+								)}
+							</button>
+							{/* <a href="#" className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', width: '75%', fontSize: '1.5rem', fontWeight: 'bold'}}>Connect Wallet
+							</a> */}
+						</div>
+					</div>
+				</div>
+			</div> 
+				<div id="myHeader" className={headerClass}>
+					<nav className="navbar">
+						<div className="container">
+							<Link to="/" className="brand-logo"><img src="assets/images/logo/logo.png" alt="" /></Link>
+							<Link to="/" className="sticky-logo"><img src="assets/images/logo/logo.png" alt="" /></Link>
+							<div className="ml-auto d-flex align-items-center">
+									<div className="main-menu">
+									<ul className={mobileMenu.main ? 'show' : ''}>
+										<li><Link to="/explore">Home</Link></li>
+									
+										<li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
+											<ul className="sub-menu" style={{display: `${mobileMenu.sub1 ? 'block' : ''}`}}>
+												<li><Link to="/listed-domains">All Listed Domains</Link></li>
+												<li><Link to="/">Fixed Price</Link></li>
+												<li><Link to="/">Auction List</Link></li>
+											</ul>
+										</li>
+										<li ><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link>
+										
+										</li>
+										<li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
+											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
+												<li><Link to="/">How It Works</Link></li>
+												<li><Link to="/">FAQ</Link></li>
+												<li><Link to="/">Partnership</Link></li>
+											</ul>
+										</li>
+										<li><Link to="#">CNS Token</Link>
+										
+										</li>
+									</ul>
+								</div>
+							<div className="rt-nav-tolls d-flex align-items-center">
+								<div className="mobile-menu" onClick={()=>setMobileMenu({...mobileMenu, main: !mobileMenu.main})}>
+									<div className="menu-click">
+										<span></span>
+										<span></span>
+										<span></span>
+									</div>
+								</div>
+							</div>
+						</div>
+						</div>
+					</nav>
+				</div>
+			</header>
+			<div className="rt-breadcump rt-breadcump-height breaducump-style-2">
+				<div className="rt-page-bg rtbgprefix-full" style={{backgroundImage: 'url(/assets/images/banner/breadcump-img.png)'}}>
+				</div>
+				<div className="container">
+					<div className="rt-spacer-60"></div>
+
+					<div className="row rt-breadcump-height align-items-center">
+						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
+							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong">
+								{location.pathname==='/' ? 'Buy Crypto Domains' : ''}
+								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
+								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
+								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
+								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
+								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
+							</h4>
+							<form action="#" className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
+								data-animation="wow fadeInUp">
+								<input type="text" placeholder="enter a new search" />
+						
+								<button className="rt-btn rt-gradient pill rt-Bshadow-1" type="submit">
+									Search <span><i className="icofont-simple-right"></i></span>
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+				{/* <div className="container">
+					<div className="rt-spacer-60"></div>
+
+					<div className="row rt-breadcump-height align-items-center">
+						<div className="col-lg-12 mx-auto text-center text-white">
+							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong">ELON.ETH</h4>
+							<h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>
+						</div>
+					</div>
+				</div> */}
+			</div>
         </>
     );
 }

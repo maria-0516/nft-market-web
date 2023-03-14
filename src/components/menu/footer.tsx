@@ -12,48 +12,59 @@ import {
 
 const Footer = () => {
     return (
-        <footer className="footer-light">
-            <div className="container">
-                <span className="spacer-20"></span>
-                <div className="part_1">
-                    <h2>Join the community</h2>
-                    <span className="spacer-10"></span>
-                    <div>
-                        <span>
-                            <a href="/#">
-                                <BsTwitter /> @PICASSO
-                            </a>
-                        </span>
-                        <span>
-                            <a href="/#">
-                                <BsDiscord /> Discord
-                            </a>
-                        </span>
-                        <span>
-                            <a href="/#">
-                                <BsEnvelope /> support@picasso.to
-                            </a>
-                        </span>
-                        <span>
-                            <a href="/#">
-                                <BsTelegram /> Telegram
-                            </a>
-                        </span>
-                    </div>
-                    <span className="spacer-20"></span>
-                </div>
-                <span className="spacer-20"></span>
-                <div className="part_2">
-                    <p>&copy; {new Date().getFullYear()} PICASSO</p>
-                    <div>
-                        <Link to="/explore">All NFTs</Link>
-                        <Link to="/Collections">All Collections</Link>
-                        <Link to="/create/nft">Minting Now</Link>
-                        <Link to="/create/collection">Submit Collection</Link>
+        // <footer className="footer-light">
+        //     <div className="container">
+        //         <span className="spacer-20"></span>
+        //         <div className="part_1">
+        //             <h2>Join the community</h2>
+        //             <span className="spacer-10"></span>
+        //             <div>
+        //                 <span>
+        //                     <a href="/#">
+        //                         <BsTwitter /> @PICASSO
+        //                     </a>
+        //                 </span>
+        //                 <span>
+        //                     <a href="/#">
+        //                         <BsDiscord /> Discord
+        //                     </a>
+        //                 </span>
+        //                 <span>
+        //                     <a href="/#">
+        //                         <BsEnvelope /> support@picasso.to
+        //                     </a>
+        //                 </span>
+        //                 <span>
+        //                     <a href="/#">
+        //                         <BsTelegram /> Telegram
+        //                     </a>
+        //                 </span>
+        //             </div>
+        //             <span className="spacer-20"></span>
+        //         </div>
+        //         <span className="spacer-20"></span>
+        //         <div className="part_2">
+        //             <p>&copy; {new Date().getFullYear()} PICASSO</p>
+        //             <div>
+        //                 <Link to="/explore">All NFTs</Link>
+        //                 <Link to="/Collections">All Collections</Link>
+        //                 <Link to="/create/nft">Minting Now</Link>
+        //                 <Link to="/create/collection">Submit Collection</Link>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </footer>
+        <div className="rt-site-footer deafult-footer has-callto-action">
+            <div className="footer-bottom">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-12 text-center copy-right-text">
+                            Copyright © 2023 .All Rights Reserved By Crypto Names Store (CNS)
+                        </div>
                     </div>
                 </div>
             </div>
-        </footer>
+        </div>
     );
 };
 export default Footer;

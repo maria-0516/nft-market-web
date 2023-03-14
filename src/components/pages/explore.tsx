@@ -126,7 +126,7 @@ export default function Explore() {
     );
 
     return (
-        <div style={{ paddingBottom: '500px' }}>
+        <div>
             <div className="jumbotron no-bg">
                 <div className="container">
                     <h1>{translateLang('allnft_title')}</h1>
@@ -186,8 +186,6 @@ export default function Explore() {
                     </Tab>
                 </Tabs>
             </section>
-
-            <Footer />
         </div>
     );
 }
