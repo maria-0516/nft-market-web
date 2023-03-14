@@ -21,6 +21,7 @@ import Collections from './pages/collections';
 import { useBlockchainContext } from '../context';
 import Provider from '../context';
 import { ToastContainer, toast } from 'react-toastify';
+import config from '../config.json'
 
 const httpLink = createHttpLink({
     uri: process.env.REACT_APP_GRAPQLENDPOINT
@@ -63,10 +64,10 @@ function App() {
             <Router>
                 <ApolloProvider client={client}>
                     <UseWalletProvider
-                        // chainId={250}s
+                        // chainId={config.chainId}
                         connectors={{
                             walletconnect: {
-                                rpcUrl: 'https://rpc.testnet.fantom.network/'
+                                rpcUrl: config.rpc
                             }
                         }}>
                         <Provider>

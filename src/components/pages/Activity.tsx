@@ -51,8 +51,7 @@ const Acitivity = ({activitiesData}: Props) => {
                                                         <img
                                                             key={index}
                                                             src={
-                                                                collect.items[item.tokenID].metadata
-                                                                    .image
+                                                                collect.items?.[item.tokenID]?.metadata?.image || ''
                                                             }
                                                             alt=""
                                                         />
@@ -70,8 +69,7 @@ const Acitivity = ({activitiesData}: Props) => {
                                                             collect.address === item.contractAddress
                                                         )
                                                             return styledText(
-                                                                collect.items[item.tokenID].metadata
-                                                                    .name
+                                                                collect.items?.[item.tokenID]?.metadata?.name || ''
                                                             );
                                                     })}
                                                 </Link>

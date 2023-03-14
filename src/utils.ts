@@ -1,4 +1,6 @@
 import { ethers } from 'ethers';
+import config from './config.json'
+
 function delay(delayTimes: any) {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -81,7 +83,7 @@ const networks = {
         blockExplorerUrls: ['https://testnet.ftmscan.com/']
     },
     fantom: {
-        chainId: `0x${Number(250).toString(16)}`,
+        chainId: `0x${config.chainId.toString(16)}`,
         chainName: 'Fantom Opera',
         nativeCurrency: {
             name: 'Fantom',

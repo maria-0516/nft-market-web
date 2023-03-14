@@ -10,6 +10,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import './assets/animated.css';
 import './assets/style.scss';
+import 'react-toastify/dist/ReactToastify.css'
 
 import App from './components/app';
 import { ToastContainer } from 'react-toastify';

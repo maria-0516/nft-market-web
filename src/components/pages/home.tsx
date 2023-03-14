@@ -132,7 +132,7 @@ export default function Homethree() {
                     </div>
                 </div>
             </section>
-
+            
             <section className="container no-top">
                 <div className="container no-top">
                     <div className="row">
@@ -143,7 +143,7 @@ export default function Homethree() {
                                 delay={900}
                                 duration={800}
                                 triggerOnce>
-                                <CarouselCollection />
+                               <CarouselCollection />
                             </Reveal>
                         </div>
                     </div>

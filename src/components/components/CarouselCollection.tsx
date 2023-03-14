@@ -14,7 +14,15 @@ const settings = {
     initialSlide: 0,
     responsive: [
         {
-            breakpoint: 1900,
+            breakpoint: 4000,
+            settings: {
+                slidesToShow: 8,
+                slidesToScroll: 1,
+                infinite: false
+            }
+        },
+        {
+            breakpoint: 2000,
             settings: {
                 slidesToShow: 4,
                 slidesToScroll: 1,
@@ -68,7 +76,7 @@ export default function CarouselCollection() {
         };
 
         return (
-            <div /* index={id} */>
+            <div key={id}>
                 <div className="nft_coll" onClick={handle}>
                     <span>
                         <div className="nft_wrap">
@@ -98,9 +106,9 @@ export default function CarouselCollection() {
     return (
         <div>
             <Slider {...settings}>
-                {state.collectionNFT.slice(0, 4).map((item: any, index: any) => (
+                {state.collectionNFT.slice(0, 4).map((item: any, index: number) => (
                     <NFTItem
-                        key={index}
+                        key={item.id}
                         id={index}
                         title={item.metadata.name}
                         coverImage={item.metadata.coverImage}

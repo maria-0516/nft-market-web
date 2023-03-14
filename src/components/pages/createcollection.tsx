@@ -95,6 +95,7 @@ export default function CreateCollection() {
             formData.append('extUrl4', extLink4.trim());
             formData.append('extUrl5', extLink5.trim());
             formData.append('desc', desc.trim());
+            formData.append('ownerAddress', state.auth.address.trim());
 
             const uploadData = await Action.create_collection(formData);
             if (uploadData) {

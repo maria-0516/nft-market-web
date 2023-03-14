@@ -23,25 +23,28 @@ export default function Createpage() {
     const [count, setCount] = useState(1);
     const [collections, setCollections] = useState<any>([]);
     const [loading, setLoading] = useState(false);
-    const [currentCollection, setCurrentCollection] = useState(Addresses.NFT1);
+    const [currentCollection, setCurrentCollection] = useState('');
 
     useEffect(() => {
-        setCollections([
-            {
-                name: state.collectionNFT[0].metadata.name,
-                owner: state.collectionNFT[0].address
-            }
-        ]);
 
-        for (let i = 1; i < state.collectionNFT.length; i++) {
+        // setCollections([
+        //     {
+        //         name: state.collectionNFT[0]?.metadata?.name || '',
+        //         owner: state.collectionNFT[0]?.address || ''
+        //     }
+        // ]);
+        const data = [] as Array<{name: string, owner: string}>
+        for (let i = 0; i < state.collectionNFT.length; i++) {
             if (state.collectionNFT[i].metadata.fee_recipent === state.auth.address) {
-                let data = {
+                data.push({
                     name: state.collectionNFT[i].metadata.name,
                     owner: state.collectionNFT[i].address
-                };
-                setCollections((state: any) => [...state, data]);
+                });
+                
             }
         }
+        setCollections((state: any) => [...data]);
+        setCurrentCollection(data[0]?.owner || '')
     }, [state]);
 
     const handleSubmit = async () => {

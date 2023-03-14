@@ -118,25 +118,27 @@ const Header = () => {
             });
             localStorage.setItem('isConnected', "0");
         } else {
-            wallet.connect().then((res) => {
-                (async () => {
-                    try {
-                        //if metamask is connected and wallet is not connected ( chain error))
-                        if (wallet.status === 'error') {
-                            var accounts = await window.ethereum.request({
-                                method: 'eth_accounts'
-                            });
-                            if (accounts.length > 0) {
-                                await changeNetwork('fantom');
-                                wallet.connect();
-                            }
-                        }
-                        localStorage.setItem('isConnected', "1");
-                    } catch (err) {
-                        console.log((err as any).message);
-                    }
-                })();
-            });
+            wallet.connect()
+
+            // wallet.connect().then((res) => {
+            //     (async () => {
+            //         try {
+            //             //if metamask is connected and wallet is not connected ( chain error))
+            //             if (wallet.status === 'error') {
+            //                 var accounts = await window.ethereum.request({
+            //                     method: 'eth_accounts'
+            //                 });
+            //                 if (accounts.length > 0) {
+            //                     await changeNetwork('fantom');
+            //                     wallet.connect();
+            //                 }
+            //             }
+            //             localStorage.setItem('isConnected', "1");
+            //         } catch (err) {
+            //             console.log((err as any).message);
+            //         }
+            //     })();
+            // });
         }
     };
 
@@ -169,10 +171,15 @@ const Header = () => {
     });
 
     useEffect(() => {
-        if (localStorage.getItem('isConnected')==="1") {
-            wallet.connect();
+
+        console.log("wallet-status", wallet.status)
+        if (wallet.status==='disconnected' && localStorage.getItem('isConnected')==="1") {
+            localStorage.setItem('isConnected', "0")
+            // wallet.connect();
+        } else if (wallet.status==='connected' && localStorage.getItem('isConnected')==="0") {
+            localStorage.setItem('isConnected', "1")
         }
-    }, []);
+    }, [wallet.status]);
 
     const [showmenu, btn_icon] = useState(false);
 
@@ -432,11 +439,9 @@ const Header = () => {
                                         </div>
                                     )}
                                     <button className="btn-main" onClick={handleConnect}>
-                                        {wallet.status == 'connected'
-                                            ? wallet.account?.slice(0, 4) +
-                                              '...' +
-                                              wallet.account?.slice(-4)
-                                            : 'Connect'}
+                                        {wallet.status==='connecting' ? 'Connecting...' : (
+                                            (wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect'
+                                        )}
                                     </button>
                                 </div>
                             </Breakpoint>
