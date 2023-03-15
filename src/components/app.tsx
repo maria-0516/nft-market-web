@@ -23,6 +23,7 @@ import Provider from '../context';
 import { ToastContainer, toast } from 'react-toastify';
 import config from '../config.json'
 import Footer from './menu/footer';
+import Domains from './pages/Domains';
 
 const httpLink = createHttpLink({
     uri: process.env.REACT_APP_GRAPQLENDPOINT
@@ -83,6 +84,8 @@ function App() {
 
                                 <Route path="/ItemDetail/:collection/:id" element={<ItemDetail />}/>
                                 <Route path="/:address" element={<Author />} />
+                                <Route path="/fixed-price" element={<Domains />} />
+                                <Route path="/auctions" element={<Domains isAuction />} />
                                 <Route path="/account/profile"
                                     element={
                                         <PrivateRoute>

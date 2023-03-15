@@ -463,7 +463,7 @@ const Header = () => {
 							
 							<ul className="text-center text-md-left top-social">
 								<li><span><a href="#" className="f-size-14 text-white"><img src="/assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</a></span></li>
-								<li style={{position: 'relative'}} onClick={()=>setLangMenu(!langMenu)}>
+								<li style={{position: 'relative', cursor: 'pointer'}} onClick={()=>setLangMenu(!langMenu)}>
 									<span className="select2 select2-container select2-container--default" dir="ltr" data-select2-id="2" style={{width: '100%'}}>
 										<span className="selection">
 											<span className="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" aria-disabled="false" aria-labelledby="select2-from-l2-container">
@@ -532,8 +532,8 @@ const Header = () => {
 										<li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub1 ? 'block' : ''}`}}>
 												<li><Link to="/listed-domains">All Listed Domains</Link></li>
-												<li><Link to="/">Fixed Price</Link></li>
-												<li><Link to="/">Auction List</Link></li>
+												<li><Link to="/fixed-price">Fixed Price</Link></li>
+												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li>
 										<li ><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link>
