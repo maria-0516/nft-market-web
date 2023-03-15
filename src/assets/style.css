@@ -6245,4 +6245,50 @@ img.img-rounded {
 a {
   text-decoration: none;
 }
+
+.md-start {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.md-end {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .sm-center {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+}
+
+header .lang-menu {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  padding-left: 0;
+  z-index: 10;
+}
+
+header .lang-menu li {
+  padding: 8px 10px !important;
+  background-color: #fff;
+  color: #f30070;
+  cursor: pointer;
+}
+
+header .lang-menu li:hover {
+  background-color: #b90559;
+  color: #fff;
+}
 /*# sourceMappingURL=style.css.map */

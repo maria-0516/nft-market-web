@@ -39,6 +39,7 @@ const Header = () => {
 		sub1: false,
 		sub2: false
 	});
+	const [langMenu, setLangMenu] = useState(false)
     const wallet = useWallet();
 	const location = useLocation()
 
@@ -458,24 +459,35 @@ const Header = () => {
 				<div className="top-header">
 				<div className="container">
 					<div className="row align-items-center">
-						<div className="col-md-9">
+						<div className="col-md-6 md-start sm-center">
 							
 							<ul className="text-center text-md-left top-social">
-								<li><span><a href="#" className="f-size-14 text-white"><img src="assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</a></span></li>
-								<li>
-									<select className="rt-selectactive select2-hidden-accessible" name="from" style={{width: '100%'}}>
-										<option value="eng">EN</option>
-									
-									</select>
-									<span className="select-arrwo"><i className="icofont-thin-down"></i></span>
+								<li><span><a href="#" className="f-size-14 text-white"><img src="/assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</a></span></li>
+								<li style={{position: 'relative'}} onClick={()=>setLangMenu(!langMenu)}>
+									<span className="select2 select2-container select2-container--default" dir="ltr" data-select2-id="2" style={{width: '100%'}}>
+										<span className="selection">
+											<span className="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" aria-disabled="false" aria-labelledby="select2-from-l2-container">
+												<span className="select2-selection__rendered" id="select2-from-l2-container" role="textbox" aria-readonly="true" title="EN">EN</span>
+												<span className="select2-selection__arrow" role="presentation">
+													<b role="presentation"></b>
+												</span>
+											</span>
+										</span>
+										<span className="dropdown-wrapper" aria-hidden="true"></span>
+									</span>
+									<span className="select-arrwo">
+										<i className="icofont-thin-down"></i>
+									</span>
+									<ul className='lang-menu' style={{display: `${langMenu ? 'block' : 'none'}`}}>
+										<li>EN</li>
+									</ul>
 								</li>
-			
 								<li><a href="#"><i className="icofont-telegram"></i></a></li>
 								<li><a href="#"><i className="icofont-twitter"></i></a></li>
 			
 							</ul>
 						</div>
-						<div className="col-md-3 text-center text-md-right" style={{display: 'flex', justifyContent: 'center'}}>
+						<div className="col-md-6 text-center text-md-right md-end sm-center" style={{gap: '0.5em'}}>
 							{wallet.status == 'connected' && (
 								<div
 									className="switch_network"
@@ -510,8 +522,8 @@ const Header = () => {
 				<div id="myHeader" className={headerClass}>
 					<nav className="navbar">
 						<div className="container">
-							<Link to="/" className="brand-logo"><img src="assets/images/logo/logo.png" alt="" /></Link>
-							<Link to="/" className="sticky-logo"><img src="assets/images/logo/logo.png" alt="" /></Link>
+							<Link to="/" className="brand-logo"><img src="/assets/images/logo/logo.png" alt="" /></Link>
+							<Link to="/" className="sticky-logo"><img src="/assets/images/logo/logo.png" alt="" /></Link>
 							<div className="ml-auto d-flex align-items-center">
 									<div className="main-menu">
 									<ul className={mobileMenu.main ? 'show' : ''}>
@@ -562,21 +574,23 @@ const Header = () => {
 					<div className="row rt-breadcump-height align-items-center">
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
 							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong">
-								{location.pathname==='/' ? 'Buy Crypto Domains' : ''}
-								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
-								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
-								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
-								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
-								{location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''}
+								{location.pathname==='/'||location.pathname==='/explore' ? 'Buy Crypto Domains' : ''}
+								{location.pathname.indexOf('listed-domains')===1 ? 'Listed Crypto Domains' : ''}
+								{/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) ? 'My Domains' : ''}
+								{/* {location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''} */}
 							</h4>
-							<form action="#" className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
-								data-animation="wow fadeInUp">
-								<input type="text" placeholder="enter a new search" />
-						
-								<button className="rt-btn rt-gradient pill rt-Bshadow-1" type="submit">
-									Search <span><i className="icofont-simple-right"></i></span>
-								</button>
-							</form>
+							{
+								!/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) && (
+									<form action="#" className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
+										data-animation="wow fadeInUp">
+										<input type="text" placeholder="enter a new search" />
+								
+										<button className="rt-btn rt-gradient pill rt-Bshadow-1" type="submit">
+											Search <span><i className="icofont-simple-right"></i></span>
+										</button>
+									</form>
+								)
+							}
 						</div>
 					</div>
 				</div>

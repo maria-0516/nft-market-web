@@ -6119,3 +6119,37 @@ img.img-rounded {
 a {
     text-decoration: none;
 }
+
+.md-start {
+    display: flex;
+}
+.md-end {
+    display: flex;
+    justify-content: flex-end;
+}
+@media (max-width: 768px) {   
+    .sm-center {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+header {
+    .lang-menu {
+        position: absolute;
+        top: 30px;
+        left: 0;
+        padding-left: 0;
+        z-index: 10;
+        li {
+            padding: 8px 10px !important;
+            background-color: $white;
+            color: #f30070;
+            cursor: pointer;
+            &:hover {
+                background-color: #b90559;
+                color: $white;
+            }
+        }
+    }
+}
