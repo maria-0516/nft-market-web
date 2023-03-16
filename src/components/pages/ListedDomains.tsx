@@ -10,7 +10,7 @@ export default function ListedDomains() {
     const [volumns, setVolumns] = useState([]);
 
     useEffect(() => {
-        if (state.orderList.length !== 0) {
+        if (state.orderList?.length !== 0) {
             let bump = 0;
             let bumpArr = [] as any;
             state.collectionNFT.map((collectionItem: any) => {

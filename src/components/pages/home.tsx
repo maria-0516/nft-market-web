@@ -93,7 +93,7 @@ export default function Homethree() {
     })
 
     const handleClick = (nft: NFTData) => {
-        navigate(`/ItemDetail/${nft.name}`);
+        navigate(`/domain/${nft.name}`);
     };
 
     return (

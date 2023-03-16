@@ -26,7 +26,7 @@ import Footer from './menu/footer';
 import Domains from './pages/Domains';
 
 const httpLink = createHttpLink({
-    uri: process.env.REACT_APP_GRAPQLENDPOINT
+    uri: config.graphql
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -76,13 +76,13 @@ function App() {
                             <GlobalStyles />
                             <Header />
                             <Routes>
-                                <Route path="/" element={<Home />} />
-                                <Route path="/explore" element={<Explore />} />
+                                {/* <Route path="/" element={<Home />} /> */}
+                                <Route path="/" element={<Explore />} />
                                 <Route path="/listed-domains" element={<ListedDomains />} />
                                 {/* <Route path="/signPage" element={<Wallet />} /> */}
                                 <Route path="/collection/:collection" element={<Collection />}/>
 
-                                <Route path="/ItemDetail/:name" element={<ItemDetail />}/>
+                                
                                 <Route path="/:address" element={<Author />} />
                                 <Route path="/fixed-price" element={<Domains />} />
                                 <Route path="/auctions" element={<Domains isAuction />} />
@@ -125,6 +125,7 @@ function App() {
                                         </PrivateRoute>
                                     }
                                 />
+                                <Route path="/domain/:name" element={<ItemDetail />}/>
                                 <Route path="*" element={<Navigate to={'/'} />} />
                             </Routes>
                             <Footer />

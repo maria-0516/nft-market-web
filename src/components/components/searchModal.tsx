@@ -69,13 +69,13 @@ const NFTItem = (props: any) => {
         <div className="col-sm-12 col-md-4">
             <div
                 className="search__item"
-                onClick={() => navigate(`/ItemDetail/${collectionAddress}/${tokenID}`)}>
+                onClick={() => navigate(`/domain/${collectionAddress}/${tokenID}`)}>
                 <div>
                     <img src={image} alt="" />
                 </div>
                 <div>
                     <h6>{name.length > 9 ? name.slice(0, 8) + '...' : name}</h6>
-                    <p>{address.slice(0, 4) + '...' + address.slice(-4)}</p>
+                    <p>{address.slice(0, 6) + '...' + address.slice(-4)}</p>
                 </div>
             </div>
         </div>

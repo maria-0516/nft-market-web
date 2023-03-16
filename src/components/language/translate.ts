@@ -3,7 +3,7 @@ export const translations = {
         // home
         home_txt1: "Where people come together to create and collect what's next",
         home_txt2:
-            'PICASSO is the open marketplace for Bitcoin NFTs, powered by Stacks. Start building your collection today.',
+            'Cryptonames is the open marketplace for Bitcoin NFTs, powered by Stacks. Start building your collection today.',
         notablecollection: 'Notable Collections',
         createandsell: 'Create and sell',
         feature_title1: 'Set up your wallet',

@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { format } from 'prettier';
+import config from '../config.json'
 
-axios.defaults.baseURL = process.env.REACT_APP_SERVERENDPOINT;
+axios.defaults.baseURL = config.api;
 
 // NFT manage
 

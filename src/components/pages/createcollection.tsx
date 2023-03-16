@@ -6,6 +6,7 @@ import { FaDiscord } from 'react-icons/fa';
 import Footer from '../menu/footer';
 import Action from '../../service';
 import { useBlockchainContext } from '../../context';
+import config from '../../config.json'
 
 export default function CreateCollection() {
     const [state, { translateLang }] = useBlockchainContext() as any;
@@ -35,7 +36,7 @@ export default function CreateCollection() {
         try {
             setLoading(true);
             const result = await axios.post(
-                process.env.REACT_APP_SERVERENDPOINT + '/api/nft-verify',
+                '/api/nft-verify',
                 {
                     address: address
                 }

@@ -163,7 +163,7 @@ export default function Explore() {
     }, [status.page])
 
     const handleClick = (name: string) => {
-        navigate(`/ItemDetail/${name}`);
+        navigate(`/domain/${name}`);
     };
 
     return (
@@ -293,7 +293,7 @@ export default function Explore() {
                                                         <tr key={index} onClick={() => handleClick(i.name)}>
                                                             <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.name}</th>
                                                             <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.owner.slice(0, 8) + '...' + i.owner.slice(-5)}</code></td>
-                                                            <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</th>
+                                                            <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.attributes?.expiryDate || 0) * 1000).toDateString()}</th>
                                                         </tr>
                                                     ))
                                                 }

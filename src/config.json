@@ -1,4 +1,7 @@
 {
+    "api": "http://localhost:5000",
+    "graphql": "http://localhost:5000/graphql",
     "chainId": 4002,
-    "rpc": "https://rpc.testnet.fantom.network/"
+    "rpc": "https://rpc.testnet.fantom.network/",
+    "rootDomain": "eth"
 }

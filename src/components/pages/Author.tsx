@@ -269,7 +269,7 @@ export default function Author() {
                                                     <tbody>
                                                         {
                                                             nfts.map((i: NFTData, k) => (
-                                                                <tr onClick={()=>navigate(`/ItemDetail/${i.name}`)}>
+                                                                <tr onClick={()=>navigate(`/domain/${i.name}`)}>
                                                                     <th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
                                                                     <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.attributes?.cost}</td>
                                                                     <td className="f-size-18 f-size-md-18 rt-semiblod text-338">{new Date((i.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</td>

@@ -621,7 +621,7 @@ export default function Colection() {
                                                         />
                                                     ) : (
                                                         <Jazzicon
-                                                            diameter={100}
+                                                            diameter={32}
                                                             seed={Math.round(
                                                                 (Number(itemData.owner) /
                                                                     Number(
@@ -672,7 +672,8 @@ export default function Colection() {
                                                 </div>
                                                 <form action="#" className="rt-form ">
                                                     <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" />
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button>
+
+                                                    {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button> */}
                                                     <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
 
                                                     <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>

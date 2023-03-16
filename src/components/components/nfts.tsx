@@ -25,7 +25,7 @@ const NFTList = ({data}: Props) => {
     }, [data, renderCount]);
 
     const handleItem = (item: any) => {
-        navigate(`/ItemDetail/${item.collectionAddress}/${item.tokenID}`);
+        navigate(`/domain/${item.collectionAddress}/${item.tokenID}`);
     };
 
     return (

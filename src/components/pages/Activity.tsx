@@ -63,7 +63,7 @@ const Acitivity = ({activitiesData}: Props) => {
                                                     {styledText(item.contractAddress)}
                                                 </Link>
                                                 <Link
-                                                    to={`/ItemDetail/${item.contractAddress}/${item.tokenID}`}>
+                                                    to={`/domain/${item.contractAddress}/${item.tokenID}`}>
                                                     {(state as any).collectionNFT.map((collect: any) => {
                                                         if (
                                                             collect.address === item.contractAddress
