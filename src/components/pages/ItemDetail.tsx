@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 
 export default function Colection() {
     const wallet = useWallet();
-    const { id, collection } = useParams();
+    const { name } = useParams();
     const navigate = useNavigate();
     const [state, { buyNFT, cancelOrder, translateLang, bidApprove, getCurrency }] =
         useBlockchainContext() as any;
@@ -25,179 +25,204 @@ export default function Colection() {
     const [loading, setLoading] = useState(false);
 
     // item data
-    const [itemData, setItemData] = useState<any>(null);
+    const [itemData, setItemData] = useState<NFTData>({
+        collection:	'',
+        tokenId:	'',
+        creator: 	'',
+        owner: 		'',
+        name: 		'',
+    });
+
+    const readNfts = async () => {
+        const formData = new FormData();
+        formData.append('name', name || '');
+
+        const response = await Action.name_nft(formData);
+        if (response.success) {
+            if (!!response.data) {
+                setItemData(response.data)
+            }
+        } else {
+            console.log("readNftsError")
+        }
+        return
+    }
 
     useEffect(() => {
-        if (itemData !== null)
-            if (itemData.marketdata.endTime !== '')
-                setInterval(() => {
-                    let endTime = moment(Number(itemData.marketdata.endTime));
-                    let nowTime = moment(new Date());
-                    // test
-                    if (endTime < nowTime) setTimeFlag(true);
-                    else {
-                        let ms = moment(endTime.diff(nowTime));
-                        let bump = [] as any;
-                        bump.push(Math.floor(moment.duration(ms as any).asHours() / 24));
-                        bump.push(Math.floor(moment.duration(ms as any).asHours()) % 24);
-                        bump.push(moment.utc(ms).format('mm'));
-                        bump.push(moment.utc(ms).format('ss'));
-                        setExpireTime(bump);
-                        setTimeFlag(false);
-                    }
-                }, 1000);
-    }, [itemData]);
+        readNfts()
+    }, [])
 
-    useEffect(() => {
-        if (itemData !== null) {
-            if (itemData.owner?.toLowerCase() === state.addresses.Marketplace?.toLowerCase()) {
-                // on market
-                if (!state.auth?.address?.toLowerCase()) {
-                    setPageFlag(4);
-                    return;
-                }
-                itemData.marketdata.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
-                    ? setPageFlag(2)
-                    : setPageFlag(4);
-            } else {
-                itemData.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
-                    ? setPageFlag(1)
-                    : setPageFlag(3);
-            }
-        }
-    }, [itemData, state.auth?.address]);
+    // useEffect(() => {
+    //     if (itemData !== null)
+    //         if (itemData.marketdata.endTime !== '')
+    //             setInterval(() => {
+    //                 let endTime = moment(Number(itemData.marketdata.endTime));
+    //                 let nowTime = moment(new Date());
+    //                 // test
+    //                 if (endTime < nowTime) setTimeFlag(true);
+    //                 else {
+    //                     let ms = moment(endTime.diff(nowTime));
+    //                     let bump = [] as any;
+    //                     bump.push(Math.floor(moment.duration(ms as any).asHours() / 24));
+    //                     bump.push(Math.floor(moment.duration(ms as any).asHours()) % 24);
+    //                     bump.push(moment.utc(ms).format('mm'));
+    //                     bump.push(moment.utc(ms).format('ss'));
+    //                     setExpireTime(bump);
+    //                     setTimeFlag(false);
+    //                 }
+    //             }, 1000);
+    // }, [itemData]);
 
-    useEffect(() => {
-        for (let i = 0; i < state.collectionNFT.length; i++) {
-            if (state.collectionNFT[i].address === collection) {
-                setCorrectCollection(state.collectionNFT[i]);
-                var itemData = state.collectionNFT[i].items.find((item: any) => item.tokenID === id);
+    // useEffect(() => {
+    //     if (itemData !== null) {
+    //         if (itemData.owner?.toLowerCase() === state.addresses.Marketplace?.toLowerCase()) {
+    //             // on market
+    //             if (!state.auth?.address?.toLowerCase()) {
+    //                 setPageFlag(4);
+    //                 return;
+    //             }
+    //             itemData.marketdata.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
+    //                 ? setPageFlag(2)
+    //                 : setPageFlag(4);
+    //         } else {
+    //             itemData.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
+    //                 ? setPageFlag(1)
+    //                 : setPageFlag(3);
+    //         }
+    //     }
+    // }, [itemData, state.auth?.address]);
 
-                let attributeRarityies = itemData?.metadata?.attributes.map((attribute: any, index: any) => {
-                    let itemsWithSameAttributes = state.collectionNFT[i].items.filter((item: any) => {
-                        let hasSameAttribute = item.metadata?.attributes.find((itemAttribute: any) => {
-                            if (
-                                (itemAttribute.key === attribute.key ||
-                                    itemAttribute.trait_type === attribute.trait_type) &&
-                                itemAttribute.value === attribute.value
-                            ) {
-                                return true;
-                            }
-                        });
-                        if (!!hasSameAttribute) {
-                            return true;
-                        }
-                        return false;
-                    });
+    // useEffect(() => {
+    //     for (let i = 0; i < state.collectionNFT.length; i++) {
+    //         if (state.collectionNFT[i].address === collection) {
+    //             setCorrectCollection(state.collectionNFT[i]);
+    //             var itemData = state.collectionNFT[i].items.find((item: any) => item.tokenID === id);
 
-                    return (
-                        (itemsWithSameAttributes.length * 100) / state.collectionNFT[i].items.length
-                    );
-                });
+    //             let attributeRarityies = itemData?.metadata?.attributes.map((attribute: any, index: any) => {
+    //                 let itemsWithSameAttributes = state.collectionNFT[i].items.filter((item: any) => {
+    //                     let hasSameAttribute = item.metadata?.attributes.find((itemAttribute: any) => {
+    //                         if (
+    //                             (itemAttribute.key === attribute.key ||
+    //                                 itemAttribute.trait_type === attribute.trait_type) &&
+    //                             itemAttribute.value === attribute.value
+    //                         ) {
+    //                             return true;
+    //                         }
+    //                     });
+    //                     if (!!hasSameAttribute) {
+    //                         return true;
+    //                     }
+    //                     return false;
+    //                 });
 
-                if (!itemData) navigate('/explorer');
-                else setItemData({ ...itemData, attributeRarityies });
-                break;
-            }
-        }
-    }, [state.collectionNFT, id, collection]);
+    //                 return (
+    //                     (itemsWithSameAttributes.length * 100) / state.collectionNFT[i].items.length
+    //                 );
+    //             });
 
-    const handleBuy = async () => {
-        if (!state.signer) {
-            wallet.connect();
-            // navigate('/signPage');
-            return;
-        }
-        try {
-            setLoading(true);
-            await buyNFT({
-                nftAddress: itemData?.collectionAddress,
-                assetId: itemData?.tokenID,
-                price: itemData?.marketdata.price,
-                acceptedToken: itemData?.marketdata.acceptedToken
-            });
-            // NotificationManager.success(translateLang('buynft_success'));
-            toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
-            setLoading(false);
-        } catch (err: any) {
-            console.log(err.message);
-            // NotificationManager.error(translateLang('buynft_error'));
-            toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
-            setLoading(false);
-        }
-    };
+    //             if (!itemData) navigate('/explorer');
+    //             else setItemData({ ...itemData, attributeRarityies });
+    //             break;
+    //         }
+    //     }
+    // }, [state.collectionNFT, id, collection]);
 
-    const handleApproveBid = async () => {
-        try {
-            if (itemData !== null) {
-                setLoading(true);
+    // const handleBuy = async () => {
+    //     if (!state.signer) {
+    //         wallet.connect();
+    //         // navigate('/signPage');
+    //         return;
+    //     }
+    //     try {
+    //         setLoading(true);
+    //         await buyNFT({
+    //             nftAddress: itemData?.collectionAddress,
+    //             assetId: itemData?.tokenID,
+    //             price: itemData?.marketdata.price,
+    //             acceptedToken: itemData?.marketdata.acceptedToken
+    //         });
+    //         // NotificationManager.success(translateLang('buynft_success'));
+    //         toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
+    //         setLoading(false);
+    //     } catch (err: any) {
+    //         console.log(err.message);
+    //         // NotificationManager.error(translateLang('buynft_error'));
+    //         toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
+    //         setLoading(false);
+    //     }
+    // };
 
-                await bidApprove({
-                    address: collection,
-                    id: id,
-                    price: itemData.marketdata.bidPrice
-                });
-                // NotificationManager.success(translateLang('approve_succeess'));
-                toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
-                setLoading(false);
-            }
-        } catch (err: any) {
-            console.log(err.message);
-            setLoading(false);
-            // NotificationManager.error(translateLang('approve_error'));
-            toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
-        }
-    };
+    // const handleApproveBid = async () => {
+    //     try {
+    //         if (itemData !== null) {
+    //             setLoading(true);
 
-    const handleSell = () => {
-        navigate(`/Auction/${collection}/${id}`);
-    };
+    //             await bidApprove({
+    //                 address: collection,
+    //                 id: id,
+    //                 price: itemData.marketdata.bidPrice
+    //             });
+    //             // NotificationManager.success(translateLang('approve_succeess'));
+    //             toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
+    //             setLoading(false);
+    //         }
+    //     } catch (err: any) {
+    //         console.log(err.message);
+    //         setLoading(false);
+    //         // NotificationManager.error(translateLang('approve_error'));
+    //         toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
+    //     }
+    // };
 
-    const handleCancel = async () => {
-        if (itemData !== null) {
-            setLoading(true);
-            try {
-                await cancelOrder({
-                    nftAddress: collection,
-                    assetId: id
-                });
-                // NotificationManager.success(translateLang('cancelorder_success'));
-                toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
+    // const handleSell = () => {
+    //     navigate(`/Auction/${collection}/${id}`);
+    // };
 
-                setLoading(false);
-            } catch (err: any) {
-                console.log(err.message);
-                // NotificationManager.error(translateLang('cancelorder_error'));
-                toast(translateLang('cancelorder_error'), {position: "top-right", autoClose: 2000})
-                setLoading(false);
-            }
-        }
-    };
+    // const handleCancel = async () => {
+    //     if (itemData !== null) {
+    //         setLoading(true);
+    //         try {
+    //             await cancelOrder({
+    //                 nftAddress: collection,
+    //                 assetId: id
+    //             });
+    //             // NotificationManager.success(translateLang('cancelorder_success'));
+    //             toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
 
-    const HandleLike = async () => {
-        if (!state.auth.isAuth) {
-            navigate('/signPage');
-            return;
-        }
-        Action.nft_like({
-            collectAddress: collection,
-            tokenId: id,
-            currentAddress: state.auth.address
-        })
-            .then((res) => {
-                if (res) {
-                    console.log(res);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
+    //             setLoading(false);
+    //         } catch (err: any) {
+    //             console.log(err.message);
+    //             // NotificationManager.error(translateLang('cancelorder_error'));
+    //             toast(translateLang('cancelorder_error'), {position: "top-right", autoClose: 2000})
+    //             setLoading(false);
+    //         }
+    //     }
+    // };
+
+    // const HandleLike = async () => {
+    //     if (!state.auth.isAuth) {
+    //         navigate('/signPage');
+    //         return;
+    //     }
+    //     Action.nft_like({
+    //         collectAddress: collection,
+    //         tokenId: id,
+    //         currentAddress: state.auth.address
+    //     })
+    //         .then((res) => {
+    //             if (res) {
+    //                 console.log(res);
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.log(err);
+    //         });
+    // };
 
     return (
         <div>
             <section className="container domain-detail">
-                {correctCollection === null ? (
+                {itemData === null ? (
                     'Loading...'
                 ) : (
                     <>
@@ -559,13 +584,13 @@ export default function Colection() {
                                 <div className="col-lg-7">
                                         <div className="imil-box rt-mb-30">
                                             <div className="rt-box-style-2">
-                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData?.metadata?.name}</h4>   
+                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData.name}</h4>   
                                                 <h5 className="f-size-18 rt-light3">is for sale</h5>
                                             
                                             Network: Ethereum
                                                 <div className="row rt-mt-50">
                                                     <div className="domain-border col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod">2 Months</span>
+                                                        <span className="d-block f-size-24 rt-semiblod"></span>
                                                         <span className="d-block f-size-16 rt-light3">Age</span>
                                                     </div>
                                                     <div className="domain-border col-lg-4">
@@ -573,7 +598,7 @@ export default function Colection() {
                                                         <span className="d-block f-size-16 rt-light3">Provider</span>
                                                     </div>
                                                     <div className="col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod">8 Months</span>
+                                                        <span className="d-block f-size-24 rt-semiblod">{new Date((itemData.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</span>
                                                         <span className="d-block f-size-16 rt-light3">Expires</span>
                                                     </div>
                                                 </div>
@@ -586,11 +611,11 @@ export default function Colection() {
                                         <div className="rt-box-style-2 rt-mb-30">
                                             <div className="f-size-18 rt-light3 line-height-34" style={{display: 'flex', gap: '1em'}}>
                                                 <div>Seller:</div>
-                                                <div style={{display: 'flex', gap: '0.5em', cursor: 'pointer'}} onClick={() => navigate(`/${itemData?.owner}`)}>
-                                                    {state.usersInfo[itemData?.owner]?.image ? (
+                                                <div style={{display: 'flex', gap: '0.5em', cursor: 'pointer'}} onClick={() => navigate(`/${itemData.owner}`)}>
+                                                    {state.usersInfo[itemData.owner]?.image ? (
                                                         <img
                                                             className="lazy"
-                                                            src={state.usersInfo[itemData?.owner].image}
+                                                            src={state.usersInfo[itemData.owner].image}
                                                             alt=""
                                                             style={{width: 32, height: 32, borderRadius: '50%'}}
                                                         />
@@ -598,7 +623,7 @@ export default function Colection() {
                                                         <Jazzicon
                                                             diameter={100}
                                                             seed={Math.round(
-                                                                (Number(itemData?.owner) /
+                                                                (Number(itemData.owner) /
                                                                     Number(
                                                                         '0xffffffffffffffffffffffffffffffffffffffffff'
                                                                     )) *
@@ -607,7 +632,7 @@ export default function Colection() {
                                                         />
                                                     )}
                                                     <div className="author_list_info">
-                                                        <span>{styledAddress(itemData?.owner)}</span>
+                                                        <span>{styledAddress(itemData.owner)}</span>
                                                     </div>
                                                 </div>
                                             </div>

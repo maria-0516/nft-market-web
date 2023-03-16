@@ -82,7 +82,7 @@ function App() {
                                 {/* <Route path="/signPage" element={<Wallet />} /> */}
                                 <Route path="/collection/:collection" element={<Collection />}/>
 
-                                <Route path="/ItemDetail/:collection/:id" element={<ItemDetail />}/>
+                                <Route path="/ItemDetail/:name" element={<ItemDetail />}/>
                                 <Route path="/:address" element={<Author />} />
                                 <Route path="/fixed-price" element={<Domains />} />
                                 <Route path="/auctions" element={<Domains isAuction />} />

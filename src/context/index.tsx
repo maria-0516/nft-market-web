@@ -64,7 +64,8 @@ const INIT_STATE = {
     },
     lang: 'en',
     currencies: Currency,
-    addresses: addresses
+    addresses: addresses,
+    search: ''
 };
 
 export default function Provider({ children }: {children: any}) {
@@ -188,7 +189,7 @@ export default function Provider({ children }: {children: any}) {
             return;
         }
         let bump = {};
-        for (let i = 0; i < usersData.getUsersInfo.length; i++) {
+        for (let i = 0; i < usersData?.getUsersInfo?.length; i++) {
             bump = {
                 ...bump,
                 [usersData.getUsersInfo[i].address]: usersData.getUsersInfo[i]
@@ -231,6 +232,17 @@ export default function Provider({ children }: {children: any}) {
 
         localStorage.setItem('lang', newLang);
     };
+
+    const setSearch = (props: any) => {
+        const {search} = props as {search: string}
+        dispatch({
+            type: 'search',
+            payload: {
+                search
+            }
+        })
+        localStorage.setItem('search', search);
+    }
 
     const translateLang = (txt: any) => {
         return (translations as any)[state.lang][txt];
@@ -461,6 +473,7 @@ export default function Provider({ children }: {children: any}) {
                         updateAuth,
                         setLanguage,
                         translateLang,
+                        setSearch,
                         approveNFT,
                         getCurrency,
                         checkNFTApprove

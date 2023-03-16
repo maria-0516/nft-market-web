@@ -1,8 +1,50 @@
 import axios from 'axios';
+import { format } from 'prettier';
 
 axios.defaults.baseURL = process.env.REACT_APP_SERVERENDPOINT;
 
 // NFT manage
+
+const all_nfts = async (formData: any) => {
+    try {
+        var res = await axios.post('/api/all-nfts', formData);
+        if (!res.data.success) {
+            return false;
+        }
+
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+const user_nfts = async (formData: any) => {
+    try {
+        var res = await axios.post('/api/user-nfts', formData);
+        if (!res.data.success) {
+            return false;
+        }
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+const name_nft = async (formData: any) => {
+    try {
+        var res = await axios.post('/api/name-nft', formData);
+        if (!res.data.success) {
+            return false;
+        }
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 const create_collection = async (formData: any) => {
     try {
         var res = await axios.post('/api/create-collection', formData);
@@ -134,7 +176,10 @@ const Action = {
     user_create,
     user_login,
     buy_credit,
-    getRequests
+    getRequests,
+    all_nfts,
+    user_nfts,
+    name_nft
 };
 
 export default Action;

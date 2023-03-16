@@ -73,23 +73,27 @@ export default function Homethree() {
     const [floorPrice, setFloorPrice] = useState<any>(0);
 
     useEffect(() => {
-        let bump = [] as any;
-        state.collectionNFT.map((collectionItem: any) => {
-            let floorBump = [] as any;
-            for (let i = 0; i < collectionItem.items.length; i++) {
-                if (collectionItem.items[i].marketdata.price !== '') {
-                    floorBump.push(Number(collectionItem.items[i].marketdata.price));
-                }
-            }
-            floorBump.sort();
-            if (floorBump.length === 0) bump.push(0);
-            else bump.push(parseFloat((floorBump[0] as any).toFixed(2)));
-        });
-        setFloorPrice(bump);
+        // let bump = [] as any;
+        // state.collectionNFT.map((collectionItem: any) => {
+        //     let floorBump = [] as any;
+        //     for (let i = 0; i < collectionItem.items.length; i++) {
+        //         if (collectionItem.items[i].marketdata.price !== '') {
+        //             floorBump.push(Number(collectionItem.items[i].marketdata.price));
+        //         }
+        //     }
+        //     floorBump.sort();
+        //     if (floorBump.length === 0) bump.push(0);
+        //     else bump.push(parseFloat((floorBump[0] as any).toFixed(2)));
+        // });
+        // setFloorPrice(bump);
     }, [state.collectionNFT]);
 
-    const handleClick = (nft: any) => {
-        navigate(`/ItemDetail/${nft.collectionAddress}/${nft.tokenID}`);
+    useEffect(() => {
+        
+    })
+
+    const handleClick = (nft: NFTData) => {
+        navigate(`/ItemDetail/${nft.name}`);
     };
 
     return (

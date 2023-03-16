@@ -25,7 +25,7 @@ const NavLink = (props: any) => (
 
 
 const Header = () => {
-    const [state, { dispatch, translateLang }] = useBlockchainContext() as any;
+    const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
     const [openMenu2, setOpenMenu2] = useState(false);
     const [openMenu3, setOpenMenu3] = useState(false);
@@ -42,6 +42,9 @@ const Header = () => {
 	const [langMenu, setLangMenu] = useState(false)
     const wallet = useWallet();
 	const location = useLocation()
+    const [status, setStatus] = useState({
+        search: ''
+    })
 
     useEffect(() => {
         if (searchKey.trim() !== '' && focused) {
@@ -207,6 +210,10 @@ const Header = () => {
         if (window.pageYOffset > sticky) {
             closeMenu1();
         }
+    }
+
+    const onSearch = () => {
+        setSearch({search: status.search})
     }
 
     return (
@@ -577,18 +584,25 @@ const Header = () => {
 								{location.pathname==='/'||location.pathname==='/explore' ? 'Buy Crypto Domains' : ''}
 								{location.pathname.indexOf('listed-domains')===1 ? 'Listed Crypto Domains' : ''}
 								{/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) ? 'My Domains' : ''}
-								{/* {location.pathname.indexOf('dashboard')===1 ? 'Buy Crypto Domains' : ''} */}
+								{location.pathname.indexOf('ItemDetail')===1 ? `${location.pathname.slice(location.pathname.lastIndexOf('/')+1)}` : ''}
 							</h4>
+                            {
+                                (location.pathname.indexOf('ItemDetail')===1 || /^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1))) && (
+                                    <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">{
+                                        location.pathname.indexOf('ItemDetail')===1 ? 'is listed for sale!' : `${state.auth.address}`
+                                    }</h4>
+                                )
+                            }
 							{
-								!/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) && (
-									<form action="#" className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
+								!/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) && location.pathname.indexOf('ItemDetail')!==1 && (
+									<div className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
 										data-animation="wow fadeInUp">
-										<input type="text" placeholder="enter a new search" />
+										<input type="text" placeholder="enter a new search" value={status.search} onChange={e=>setStatus({...status, search: e.target.value})} />
 								
-										<button className="rt-btn rt-gradient pill rt-Bshadow-1" type="submit">
+										<button className="rt-btn rt-gradient pill rt-Bshadow-1" onClick={onSearch}>
 											Search <span><i className="icofont-simple-right"></i></span>
 										</button>
-									</form>
+									</div>
 								)
 							}
 						</div>
