@@ -46,6 +46,19 @@ const name_nft = async (formData: any) => {
     }
 }
 
+const name_order = async (formData: any) => {
+    try {
+        var res = await axios.post('/api/name-order', formData);
+        if (!res.data.success) {
+            return false;
+        }
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 const create_collection = async (formData: any) => {
     try {
         var res = await axios.post('/api/create-collection', formData);
@@ -180,7 +193,8 @@ const Action = {
     getRequests,
     all_nfts,
     user_nfts,
-    name_nft
+    name_nft,
+    name_order
 };
 
 export default Action;

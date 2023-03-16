@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { createGlobalStyle } from 'styled-components';
 import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { UseWalletProvider } from 'use-wallet';
+import { UseWalletProvider } from 'use-wallet'
 
 import ScrollToTopBtn from './menu/ScrollToTop';
 import Header from './menu/header';
@@ -23,7 +23,10 @@ import Provider from '../context';
 import { ToastContainer, toast } from 'react-toastify';
 import config from '../config.json'
 import Footer from './menu/footer';
-import Domains from './pages/Domains';
+import HowWork from './pages/HowWork';
+import Faq from './pages/Faq';
+import Partnership from './pages/Partnership';
+import CNSToken from './pages/CNSToken';
 
 const httpLink = createHttpLink({
     uri: config.graphql
@@ -69,7 +72,7 @@ function App() {
                         // chainId={config.chainId}
                         connectors={{
                             walletconnect: {
-                                rpcUrl: config.rpc
+                                rpcUrl: config.rpc[0]
                             }
                         }}>
                         <Provider>
@@ -80,19 +83,19 @@ function App() {
                                 <Route path="/" element={<Explore />} />
                                 <Route path="/listed-domains" element={<ListedDomains />} />
                                 {/* <Route path="/signPage" element={<Wallet />} /> */}
-                                <Route path="/collection/:collection" element={<Collection />}/>
-
-                                
+                                {/* <Route path="/collection/:collection" element={<Collection />}/> */}
                                 <Route path="/:address" element={<Author />} />
-                                <Route path="/fixed-price" element={<Domains />} />
-                                <Route path="/auctions" element={<Domains isAuction />} />
-                                <Route path="/account/profile"
+                                <Route path="/how-work" element={<HowWork />} />
+                                <Route path="/faq" element={<Faq />} />
+                                <Route path="/partnership" element={<Partnership />} />
+                                <Route path="/cns-token" element={<CNSToken />} />
+                                {/* <Route path="/account/profile"
                                     element={
                                         <PrivateRoute>
                                             <Profile />
                                         </PrivateRoute>
                                     }
-                                />
+                                /> */}
                                 <Route
                                     path="/create/collection"
                                     element={
@@ -118,7 +121,7 @@ function App() {
                                     }
                                 />
                                 <Route
-                                    path="/Auction/:collection/:id"
+                                    path="/auction/:name"
                                     element={
                                         <PrivateRoute>
                                             <Auction />

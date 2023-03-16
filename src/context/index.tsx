@@ -299,13 +299,14 @@ export default function Provider({ children }: {children: any}) {
     // NFT on sale
     const onsaleNFT = async (props: any) => {
         try {
-            const { nftAddress, assetId, currency, price, expiresAt } = props;
+            const { nftAddress, assetId, name, currency, price, expiresAt } = props;
 
             const signedMarketplaceContract = marketplaceContract.connect(state.signer);
             const tx = await signedMarketplaceContract.createOrder(
                 nftAddress,
                 state.auth.address,
                 assetId,
+                name,
                 currency,
                 toBigNum(price, 18),
                 expiresAt

@@ -5,12 +5,12 @@ import Footer from '../menu/footer';
 import { useBlockchainContext } from '../../context';
 
 export default function Auction() {
-    const { id, collection } = useParams();
+    const { name } = useParams();
     const [state, { translateLang }] = useBlockchainContext() as any;
 
     return (
         <div>
-            <section className="jumbotron breadcumb no-bg">
+            {/* <section className="jumbotron breadcumb no-bg">
                 <div className="mainbreadcumb">
                     <div className="container">
                         <div className="row m-10-hor">
@@ -20,10 +20,11 @@ export default function Auction() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             <section className="container">
-                <ColumnAuction collection={collection} id={id} />
+                {/* <ColumnAuction collection={collection} id={id} /> */}
+                <ColumnAuction name={name || ''} />
             </section>
         </div>
     );

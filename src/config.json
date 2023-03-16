@@ -1,7 +1,19 @@
 {
     "api": "http://localhost:5000",
     "graphql": "http://localhost:5000/graphql",
-    "chainId": 4002,
-    "rpc": "https://rpc.testnet.fantom.network/",
-    "rootDomain": "eth"
+    "chainId": 1,
+    "rpc": [
+        "https://cloudflare-eth.com",
+        "https://eth.llamarpc.com",
+        "https://singapore.rpc.blxrbdn.com",
+        "https://virginia.rpc.blxrbdn.com",
+        "https://uk.rpc.blxrbdn.com",
+        "https://ethereum.blockpi.network/v1/rpc/public",
+        "https://eth-rpc.gateway.pokt.network",
+        "https://eth-mainnet.public.blastapi.io",
+        "https://ethereum.publicnode.com",
+        "https://api.securerpc.com/v1"
+    ],
+    "rootDomain": "eth",
+    "fee": 5
 }

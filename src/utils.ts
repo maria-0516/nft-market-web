@@ -60,6 +60,17 @@ function copyToClipboard(textToCopy: any) {
  * change network in metamask
  */
 const networks = {
+    ethereum: {
+        chainId: `0x${Number(config.chainId).toString(16)}`,
+        chainName: 'Ethereum Mainnet',
+        nativeCurrency: {
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18
+        },
+        rpcUrls: config.rpc,
+        blockExplorerUrls: ['https://etherscan.io/']
+    },
     polygon: {
         chainId: `0x${Number(137).toString(16)}`,
         chainName: 'Polygon Mainnet',
@@ -130,5 +141,6 @@ const changeNetwork = async (networkName: any) => {
         ]
     });
 };
+export const currentTime = () => Math.round((new Date().getTime()) / 1000);
 
 export { delay, toBigNum, fromBigNum, styledAddress, copyToClipboard, changeNetwork, styledText };

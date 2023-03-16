@@ -4909,6 +4909,9 @@ i.font60 {
                 background: #ff6d00;
             }
         }
+        > :last-child {
+            border: 0;
+        }
             
         > span {
             background-color: transparent;
@@ -6153,3 +6156,6 @@ header {
         }
     }
 }
+
+.mt {margin-top: 0.5em;}
+.mt-1 {margin-top: 1em;}

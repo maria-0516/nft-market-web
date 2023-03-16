@@ -37273,7 +37273,7 @@ p
 }
 .domain-searh-form input[type='text']
 {
-    width: calc(100% - 200px); 
+    width: 200px; 
 
     border: none;
     border-top-left-radius: 999px;
@@ -37284,7 +37284,13 @@ p
 {
     .domain-searh-form input[type='text']
     {
-        width: 100%; 
+        width: auto;
+        max-width: 70%; 
+
+        -webkit-box-flex: 0;
+        -webkit-flex: 0 0 70%;
+            -ms-flex: 0 0 70%;
+                flex: 0 0 70%;
     }
 }
 .domain-searh-form input[type='text']::-webkit-input-placeholder

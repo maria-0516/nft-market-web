@@ -9,9 +9,9 @@ import { useBlockchainContext } from '../../context';
 const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
 
 interface Props {
-    show: any
-    setShow: any 
-    correctItem: any
+    show: boolean
+    setShow: any
+    correctItem: NFTData
 }
 
 const BuyModal = ({show, setShow, correctItem}: Props) => {
@@ -35,7 +35,7 @@ const BuyModal = ({show, setShow, correctItem}: Props) => {
             if (!moment(date).isValid()) {
                 return;
             }
-            if (price < Number(correctItem?.marketdata.bidPrice)) {
+            if (price < Number(correctItem.marketdata?.price)) {
                 // NotificationManager.warning(translateLang('increasebid_warn'));
                 toast(translateLang('increasebid_warn'), {position: "top-right", autoClose: 2000})
                 return;
@@ -43,10 +43,10 @@ const BuyModal = ({show, setShow, correctItem}: Props) => {
 
             setLoading(true);
             await bidNFT({
-                nftAddress: correctItem?.collectionAddress,
-                assetId: correctItem?.tokenID,
+                nftAddress: correctItem.collection,
+                assetId: correctItem.tokenId,
                 price: price,
-                acceptedToken: correctItem?.marketdata.acceptedToken,
+                acceptedToken: correctItem.marketdata?.acceptedToken,
                 expiresAt: moment(date).valueOf()
             });
             // NotificationManager.success(translateLang('bid_success'));

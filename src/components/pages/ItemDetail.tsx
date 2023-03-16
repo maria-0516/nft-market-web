@@ -5,11 +5,14 @@ import moment from 'moment';
 import M_itemdetailRedux from '../components/M_ItemdetailRedex';
 import { useBlockchainContext } from '../../context';
 import BuyModal from '../components/BuyModal';
-import { styledAddress } from '../../utils';
+import { currentTime, styledAddress } from '../../utils';
 import { useWallet } from 'use-wallet';
 import Action from '../../service';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
+import config from '../../config.json'
+
+// const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
 
 export default function Colection() {
     const wallet = useWallet();
@@ -18,20 +21,42 @@ export default function Colection() {
     const [state, { buyNFT, cancelOrder, translateLang, bidApprove, getCurrency }] =
         useBlockchainContext() as any;
     const [correctCollection, setCorrectCollection] = useState<any>(null);
-    const [pageFlag, setPageFlag] = useState(0); // 1 is mine, 2 is saled mine, 3 is others, 4 is saled others
+    const [pageFlag, setPageFlag] = useState(1); // 1 = mine, 2 = sale mine, 3 = others, 4 = sale others
     const [modalShow, setModalShow] = useState(false);
     const [expireTime, setExpireTime] = useState([]);
     const [timeFlag, setTimeFlag] = useState(true);
     const [loading, setLoading] = useState(false);
-
-    // item data
+    const [order, setOrder] = useState<OrderData>({
+        collection: '',
+        assetId: '',
+        name: '',
+        price: '',
+        token: '',
+        assetOwner: '',
+        expiresAt: 0,
+        status: 'pending',
+    })
     const [itemData, setItemData] = useState<NFTData>({
         collection:	'',
         tokenId:	'',
         creator: 	'',
         owner: 		'',
         name: 		'',
+        listed:     false
     });
+    const [status, setStatus] = useState({
+        remainTime: 0
+    })
+
+    React.useEffect(() => {
+        let flag = 0
+        if (order.name === itemData.name) {
+            flag = order.assetOwner===state.auth.address ? 2 : 4
+        } else {
+            flag = itemData.owner===state.auth.address ? 1 : 3
+        }
+        setPageFlag(flag)
+    }, [itemData])
 
     const readNfts = async () => {
         const formData = new FormData();
@@ -48,40 +73,63 @@ export default function Colection() {
         return
     }
 
+    const readOrder = async () => {
+        const formData = new FormData();
+        formData.append('name', name || '');
+
+        const response = await Action.name_order(formData);
+        if (response.success) {
+            if (!!response.data) {
+                setOrder(response.data)
+            }
+        } else {
+            console.log("readNftsError")
+        }
+        return
+    }
+
     useEffect(() => {
         readNfts()
     }, [])
 
+    useEffect(() => {
+        if (itemData.listed) {
+            readOrder()
+        }
+    }, [itemData.listed])
+
     // useEffect(() => {
-    //     if (itemData !== null)
-    //         if (itemData.marketdata.endTime !== '')
+    //     if (order.name !== "")
+    //         const now = currentTime()
+    //         if (order.expiresAt > now)
     //             setInterval(() => {
-    //                 let endTime = moment(Number(itemData.marketdata.endTime));
-    //                 let nowTime = moment(new Date());
-    //                 // test
-    //                 if (endTime < nowTime) setTimeFlag(true);
-    //                 else {
-    //                     let ms = moment(endTime.diff(nowTime));
-    //                     let bump = [] as any;
-    //                     bump.push(Math.floor(moment.duration(ms as any).asHours() / 24));
-    //                     bump.push(Math.floor(moment.duration(ms as any).asHours()) % 24);
-    //                     bump.push(moment.utc(ms).format('mm'));
-    //                     bump.push(moment.utc(ms).format('ss'));
-    //                     setExpireTime(bump);
-    //                     setTimeFlag(false);
-    //                 }
+    //                 // let endTime = moment(Number(order.expiresAt));
+    //                 // let nowTime = moment(new Date());
+    //                 // // test
+    //                 // if (endTime < nowTime) setTimeFlag(true);
+    //                 // else {
+    //                 //     let ms = moment(endTime.diff(nowTime));
+    //                 //     let bump = [] as any;
+    //                 //     bump.push(Math.floor(moment.duration(ms as any).asHours() / 24));
+    //                 //     bump.push(Math.floor(moment.duration(ms as any).asHours()) % 24);
+    //                 //     bump.push(moment.utc(ms).format('mm'));
+    //                 //     bump.push(moment.utc(ms).format('ss'));
+    //                 //     setExpireTime(bump);
+    //                 //     setTimeFlag(false);
+    //                 // }
+    //                 const remainTime = new Date(order.expiresAt * )
     //             }, 1000);
     // }, [itemData]);
 
     // useEffect(() => {
-    //     if (itemData !== null) {
+    //     if (order.name !== "") {
     //         if (itemData.owner?.toLowerCase() === state.addresses.Marketplace?.toLowerCase()) {
     //             // on market
     //             if (!state.auth?.address?.toLowerCase()) {
     //                 setPageFlag(4);
     //                 return;
     //             }
-    //             itemData.marketdata.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
+    //             itemData.marketdata?.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
     //                 ? setPageFlag(2)
     //                 : setPageFlag(4);
     //         } else {
@@ -125,99 +173,100 @@ export default function Colection() {
     //             break;
     //         }
     //     }
-    // }, [state.collectionNFT, id, collection]);
+    // }, [state.collectionNFT]);
 
-    // const handleBuy = async () => {
-    //     if (!state.signer) {
-    //         wallet.connect();
-    //         // navigate('/signPage');
-    //         return;
-    //     }
-    //     try {
-    //         setLoading(true);
-    //         await buyNFT({
-    //             nftAddress: itemData?.collectionAddress,
-    //             assetId: itemData?.tokenID,
-    //             price: itemData?.marketdata.price,
-    //             acceptedToken: itemData?.marketdata.acceptedToken
-    //         });
-    //         // NotificationManager.success(translateLang('buynft_success'));
-    //         toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
-    //         setLoading(false);
-    //     } catch (err: any) {
-    //         console.log(err.message);
-    //         // NotificationManager.error(translateLang('buynft_error'));
-    //         toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
-    //         setLoading(false);
-    //     }
-    // };
+    const handleBuy = async () => {
+        if (order.name !== itemData.name) return
+        if (!state.signer) {
+            wallet.connect();
+            // navigate('/signPage');
+            return;
+        }
+        try {
+            setLoading(true);
+            await buyNFT({
+                nftAddress: order.collection,
+                assetId: order.assetId,
+                price: order.price,
+                acceptedToken: order.token
+            });
+            // NotificationManager.success(translateLang('buynft_success'));
+            toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
+            setLoading(false);
+        } catch (err: any) {
+            console.log(err.message);
+            // NotificationManager.error(translateLang('buynft_error'));
+            toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
+            setLoading(false);
+        }
+    };
 
-    // const handleApproveBid = async () => {
-    //     try {
-    //         if (itemData !== null) {
-    //             setLoading(true);
+    const handleApproveBid = async () => {
+        if (order.name !== itemData.name) return
+        try {
+            if (itemData !== null) {
+                setLoading(true);
 
-    //             await bidApprove({
-    //                 address: collection,
-    //                 id: id,
-    //                 price: itemData.marketdata.bidPrice
-    //             });
-    //             // NotificationManager.success(translateLang('approve_succeess'));
-    //             toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
-    //             setLoading(false);
-    //         }
-    //     } catch (err: any) {
-    //         console.log(err.message);
-    //         setLoading(false);
-    //         // NotificationManager.error(translateLang('approve_error'));
-    //         toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
-    //     }
-    // };
+                await bidApprove({
+                    address: order.collection,
+                    id: order.assetId,
+                    price: order.price
+                });
+                // NotificationManager.success(translateLang('approve_succeess'));
+                toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
+                setLoading(false);
+            }
+        } catch (err: any) {
+            console.log(err.message);
+            setLoading(false);
+            // NotificationManager.error(translateLang('approve_error'));
+            toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
+        }
+    };
 
-    // const handleSell = () => {
-    //     navigate(`/Auction/${collection}/${id}`);
-    // };
+    const handleSell = () => {
+        navigate(`/auction/${itemData.name}`);
+    };
 
-    // const handleCancel = async () => {
-    //     if (itemData !== null) {
-    //         setLoading(true);
-    //         try {
-    //             await cancelOrder({
-    //                 nftAddress: collection,
-    //                 assetId: id
-    //             });
-    //             // NotificationManager.success(translateLang('cancelorder_success'));
-    //             toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
+    const handleCancel = async () => {
+        if (itemData !== null) {
+            setLoading(true);
+            try {
+                await cancelOrder({
+                    nftAddress: itemData.collection,
+                    assetId: itemData.tokenId
+                });
+                // NotificationManager.success(translateLang('cancelorder_success'));
+                toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
 
-    //             setLoading(false);
-    //         } catch (err: any) {
-    //             console.log(err.message);
-    //             // NotificationManager.error(translateLang('cancelorder_error'));
-    //             toast(translateLang('cancelorder_error'), {position: "top-right", autoClose: 2000})
-    //             setLoading(false);
-    //         }
-    //     }
-    // };
+                setLoading(false);
+            } catch (err: any) {
+                console.log(err.message);
+                // NotificationManager.error(translateLang('cancelorder_error'));
+                toast(translateLang('cancelorder_error'), {position: "top-right", autoClose: 2000})
+                setLoading(false);
+            }
+        }
+    };
 
-    // const HandleLike = async () => {
-    //     if (!state.auth.isAuth) {
-    //         navigate('/signPage');
-    //         return;
-    //     }
-    //     Action.nft_like({
-    //         collectAddress: collection,
-    //         tokenId: id,
-    //         currentAddress: state.auth.address
-    //     })
-    //         .then((res) => {
-    //             if (res) {
-    //                 console.log(res);
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //         });
-    // };
+    const HandleLike = async () => {
+        try {
+            if (!state.auth.isAuth) {
+                navigate('/');
+                return;
+            }
+            const res = await Action.nft_like({
+                collection: itemData.collection,
+                tokenId: itemData.tokenId,
+                currentAddress: state.auth.address
+            })
+            if (res) {
+                console.log(res);
+            }
+        } catch (error) {
+            console.log("HandleLike", error);
+        }
+    };
 
     return (
         <div>
@@ -584,7 +633,12 @@ export default function Colection() {
                                 <div className="col-lg-7">
                                         <div className="imil-box rt-mb-30">
                                             <div className="rt-box-style-2">
-                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData.name}</h4>   
+                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData.name}</h4>  
+                                                <div onClick={HandleLike} className="like">
+                                                    <i className="fa fa-heart"></i>
+                                                    {'  '}
+                                                    {itemData.likes?.length || 0}
+                                                </div> 
                                                 <h5 className="f-size-18 rt-light3">is for sale</h5>
                                             
                                             Network: Ethereum
@@ -637,31 +691,28 @@ export default function Colection() {
                                                 </div>
                                             </div>
                                         </div>
-                                    
                                 </div>
-                                <div className="col-lg-5">
+                                {order.name===itemData.name && (
+                                    <div className="col-lg-5">
                                         <div className="rt-box-style-3">
                                             <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
-                                                This domain is in auction (or Fixed Price)
+                                                This domain is in auction
                                             </div>
                                             <div className="rt-p-30">
                                                 <div className="d-flex justify-content-between rt-mb-20">
                                                 
                                                     <span className="f-size-20 rt-light3">Current price:</span>
-                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">1.5</span></span><span
-                                                            className="f-size-24"> ETH</span></span>
+                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> {order.token}</span></span>
                                                 
                                                 </div>
                                                 <div className="d-flex justify-content-between rt-mb-20">
-                                                
                                                 <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
-                                                    <span className="f-size-20 rt-light3 ">0.075 ETH (5%)</span>
-                                                
+                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} {order.token} ({config.fee}%)</span>
                                                 </div>
                                                 <div className="d-flex justify-content-between rt-mb-20">
                                                 
                                                 <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
-                                                    <span className="f-size-20 rt-light3 ">1.575 ETH</span>
+                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} {order.token}</span>
                                                 
                                                 </div>
                                                 <div className="d-flex justify-content-between rt-mb-20">
@@ -670,29 +721,103 @@ export default function Colection() {
                                                     <span className="f-size-20 rt-light3 text-eb7">1 day,10 hours</span>
                                                 
                                                 </div>
-                                                <form action="#" className="rt-form ">
-                                                    <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" />
-
+                                                <form className="rt-form ">
+                                                    {/* <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
                                                     {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button> */}
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
-
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button>
-                                                    
-                                                    <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button>
-
-                                            
+                                                    {pageFlag===1 && (
+                                                        <>
+                                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleSell}>Sell Your Domain</button>
+                                                        </>
+                                                    )}
+                                                    {pageFlag===2 && (
+                                                        <>
+                                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
+                                                        </>
+                                                    )}
+                                                    {pageFlag===3 && (
+                                                        <>
+                                                        
+                                                        </>
+                                                    )}
+                                                    {pageFlag===4 && (
+                                                        <>
+                                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
+                                                            {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button> */}
+                                                            {/* <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button> */}
+                                                        </>
+                                                    )}
                                                 </form>
                                             </div>
                                         </div>
-                                    
-                                    
-                                    
-                            
-                                    
+                                    </div>
+                                )}
                                 </div>
                             </div>
-                            </div>
+                            <div>
+                            {/* <div>
+                                {itemData === null ? (
+                                    'Loading...'
+                                ) : (
+                                    <div className="mainside">
+                                        {pageFlag === 1 ? (
+                                            <div className="attribute">
+                                                <button
+                                                    className="btn-main round-button"
+                                                    onClick={handleSell}>
+                                                    {translateLang('btn_sell')}
+                                                </button>
+                                            </div>
+                                        ) : pageFlag === 2 ? (
+                                            <div>
+                                                {loading ? (
+                                                    <button className="btn-main round-button">
+                                                        <span
+                                                            className="spinner-border spinner-border-sm"
+                                                            aria-hidden="true"></span>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="btn-main round-button"
+                                                        onClick={handleCancel}>
+                                                        {translateLang('btn_cancel')}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ) : pageFlag === 3 ? null : (
+                                            <div>
+                                                {loading ? (
+                                                    <button className="btn-main round-button">
+                                                        <span
+                                                            className="spinner-border spinner-border-sm"
+                                                            aria-hidden="true"></span>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="btn-main round-button"
+                                                        onClick={handleBuy}>
+                                                        {translateLang('btn_buynow')}
+                                                    </button>
+                                                )}
+                                                {loading ? (
+                                                    <button className="btn-main round-button">
+                                                        <span
+                                                            className="spinner-border spinner-border-sm"
+                                                            aria-hidden="true"></span>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="btn-main round-button"
+                                                        onClick={() => setModalShow(true)}>
+                                                        {translateLang('btn_makeoffer')}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div> */}
+                        </div>
+                            {/* <BuyModal show={modalShow} setShow={setModalShow} correctItem={itemData} /> */}
                         </section>
                     </>
                 )}

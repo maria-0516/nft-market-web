@@ -20,17 +20,6 @@ declare interface NftBidData {
     token:			string
     timestamp:		number
 }
-declare interface NftMarketData {
-	acceptedToken:	string
-    price:			string
-    owner:			string
-    startTime:		string
-    endTime:		string
-    // prices: 		number[]
-    // tokens:			number[]
-    // owners:			string[]
-    bids:			NftBidData[]
-}
 
 declare interface NftMetaData {
     description?: 	string
@@ -57,8 +46,20 @@ declare interface NFTData {
         cost:       number,
         texts:      string[]
     }
-    likes?: 		number[]
+    likes?: 		string[]
     isOffchain?: 	boolean
     metadata?: 		NftMetaData
-    marketdata?: 	NftMarketData
+    listed:         boolean
+}
+
+declare interface OrderData {
+    collection:     string
+    assetId: 		string
+    name:           string
+    price: 			string
+    token: 	        string
+    assetOwner: 	string
+    expiresAt:      number
+    bids?:			NftBidData[]
+    status: 		'pending'|'cancel'|'success'
 }

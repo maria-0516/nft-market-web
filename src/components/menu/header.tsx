@@ -131,27 +131,27 @@ const Header = () => {
             });
             localStorage.setItem('isConnected', "0");
         } else {
-            wallet.connect()
+            // wallet.connect()
 
-            // wallet.connect().then((res) => {
-            //     (async () => {
-            //         try {
-            //             //if metamask is connected and wallet is not connected ( chain error))
-            //             if (wallet.status === 'error') {
-            //                 var accounts = await window.ethereum.request({
-            //                     method: 'eth_accounts'
-            //                 });
-            //                 if (accounts.length > 0) {
-            //                     await changeNetwork('fantom');
-            //                     wallet.connect();
-            //                 }
-            //             }
-            //             localStorage.setItem('isConnected', "1");
-            //         } catch (err) {
-            //             console.log((err as any).message);
-            //         }
-            //     })();
-            // });
+            wallet.connect().then((res) => {
+                (async () => {
+                    try {
+                        //if metamask is connected and wallet is not connected ( chain error))
+                        if (wallet.status === 'error') {
+                            var accounts = await window.ethereum.request({
+                                method: 'eth_accounts'
+                            });
+                            if (accounts.length > 0) {
+                                await changeNetwork('ethereum');
+                                wallet.connect();
+                            }
+                        }
+                        localStorage.setItem('isConnected', "1");
+                    } catch (err) {
+                        console.log((err as any).message);
+                    }
+                })();
+            });
         }
     };
 
@@ -509,6 +509,7 @@ const Header = () => {
 									}>
 									<button
 										className="rt-btn rt-gradient pill text-uppercase"
+                                        style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}}
 										onClick={() => setSwitchFocus(!switchFocus)}>
 										Switch Network
 									</button>
@@ -521,9 +522,9 @@ const Header = () => {
 									)}
 								</div>
 							)}
-							<button className="rt-btn rt-gradient pill text-uppercase" onClick={handleConnect}>
+							<button className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}} onClick={handleConnect}>
 								{wallet.status==='connecting' ? 'Connecting...' : (
-									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect'
+									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect Wallet'
 								)}
 							</button>
 							{/* <a href="#" className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', width: '75%', fontSize: '1.5rem', fontWeight: 'bold'}}>Connect Wallet
@@ -541,25 +542,24 @@ const Header = () => {
 									<div className="main-menu">
 									<ul className={mobileMenu.main ? 'show' : ''}>
 										<li><Link to="/">Home</Link></li>
+										<li><Link to="/listed-domains">Buy Domain</Link></li>
 									
-										<li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
+										{/* <li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub1 ? 'block' : ''}`}}>
 												<li><Link to="/listed-domains">All Listed Domains</Link></li>
 												<li><Link to="/fixed-price">Fixed Price</Link></li>
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
-										</li>
-										<li ><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link>
-										
-										</li>
+										</li> */}
+                                        {state.auth.isAuth && <li ><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link></li>}
 										<li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
-												<li><Link to="/">How It Works</Link></li>
-												<li><Link to="/">FAQ</Link></li>
-												<li><Link to="/">Partnership</Link></li>
+												<li><Link to="/how-work">How It Works</Link></li>
+												<li><Link to="/faq">FAQ</Link></li>
+												<li><Link to="/partnership">Partnership</Link></li>
 											</ul>
 										</li>
-										<li><Link to="#">CNS Token</Link>
+										<li><Link to="/cns-token">CNS Token</Link>
 										
 										</li>
 									</ul>
@@ -587,20 +587,20 @@ const Header = () => {
 					<div className="row rt-breadcump-height align-items-center">
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
 							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong">
-								{location.pathname==='/'||location.pathname==='/explore' ? 'Buy Crypto Domains' : ''}
+								{location.pathname==='/' ? 'Buy Crypto Domains' : ''}
 								{location.pathname.indexOf('listed-domains')===1 ? 'Listed Crypto Domains' : ''}
+								{location.pathname.indexOf('how-work')===1 ? 'How it works' : ''}
+								{location.pathname.indexOf('faq')===1 ? 'Faq' : ''}
+								{location.pathname.indexOf('partnership')===1 ? 'Partnership' : ''}
+								{location.pathname.indexOf('cns-token')===1 ? 'CNS Token' : ''}
+								{location.pathname.indexOf('auction')===1 ? 'List Domain For Sale' : ''}
 								{/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) ? 'My Domains' : ''}
 								{location.pathname.indexOf('domain')===1 ? `${location.pathname.slice(location.pathname.lastIndexOf('/')+1)}` : ''}
 							</h4>
-                            {
-                                (location.pathname.indexOf('domain')===1 || /^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1))) && (
-                                    <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">{
-                                        location.pathname.indexOf('domain')===1 ? 'is listed for sale!' : `${state.auth.address}`
-                                    }</h4>
-                                )
-                            }
+                            {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>}
+                            {/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) && <p style={{marginTop: '4rem'}}>{state.auth.address}</p>}
 							{
-								!/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) && location.pathname.indexOf('domain')!==1 && (
+								(location.pathname==='/' || location.pathname.indexOf('listed-domains')===1) && (
 									<div className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
 										data-animation="wow fadeInUp">
 										<input type="text" placeholder="enter a new search" value={status.search} onChange={e=>setStatus({...status, search: e.target.value})} onKeyDown={e=>e.key==='Enter' && onSearch()} />

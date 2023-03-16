@@ -134,16 +134,16 @@ export default function ListedDomains() {
                     </div>
                     <div className="rt-spacer-60"></div>
                     <div className="row">
-                        <div className="col-lg-6 col-md-6 mx-auto rt-mb-30 wow fade-in-bottom">
+                        <div className="col-12 mx-auto rt-mb-30 wow fade-in-bottom">
                             <div className="rt-price-1">
-                                <div className="price-hrader text-center rt-mb-30">
+                                {/* <div className="price-hrader text-center rt-mb-30">
                                     <img src="assets/images/all-img/price-1.png" alt="price image" draggable="false" />
-                                    <h3 className="f-size-36  f-size-xs-32 rt-normal">
+                                    <h3 className="f-size-36 f-size-xs-32 rt-normal">
                                         Auctions
                                     </h3>
                                     <p className="rt-light3 f-size-xs-22 section-p-content">
                                     </p>
-                                </div>
+                                </div> */}
                                 <div className="price-body rt-pt-10">
                                     <ul className="rt-list">
                                         {
@@ -156,6 +156,48 @@ export default function ListedDomains() {
                                                 </li>
                                             ))
                                         }
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                irina.eth
+                                                <span className="float-right">4 FTM</span>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                                 <div className="price-footer rt-mt-30 text-center">
@@ -163,7 +205,7 @@ export default function ListedDomains() {
                                 </div>
                             </div>
                         </div>
-                        <div className="col-lg-6 col-md-6 mx-auto rt-mb-30 wow fade-in-bottom">
+                        {/* <div className="col-lg-6 col-md-6 mx-auto rt-mb-30 wow fade-in-bottom">
                             <div className="rt-price-1">
                                 <div className="price-hrader text-center rt-mb-30">
                                     <img src="assets/images/all-img/price-2.png" alt="price image" draggable="false" />
@@ -191,7 +233,7 @@ export default function ListedDomains() {
                                     <a href="#">View More </a>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </section>
