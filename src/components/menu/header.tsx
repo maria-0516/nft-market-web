@@ -6,6 +6,7 @@ import { useBlockchainContext } from '../../context';
 import { useWallet } from 'use-wallet';
 import SearchModal from '../components/searchModal';
 import { changeNetwork } from '../../utils';
+import config from '../../config.json'
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 
@@ -47,6 +48,7 @@ const Header = () => {
     const [status, setStatus] = useState({
         search: ''
     })
+    const [walletInited, setWalletInited] = useState(false)
 
     useEffect(() => {
         if (searchKey.trim() !== '' && focused) {
@@ -113,7 +115,24 @@ const Header = () => {
             return [];
         }
     }, [state.allNFT, nftFilter]);
-
+    const checkNetwork = async () => {
+        try {
+            const {ethereum} = wallet
+            //if metamask is connected and wallet is not connected ( chain error))
+            if (ethereum) {
+                const chainId = await ethereum.request({
+                    method: 'eth_chainId'
+                });
+                console.log('chainId', chainId)
+                if (Number(chainId)!==config.chainId) {
+                    await changeNetwork(ethereum, config.chainId);
+                }
+            }
+            localStorage.setItem('isConnected', "1");
+        } catch (err) {
+            console.log((err as any).message);
+        }
+    }
     const handleConnect = () => {
         if (wallet.status == 'connected') {
             wallet.reset();
@@ -133,64 +152,70 @@ const Header = () => {
         } else {
             // wallet.connect()
 
-            wallet.connect().then((res) => {
-                (async () => {
-                    try {
-                        //if metamask is connected and wallet is not connected ( chain error))
-                        if (wallet.status === 'error') {
-                            var accounts = await window.ethereum.request({
-                                method: 'eth_accounts'
-                            });
-                            if (accounts.length > 0) {
-                                await changeNetwork('ethereum');
-                                wallet.connect();
-                            }
-                        }
-                        localStorage.setItem('isConnected', "1");
-                    } catch (err) {
-                        console.log((err as any).message);
-                    }
-                })();
-            });
+            wallet.connect()
+            // .then((res) => {
+            //     (async () => {
+            //         try {
+            //             //if metamask is connected and wallet is not connected ( chain error))
+            //             if (wallet.status === 'error') {
+            //                 var accounts = await window.ethereum.request({
+            //                     method: 'eth_accounts'
+            //                 });
+            //                 if (accounts.length > 0) {
+            //                     await changeNetwork(wallet.ethereum, 'ethereum');
+            //                     wallet.connect();
+            //                 }
+            //             }
+            //             localStorage.setItem('isConnected', "1");
+            //         } catch (err) {
+            //             console.log((err as any).message);
+            //         }
+            //     })();
+            // });
         }
     };
 
-    const handleBtnClick1 = () => {
-        setOpenMenu1(!openMenu1);
-    };
-    const handleBtnClick2 = () => {
-        setOpenMenu2(!openMenu2);
-    };
-    const handleBtnClick3 = () => {
-        setOpenMenu3(!openMenu3);
-    };
+    // const handleBtnClick1 = () => {
+    //     setOpenMenu1(!openMenu1);
+    // };
+    // const handleBtnClick2 = () => {
+    //     setOpenMenu2(!openMenu2);
+    // };
+    // const handleBtnClick3 = () => {
+    //     setOpenMenu3(!openMenu3);
+    // };
     const closeMenu1 = () => {
         setOpenMenu1(false);
     };
-    const closeMenu2 = () => {
-        setOpenMenu2(false);
-    };
-    const closeMenu3 = () => {
-        setOpenMenu3(false);
-    };
-    const ref1 = useOnclickOutside(() => {
-        closeMenu1();
-    });
-    const ref2 = useOnclickOutside(() => {
-        closeMenu2();
-    });
-    const ref3 = useOnclickOutside(() => {
-        closeMenu3();
-    });
+    // const closeMenu2 = () => {
+    //     setOpenMenu2(false);
+    // };
+    // const closeMenu3 = () => {
+    //     setOpenMenu3(false);
+    // };
+    // const ref1 = useOnclickOutside(() => {
+    //     closeMenu1();
+    // });
+    // const ref2 = useOnclickOutside(() => {
+    //     closeMenu2();
+    // });
+    // const ref3 = useOnclickOutside(() => {
+    //     closeMenu3();
+    // });
 
     useEffect(() => {
 
         console.log("wallet-status", wallet.status)
         if (wallet.status==='disconnected' && localStorage.getItem('isConnected')==="1") {
             localStorage.setItem('isConnected', "0")
+            if (!walletInited) {
+                setWalletInited(true)
+                wallet.connect()
+            }
             // wallet.connect();
         } else if (wallet.status==='connected' && localStorage.getItem('isConnected')==="0") {
             localStorage.setItem('isConnected', "1")
+            checkNetwork()
         }
     }, [wallet.status]);
 
@@ -501,7 +526,7 @@ const Header = () => {
 							</ul>
 						</div>
 						<div className="col-md-6 text-center text-md-right md-end sm-center" style={{gap: '0.5em'}}>
-							{wallet.status == 'connected' && (
+							{/* {wallet.status == 'connected' && (
 								<div
 									className="switch_network"
 									onBlur={() =>
@@ -521,7 +546,7 @@ const Header = () => {
 										</ul>
 									)}
 								</div>
-							)}
+							)} */}
 							<button className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}} onClick={handleConnect}>
 								{wallet.status==='connecting' ? 'Connecting...' : (
 									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect Wallet'

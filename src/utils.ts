@@ -130,17 +130,25 @@ const networks = {
         blockExplorerUrls: ['https://bscscan.com']
     }
 };
-const changeNetwork = async (networkName: any) => {
-    if (!window.ethereum) throw new Error('No crypto wallet found');
-    await window.ethereum.request({
+const addNetwork = async (ethereum: any, networkName: any) => {
+    if (!ethereum) throw new Error('No crypto wallet found');
+    await ethereum.request({
         method: 'wallet_addEthereumChain',
-        params: [
-            {
-                ...(networks as any)[networkName]
-            }
-        ]
+        params: [{...(networks as any)[networkName]}]
     });
 };
+const changeNetwork = async (ethereum: any, chainId: number): Promise<boolean> => {
+    try {
+        await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x' + chainId.toString(16)}],
+        });
+        return true;
+    } catch (error) {
+        console.log(error)
+    }
+    return false;
+}
 export const currentTime = () => Math.round((new Date().getTime()) / 1000);
 
 export { delay, toBigNum, fromBigNum, styledAddress, copyToClipboard, changeNetwork, styledText };
