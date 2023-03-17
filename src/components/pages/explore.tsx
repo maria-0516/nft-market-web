@@ -51,7 +51,7 @@ const options2 = [
 ];
 
 export default function Explore() {
-    const [state, { translateLang }] = useBlockchainContext() as any;
+    const [state, { translateLang, setLoading }] = useBlockchainContext() as any;
     const [searchWord, setSearchWord] = useState('');
 
     const [selectedOption2, setSelectedOption2] = useState<any>(options2[0]);
@@ -140,22 +140,27 @@ export default function Explore() {
     );
 
     const readNfts = async () => {
-        const formData = new FormData();
-        formData.append('p', String(status.page + 1));
-        // formData.append('query', );
+        setLoading("1")
+        try {
+            const formData = new FormData();
+            formData.append('p', String(status.page + 1));
+            // formData.append('query', );
 
-        const response = await Action.all_nfts(formData);
-        if (response.success) {
-            let _data = [] as NFTData[]
-            if (response.data?.length > 0) {
-                response.data.map((i: NFTData ,k: any) => _data.push(i))
+            const response = await Action.all_nfts(formData);
+            if (response.success) {
+                let _data = [] as NFTData[]
+                if (response.data?.length > 0) {
+                    response.data.map((i: NFTData ,k: any) => _data.push(i))
+                }
+                setNfts([..._data])
+                setStatus({...status, total: response.meta.total})
+            } else {
+                console.log("readNftsError")
             }
-            setNfts([..._data])
-            setStatus({...status, total: response.meta.total})
-        } else {
-            console.log("readNftsError")
+        } catch (error) {
+            console.log("readNfts", error)
         }
-        return
+        setLoading("")
     }
 
     React.useEffect(() => {

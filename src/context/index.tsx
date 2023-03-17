@@ -65,11 +65,12 @@ const INIT_STATE = {
     lang: 'en',
     currencies: Currency,
     addresses: addresses,
-    search: ''
+    search: '',
+    loading: ''
 };
 
 export default function Provider({ children }: {children: any}) {
-    const location = useLocation();
+    // const location = useLocation();
     const [state, dispatch] = useReducer(reducer, INIT_STATE);
     const wallet = useWallet();
 
@@ -242,6 +243,16 @@ export default function Provider({ children }: {children: any}) {
             }
         })
         localStorage.setItem('search', search);
+    }
+    
+    const setLoading = (props: any) => {
+        
+        const {loading} = props as {loading: string}
+        dispatch({
+            type: 'loading',
+            payload: loading ? {loading} : null
+        })
+        // localStorage.setItem('loading', loading);
     }
 
     const translateLang = (txt: any) => {
@@ -475,6 +486,7 @@ export default function Provider({ children }: {children: any}) {
                         setLanguage,
                         translateLang,
                         setSearch,
+                        setLoading,
                         approveNFT,
                         getCurrency,
                         checkNFTApprove

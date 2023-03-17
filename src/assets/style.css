@@ -878,6 +878,10 @@ p.lead {
   background-color: #424242;
 }
 
+.disable-button:hover {
+  background-color: transparent !important;
+}
+
 .rankButton {
   padding: 20px 50px;
 }
@@ -4990,6 +4994,10 @@ i.font60 {
   background: #ff6d00;
 }
 
+.switch_network > ul > :last-child {
+  border: 0;
+}
+
 .switch_network > ul > span {
   background-color: transparent;
   width: 100%;
@@ -6290,5 +6298,13 @@ header .lang-menu li {
 header .lang-menu li:hover {
   background-color: #f30070;
   color: #fff;
+}
+
+.mt {
+  margin-top: 0.5em;
+}
+
+.mt-1 {
+  margin-top: 1em;
 }
 /*# sourceMappingURL=style.css.map */

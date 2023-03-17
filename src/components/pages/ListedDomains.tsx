@@ -158,50 +158,50 @@ export default function ListedDomains() {
                                         }
                                         <li className="clearfix">
                                             <a style={{cursor: 'pointer'}}>
-                                                irina.eth
-                                                <span className="float-right">4 FTM</span>
+                                                billgates.eth
+                                                <span className="float-right">5 ETH</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                broadcom.eth
+                                                <span className="float-right">0.3 ETH</span>
+                                            </a>
+                                        </li>
+                                        <li className="clearfix">
+                                            <a style={{cursor: 'pointer'}}>
+                                                etherscanio.eth
+                                                <span className="float-right">0.4 ETH</span>
                                             </a>
                                         </li>
                                         <li className="clearfix">
                                             <a style={{cursor: 'pointer'}}>
                                                 irina.eth
-                                                <span className="float-right">4 FTM</span>
+                                                <span className="float-right">0.8 ETH</span>
                                             </a>
                                         </li>
                                         <li className="clearfix">
                                             <a style={{cursor: 'pointer'}}>
-                                                irina.eth
-                                                <span className="float-right">4 FTM</span>
+                                                gregmaxwell.eth
+                                                <span className="float-right">1 ETH</span>
                                             </a>
                                         </li>
                                         <li className="clearfix">
                                             <a style={{cursor: 'pointer'}}>
-                                                irina.eth
-                                                <span className="float-right">4 FTM</span>
+                                                generalatomics.eth
+                                                <span className="float-right">4 ETH</span>
                                             </a>
                                         </li>
                                         <li className="clearfix">
                                             <a style={{cursor: 'pointer'}}>
-                                                irina.eth
-                                                <span className="float-right">4 FTM</span>
-                                            </a>
-                                        </li>
-                                        <li className="clearfix">
-                                            <a style={{cursor: 'pointer'}}>
-                                                irina.eth
-                                                <span className="float-right">4 FTM</span>
-                                            </a>
-                                        </li>
-                                        <li className="clearfix">
-                                            <a style={{cursor: 'pointer'}}>
-                                                irina.eth
-                                                <span className="float-right">4 FTM</span>
+                                                maria.eth
+                                                <span className="float-right">2 ETH</span>
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
                                 <div className="price-footer rt-mt-30 text-center">
-                                    <a href="#">View More </a>
+                                    <a href="">View More </a>
                                 </div>
                             </div>
                         </div>

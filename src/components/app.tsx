@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import { createGlobalStyle } from 'styled-components';
 // import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 // import { setContext } from '@apollo/client/link/context';
-import { UseWalletProvider } from 'use-wallet'
+
 
 import ScrollToTopBtn from './menu/ScrollToTop';
 import Header from './menu/header';
@@ -19,7 +19,7 @@ import LazyCreate from './pages/lazycreate';
 import Auction from './pages/Auction';
 import ListedDomains from './pages/ListedDomains';
 import { useBlockchainContext } from '../context';
-import Provider from '../context';
+
 import { ToastContainer, toast } from 'react-toastify';
 import config from '../config.json'
 import Footer from './menu/footer';
@@ -27,6 +27,7 @@ import HowWork from './pages/HowWork';
 import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken';
+import Loading from './components/Loading';
 
 // const httpLink = createHttpLink({
 //     uri: config.graphql
@@ -63,19 +64,15 @@ const PrivateRoute = ({ children }: {children: any}) => {
     return children;
 };
 
-function App() {
+const App = () => {
+    const [state, {loading}] = useBlockchainContext() as any;
+
+    console.log("loading", loading || '(none)')
     return (
         <div className="wraper">
             <Router>
-                {/* <ApolloProvider client={client}> */}
-                    <UseWalletProvider
-                        // chainId={config.chainId}
-                        connectors={{
-                            walletconnect: {
-                                rpcUrl: config.rpc[0]
-                            }
-                        }}>
-                        <Provider>
+               
+                        
                             <GlobalStyles />
                             <Header />
                             <Routes>
@@ -133,8 +130,12 @@ function App() {
                             </Routes>
                             <Footer />
                             <ScrollToTopBtn />
-                        </Provider>
-                    </UseWalletProvider>
+                            {(!!loading) && (
+                                <div style={{position: 'fixed', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.25', zIndex: '10000'}}>
+                                    <Loading />
+                                </div>
+                            )}
+                    
                 {/* </ApolloProvider> */}
             </Router>
         </div>
