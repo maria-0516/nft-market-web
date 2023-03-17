@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useMemo, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { useQuery } from '@apollo/client';
+// import { useQuery } from '@apollo/client';
 import { useLocation } from 'react-router-dom';
 import {
     getNFTContract,
@@ -10,13 +10,13 @@ import {
     provider
 } from '../contracts';
 import { toBigNum } from '../utils';
-import {
-    GET_ALLNFTS,
-    GET_USERSINFO,
-    GET_COLLECTIONNFTS,
-    GET_ORDER,
-    GET_ACTIVITIES
-} from '../components/gql';
+// import {
+//     GET_ALLNFTS,
+//     GET_USERSINFO,
+//     GET_COLLECTIONNFTS,
+//     GET_ORDER,
+//     GET_ACTIVITIES
+// } from '../components/gql';
 import addresses from '../contracts/contracts/addresses.json';
 import Action from '../service';
 
@@ -38,11 +38,11 @@ function reducer(state: any, { type, payload }: {type: any, payload: any}) {
 
 const Currency = [
     {
-        label: 'FTM',
+        label: 'ETH',
         value: addresses.WETH
     },
     {
-        label: 'BUSD',
+        label: 'USDT',
         value: addresses.TestToken
     }
 ];
@@ -65,11 +65,12 @@ const INIT_STATE = {
     lang: 'en',
     currencies: Currency,
     addresses: addresses,
-    search: ''
+    search: '',
+    loading: ''
 };
 
 export default function Provider({ children }: {children: any}) {
-    const location = useLocation();
+    // const location = useLocation();
     const [state, dispatch] = useReducer(reducer, INIT_STATE);
     const wallet = useWallet();
 
@@ -123,104 +124,104 @@ export default function Provider({ children }: {children: any}) {
     }, [wallet.status]);
 
     /** Begin GraphQL Query */
-    const {
-        data: nftsData,
-        loading: nftsLoading,
-        error: nftsError
-    } = useQuery(GET_ALLNFTS, {
-        pollInterval: 1000
-    });
+    // const {
+    //     data: nftsData,
+    //     loading: nftsLoading,
+    //     error: nftsError
+    // } = useQuery(GET_ALLNFTS, {
+    //     pollInterval: 1000
+    // });
 
-    const {
-        data: nftsCollectionData,
-        loading: nftsCollectionLoading,
-        error: nftsCollectionError
-    } = useQuery(GET_COLLECTIONNFTS, {
-        pollInterval: 1000
-    });
+    // const {
+    //     data: nftsCollectionData,
+    //     loading: nftsCollectionLoading,
+    //     error: nftsCollectionError
+    // } = useQuery(GET_COLLECTIONNFTS, {
+    //     pollInterval: 1000
+    // });
 
-    const {
-        data: usersData,
-        loading: usersLoading,
-        error: usersError
-    } = useQuery(GET_USERSINFO, {
-        pollInterval: 1000
-    });
+    // const {
+    //     data: usersData,
+    //     loading: usersLoading,
+    //     error: usersError
+    // } = useQuery(GET_USERSINFO, {
+    //     pollInterval: 1000
+    // });
 
-    const {
-        data: orderData,
-        loading: orderLoading,
-        error: orderError
-    } = useQuery(GET_ORDER, {
-        pollInterval: 1000
-    });
+    // const {
+    //     data: orderData,
+    //     loading: orderLoading,
+    //     error: orderError
+    // } = useQuery(GET_ORDER, {
+    //     pollInterval: 1000
+    // });
 
-    const {
-        data: activityData,
-        loading: activityLoading,
-        error: activityError
-    } = useQuery(GET_ACTIVITIES, {
-        pollInterval: 1000
-    });
+    // const {
+    //     data: activityData,
+    //     loading: activityLoading,
+    //     error: activityError
+    // } = useQuery(GET_ACTIVITIES, {
+    //     pollInterval: 1000
+    // });
     /** End GraphQL Query */
 
-    useEffect(() => {
-        if (nftsLoading || nftsError) {
-            return;
-        }
-        dispatch({
-            type: 'allNFT',
-            payload: nftsData.getAllNFTs
-        });
-    }, [nftsData, nftsLoading, nftsError]);
+    // useEffect(() => {
+    //     if (nftsLoading || nftsError) {
+    //         return;
+    //     }
+    //     dispatch({
+    //         type: 'allNFT',
+    //         payload: nftsData.getAllNFTs
+    //     });
+    // }, [nftsData, nftsLoading, nftsError]);
 
-    useEffect(() => {
-        if (nftsCollectionLoading || nftsCollectionError) {
-            return;
-        }
-        dispatch({
-            type: 'collectionNFT',
-            payload: nftsCollectionData.getCollectionNFTs
-        });
-    }, [nftsCollectionData, nftsCollectionLoading, nftsCollectionError]);
+    // useEffect(() => {
+    //     if (nftsCollectionLoading || nftsCollectionError) {
+    //         return;
+    //     }
+    //     dispatch({
+    //         type: 'collectionNFT',
+    //         payload: nftsCollectionData.getCollectionNFTs
+    //     });
+    // }, [nftsCollectionData, nftsCollectionLoading, nftsCollectionError]);
 
-    useEffect(() => {
-        if (usersLoading || usersError) {
-            return;
-        }
-        let bump = {};
-        for (let i = 0; i < usersData?.getUsersInfo?.length; i++) {
-            bump = {
-                ...bump,
-                [usersData.getUsersInfo[i].address]: usersData.getUsersInfo[i]
-            };
-        }
-        dispatch({
-            type: 'usersInfo',
-            payload: bump
-        });
-    }, [usersData, usersLoading, usersError]);
+    // useEffect(() => {
+    //     if (usersLoading || usersError) {
+    //         return;
+    //     }
+    //     let bump = {};
+    //     for (let i = 0; i < usersData?.getUsersInfo?.length; i++) {
+    //         bump = {
+    //             ...bump,
+    //             [usersData.getUsersInfo[i].address]: usersData.getUsersInfo[i]
+    //         };
+    //     }
+    //     dispatch({
+    //         type: 'usersInfo',
+    //         payload: bump
+    //     });
+    // }, [usersData, usersLoading, usersError]);
 
-    useEffect(() => {
-        if (orderLoading || orderError) {
-            return;
-        }
-        dispatch({
-            type: 'orderList',
-            payload: orderData.getOrder
-        });
-    }, [orderData, orderLoading, orderError]);
+    // useEffect(() => {
+    //     if (orderLoading || orderError) {
+    //         return;
+    //     }
+    //     dispatch({
+    //         type: 'orderList',
+    //         payload: orderData.getOrder
+    //     });
+    // }, [orderData, orderLoading, orderError]);
 
-    useEffect(() => {
-        if (activityLoading || activityError) {
-            return;
-        }
+    // useEffect(() => {
+    //     if (activityLoading || activityError) {
+    //         return;
+    //     }
 
-        dispatch({
-            type: 'activities',
-            payload: activityData.getActivity
-        });
-    }, [activityData, activityLoading, activityError]);
+    //     dispatch({
+    //         type: 'activities',
+    //         payload: activityData.getActivity
+    //     });
+    // }, [activityData, activityLoading, activityError]);
 
     // set language
     const setLanguage = (props: any) => {
@@ -242,6 +243,16 @@ export default function Provider({ children }: {children: any}) {
             }
         })
         localStorage.setItem('search', search);
+    }
+    
+    const setLoading = (props: any) => {
+        
+        const {loading} = props as {loading: string}
+        dispatch({
+            type: 'loading',
+            payload: loading ? {loading} : null
+        })
+        // localStorage.setItem('loading', loading);
     }
 
     const translateLang = (txt: any) => {
@@ -475,6 +486,7 @@ export default function Provider({ children }: {children: any}) {
                         setLanguage,
                         translateLang,
                         setSearch,
+                        setLoading,
                         approveNFT,
                         getCurrency,
                         checkNFTApprove

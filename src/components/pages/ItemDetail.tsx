@@ -12,7 +12,7 @@ import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
 import config from '../../config.json'
 
-const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
+// const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
 
 export default function Colection() {
     const wallet = useWallet();
@@ -51,9 +51,9 @@ export default function Colection() {
     React.useEffect(() => {
         let flag = 0
         // if (order.name === itemData.name) {
-            flag = order.assetOwner===/* state.auth.address */ownerAddress ? 2 : 4
+            flag = order.assetOwner===state.auth.address ? 2 : 4
         // } else {
-            flag = itemData.owner===/* state.auth.address */ownerAddress ? 1 : 3
+            flag = itemData.owner===state.auth.address ? 1 : 3
         // }
         setPageFlag(flag)
     }, [itemData])
@@ -692,65 +692,63 @@ export default function Colection() {
                                             </div>
                                         </div>
                                 </div>
-                                {order.name===itemData.name && (
-                                    <div className="col-lg-5">
-                                        <div className="rt-box-style-3">
-                                            <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
-                                                This domain is in auction
-                                            </div>
-                                            <div className="rt-p-30">
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                
-                                                    <span className="f-size-20 rt-light3">Current price:</span>
-                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> {order.token}</span></span>
-                                                
-                                                </div>
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
-                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} {order.token} ({config.fee}%)</span>
-                                                </div>
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                
-                                                <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
-                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} {order.token}</span>
-                                                
-                                                </div>
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                
-                                                    <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
-                                                    <span className="f-size-20 rt-light3 text-eb7">1 day,10 hours</span>
-                                                
-                                                </div>
-                                                <form className="rt-form ">
-                                                    {/* <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
-                                                    {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button> */}
-                                                    {pageFlag===1 && (
-                                                        <>
-                                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleSell}>Sell Your Domain</button>
-                                                        </>
-                                                    )}
-                                                    {pageFlag===2 && (
-                                                        <>
-                                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
-                                                        </>
-                                                    )}
-                                                    {pageFlag===3 && (
-                                                        <>
-                                                        
-                                                        </>
-                                                    )}
-                                                    {pageFlag===4 && (
-                                                        <>
-                                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
-                                                            {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button> */}
-                                                            {/* <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button> */}
-                                                        </>
-                                                    )}
-                                                </form>
+                                <div className="col-lg-5">
+                                    <div className="rt-box-style-3">
+                                        <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
+                                            {order.name===itemData.name ? 'This domain is in auction' : 'This domain is not listed'}
+                                        </div>
+                                        <div className="rt-p-30">
+                                            {order.name===itemData.name && (
+                                                <>
+                                                    <div className="d-flex justify-content-between rt-mb-20">
+                                                        <span className="f-size-20 rt-light3">Current price:</span>
+                                                        <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> {order.token}</span></span>
+                                                    </div>
+                                                    <div className="d-flex justify-content-between rt-mb-20">
+                                                    <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
+                                                        <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} {order.token} ({config.fee}%)</span>
+                                                    </div>
+                                                    <div className="d-flex justify-content-between rt-mb-20">
+                                                    <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
+                                                        <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} {order.token}</span>
+                                                    </div>
+                                                    <div className="d-flex justify-content-between rt-mb-20">
+                                                        <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
+                                                        <span className="f-size-20 rt-light3 text-eb7">1 day,10 hours</span>
+                                                    </div>
+                                                </>
+                                            )}
+                                            <div className="rt-form ">
+                                                {/* <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
+                                                {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button> */}
+                                                {pageFlag===1 && (
+                                                    <>
+                                                        <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleSell}>Sell Your Domain</button>
+                                                    </>
+                                                )}
+                                                {pageFlag===2 && (
+                                                    <>
+                                                        <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
+                                                    </>
+                                                )}
+                                                {pageFlag===3 && (
+                                                    <>
+                                                        <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
+                                                        <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Place Bid (in auction mode)</button>
+                                                        <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Sell Your Domain</button>
+                                                    </>
+                                                )}
+                                                {pageFlag===4 && (
+                                                    <>
+                                                        <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
+                                                        {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button> */}
+                                                        {/* <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button> */}
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
-                                )}
+                                </div>
                                 </div>
                             </div>
                             <div>

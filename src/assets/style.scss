@@ -874,6 +874,12 @@ p.lead {
     }
 }
 
+.disable-button {
+    &:hover {
+        background-color: transparent !important;
+    }
+}
+
 .rankButton {
     padding: 20px 50px;
 }

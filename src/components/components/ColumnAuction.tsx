@@ -180,7 +180,7 @@ export default function Responsive({name}: Props) {
                             <div className="col-lg-7 offset-lg-1 mb-5" style={{margin: 0}}>
                                 <div id="form-create-item" className="form-border rt-box-style-2">
                                     <div className="field-set">
-                                        <div>
+                                        <div className='rt-form'>
                                             {/* <h5>{translateLang('method')}</h5>
                                             <p
                                                 className="form-control"
@@ -200,6 +200,7 @@ export default function Responsive({name}: Props) {
                                             </p> */}
                                             {/* <div className="spacer-single"></div> */}
                                             <h5>{translateLang('sellprice')}</h5>
+                                            <input type="text" className="form-control rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" />
                                             <div className="price mt">
                                                 <div
                                                     style={{

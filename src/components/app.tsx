@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
-import { UseWalletProvider } from 'use-wallet'
+// import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+// import { setContext } from '@apollo/client/link/context';
+
 
 import ScrollToTopBtn from './menu/ScrollToTop';
 import Header from './menu/header';
@@ -19,7 +19,7 @@ import LazyCreate from './pages/lazycreate';
 import Auction from './pages/Auction';
 import ListedDomains from './pages/ListedDomains';
 import { useBlockchainContext } from '../context';
-import Provider from '../context';
+
 import { ToastContainer, toast } from 'react-toastify';
 import config from '../config.json'
 import Footer from './menu/footer';
@@ -27,27 +27,28 @@ import HowWork from './pages/HowWork';
 import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken';
+import Loading from './components/Loading';
 
-const httpLink = createHttpLink({
-    uri: config.graphql
-});
+// const httpLink = createHttpLink({
+//     uri: config.graphql
+// });
 
-const authLink = setContext((_, { headers }) => {
-    // get the authentication token from local storage if it exists
-    const token = localStorage.getItem('marketplace_session');
-    // return the headers to the context so httpLink can read them
-    return {
-        headers: {
-            ...headers,
-            authorization: token ? token : ''
-        }
-    };
-});
+// const authLink = setContext((_, { headers }) => {
+//     // get the authentication token from local storage if it exists
+//     const token = localStorage.getItem('marketplace_session');
+//     // return the headers to the context so httpLink can read them
+//     return {
+//         headers: {
+//             ...headers,
+//             authorization: token ? token : ''
+//         }
+//     };
+// });
 
-const client = new ApolloClient({
-    link: authLink.concat(httpLink),
-    cache: new InMemoryCache()
-});
+// const client = new ApolloClient({
+//     link: authLink.concat(httpLink),
+//     cache: new InMemoryCache()
+// });
 
 const PrivateRoute = ({ children }: {children: any}) => {
     const location = useLocation();
@@ -63,19 +64,15 @@ const PrivateRoute = ({ children }: {children: any}) => {
     return children;
 };
 
-function App() {
+const App = () => {
+    const [state, {loading}] = useBlockchainContext() as any;
+
+    console.log("loading", loading || '(none)')
     return (
         <div className="wraper">
             <Router>
-                <ApolloProvider client={client}>
-                    <UseWalletProvider
-                        // chainId={config.chainId}
-                        connectors={{
-                            walletconnect: {
-                                rpcUrl: config.rpc[0]
-                            }
-                        }}>
-                        <Provider>
+               
+                        
                             <GlobalStyles />
                             <Header />
                             <Routes>
@@ -133,9 +130,13 @@ function App() {
                             </Routes>
                             <Footer />
                             <ScrollToTopBtn />
-                        </Provider>
-                    </UseWalletProvider>
-                </ApolloProvider>
+                            {(!!loading) && (
+                                <div style={{position: 'fixed', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.25', zIndex: '10000'}}>
+                                    <Loading />
+                                </div>
+                            )}
+                    
+                {/* </ApolloProvider> */}
             </Router>
         </div>
     );
