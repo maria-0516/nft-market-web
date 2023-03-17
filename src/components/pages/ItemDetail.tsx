@@ -12,7 +12,7 @@ import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
 import config from '../../config.json'
 
-// const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
+const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
 
 export default function Colection() {
     const wallet = useWallet();
@@ -29,7 +29,7 @@ export default function Colection() {
     const [order, setOrder] = useState<OrderData>({
         collection: '',
         assetId: '',
-        name: '',
+        name: 'coin777.eth',
         price: '',
         token: '',
         assetOwner: '',
@@ -50,11 +50,11 @@ export default function Colection() {
 
     React.useEffect(() => {
         let flag = 0
-        if (order.name === itemData.name) {
-            flag = order.assetOwner===state.auth.address ? 2 : 4
-        } else {
-            flag = itemData.owner===state.auth.address ? 1 : 3
-        }
+        // if (order.name === itemData.name) {
+            flag = order.assetOwner===/* state.auth.address */ownerAddress ? 2 : 4
+        // } else {
+            flag = itemData.owner===/* state.auth.address */ownerAddress ? 1 : 3
+        // }
         setPageFlag(flag)
     }, [itemData])
 
