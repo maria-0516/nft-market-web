@@ -38,11 +38,11 @@ function reducer(state: any, { type, payload }: {type: any, payload: any}) {
 
 const Currency = [
     {
-        label: 'FTM',
+        label: 'ETH',
         value: addresses.WETH
     },
     {
-        label: 'BUSD',
+        label: 'USDT',
         value: addresses.TestToken
     }
 ];
