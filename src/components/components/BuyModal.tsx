@@ -32,27 +32,27 @@ const BuyModal = ({show, setShow, correctItem}: Props) => {
             return;
         }
         try {
-            if (!moment(date).isValid()) {
-                return;
-            }
-            if (price < Number(correctItem.marketdata?.price)) {
-                // NotificationManager.warning(translateLang('increasebid_warn'));
-                toast(translateLang('increasebid_warn'), {position: "top-right", autoClose: 2000})
-                return;
-            }
+            // if (!moment(date).isValid()) {
+            //     return;
+            // }
+            // if (price < Number(correctItem?.marketdata?.price)) {
+            //     // NotificationManager.warning(translateLang('increasebid_warn'));
+            //     toast(translateLang('increasebid_warn'), {position: "top-right", autoClose: 2000})
+            //     return;
+            // }
 
-            setLoading(true);
-            await bidNFT({
-                nftAddress: correctItem.collection,
-                assetId: correctItem.tokenId,
-                price: price,
-                acceptedToken: correctItem.marketdata?.acceptedToken,
-                expiresAt: moment(date).valueOf()
-            });
-            // NotificationManager.success(translateLang('bid_success'));
-            toast(translateLang('bid_success'), {position: "top-right", autoClose: 2000})
-            setLoading(false);
-            setShow(false);
+            // setLoading(true);
+            // await bidNFT({
+            //     nftAddress: correctItem.collection,
+            //     assetId: correctItem.tokenId,
+            //     price: price,
+            //     acceptedToken: correctItem.marketdata?.acceptedToken,
+            //     expiresAt: moment(date).valueOf()
+            // });
+            // // NotificationManager.success(translateLang('bid_success'));
+            // toast(translateLang('bid_success'), {position: "top-right", autoClose: 2000})
+            // setLoading(false);
+            // setShow(false);
         } catch (err: any) {
             console.log(err.message);
             // NotificationManager.error(translateLang('bid_error'));
