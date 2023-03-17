@@ -6,8 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Action from '../../service';
 import { toBigNum } from '../../utils';
 import { toast } from 'react-toastify';
-import Jazzicon from 'react-jazzicon';
-import { styledAddress } from '../../utils';
+import config from '../../config.json'
 
 const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
 
@@ -250,7 +249,7 @@ export default function Responsive({name}: Props) {
                                         <h5>{translateLang('fees')}</h5>
                                         <div className="fee">
                                             <p>{translateLang('servicefee')}</p>
-                                            <p>0%</p>
+                                            <p>{config.fee}%</p>
                                         </div>
 
                                         <div className="spacer-40"></div>
