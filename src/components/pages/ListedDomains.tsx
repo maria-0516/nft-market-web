@@ -3,13 +3,22 @@ import Footer from '../menu/footer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
 import Action from '../../service';
+import { useWallet } from 'use-wallet';
+import { ethers } from 'ethers';
+import addresses from '../../contracts/contracts/addresses.json'
+import { storefront, tokens } from '../../contracts';
 
 export default function ListedDomains() {
+    const wallet = useWallet();
     const [state, { translateLang }] = useBlockchainContext() as any;
     const navigate = useNavigate();
     const [floorPrice, setFloorPrice] = useState(0);
     const [volumns, setVolumns] = useState([]);
-    const [orders, setOrders] = useState<NFTData[]>([])
+    const [orders, setOrders] = useState<OrderData[]>([])
+    const [status, setStatus] = useState({
+        page:   0,
+        limit:  20
+    })
 
     useEffect(() => {
         if (state.orderList?.length !== 0) {
@@ -31,14 +40,20 @@ export default function ListedDomains() {
     }, [state.orderList]);
 
     const readOrders = async () => {
-        const response = await Action.all_orders({});
-        if (response.success) {
-            if (!!response.data) {
-                setOrders(response.data)
-            }
-        } else {
-            console.log("readOrders")
+        try {
+            const result = await storefront.register(status.page, status.limit);
+
+        } catch (error) {
+            console.log("readOrders", error)
         }
+        // const response = await Action.all_orders({});
+        // if (response.success) {
+        //     if (!!response.data) {
+        //         setOrders(response.data)
+        //     }
+        // } else {
+        //     console.log("readOrders")
+        // }
     }
 
     useEffect(() => {
@@ -164,11 +179,11 @@ export default function ListedDomains() {
                                 <div className="price-body rt-pt-10">
                                     <ul className="rt-list">
                                         {
-                                            orders.map((i: NFTData, k: number) => (
-                                                <li className="clearfix" key={k} onClick={() => handle(i.name)}>
+                                            orders.map((i: OrderData, k: number) => (
+                                                <li className="clearfix" key={k} onClick={() => handle(i.label)}>
                                                     <a style={{cursor: 'pointer'}}>
-                                                        {i.name.length > 25 ? i.name.slice(0,22) + '...eth' : i.name}
-                                                        <span className="float-right">{`${i.marketData?.price} ${i.marketData?.token}`}</span>
+                                                        {i.label.length > 25 ? i.label.slice(0,22) + '...eth' : i.label}
+                                                        <span className="float-right">{i.price} {tokens[i.assetId]}</span>
                                                     </a>
                                                 </li>
                                             ))

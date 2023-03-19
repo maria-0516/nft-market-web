@@ -49,57 +49,57 @@ export default function Createpage() {
 
     const handleSubmit = async () => {
         try {
-            if (!selectedFile) {
-                NotificationManager.error(translateLang('chooseimage_error'));
-                return;
-            }
-            if (selectedFile.size > 1024 * 1024 * 100) {
-                NotificationManager.error(translateLang('bigfileupload_error'));
-                return;
-            }
-            if (name.trim() === '') {
-                NotificationManager.error(translateLang('fillname'));
-                (document.getElementById('item_name') as any).focus();
-                return;
-            }
-            for (let x in attrItem) {
-                if (Object.keys(attrItem).length === 1) {
-                    if (attrItem[x].key === '' && attrItem[x].value === '') {
-                    } else {
-                        if (attrItem[x].key === '' || attrItem[x].value === '') {
-                            NotificationManager.error(translateLang('fillattribute'));
-                            return;
-                        }
-                    }
-                } else {
-                    if (attrItem[x].key === '' || attrItem[x].value === '') {
-                        NotificationManager.error(translateLang('fillattribute'));
-                        return;
-                    }
-                }
-            }
-            setLoading(true);
-            var formData = new FormData();
-            formData.append('image', selectedFile);
-            formData.append('name', name);
-            formData.append('extlink1', extLink1);
-            formData.append('extlink2', extLink2);
-            formData.append('extlink3', extLink3);
-            formData.append('extlink4', extLink4);
-            formData.append('extlink5', extLink5);
-            formData.append('desc', desc);
-            formData.append('attribute', JSON.stringify(attrItem));
+            // if (!selectedFile) {
+            //     NotificationManager.error(translateLang('chooseimage_error'));
+            //     return;
+            // }
+            // if (selectedFile.size > 1024 * 1024 * 100) {
+            //     NotificationManager.error(translateLang('bigfileupload_error'));
+            //     return;
+            // }
+            // if (name.trim() === '') {
+            //     NotificationManager.error(translateLang('fillname'));
+            //     (document.getElementById('item_name') as any).focus();
+            //     return;
+            // }
+            // for (let x in attrItem) {
+            //     if (Object.keys(attrItem).length === 1) {
+            //         if (attrItem[x].key === '' && attrItem[x].value === '') {
+            //         } else {
+            //             if (attrItem[x].key === '' || attrItem[x].value === '') {
+            //                 NotificationManager.error(translateLang('fillattribute'));
+            //                 return;
+            //             }
+            //         }
+            //     } else {
+            //         if (attrItem[x].key === '' || attrItem[x].value === '') {
+            //             NotificationManager.error(translateLang('fillattribute'));
+            //             return;
+            //         }
+            //     }
+            // }
+            // setLoading(true);
+            // var formData = new FormData();
+            // formData.append('image', selectedFile);
+            // formData.append('name', name);
+            // formData.append('extlink1', extLink1);
+            // formData.append('extlink2', extLink2);
+            // formData.append('extlink3', extLink3);
+            // formData.append('extlink4', extLink4);
+            // formData.append('extlink5', extLink5);
+            // formData.append('desc', desc);
+            // formData.append('attribute', JSON.stringify(attrItem));
 
-            const uploadData = await Action.nft_mint(formData);
-            if (uploadData.success) {
-                console.log("mint backend success")
-                await mintNFT(uploadData.url, Addresses.NFT.NFT1);
-                NotificationManager.success(translateLang('imageupload_success'));
-                reset();
-            } else {
-                NotificationManager.error(translateLang('uploadfail'));
-            }
-            setLoading(false);
+            // const uploadData = await Action.nft_mint(formData);
+            // if (uploadData.success) {
+            //     console.log("mint backend success")
+            //     await mintNFT(uploadData.url, Addresses.NFT.NFT1);
+            //     NotificationManager.success(translateLang('imageupload_success'));
+            //     reset();
+            // } else {
+            //     NotificationManager.error(translateLang('uploadfail'));
+            // }
+            // setLoading(false);
         } catch (err: any) {
             console.log(err.code);
             if (err.code === 4001) {

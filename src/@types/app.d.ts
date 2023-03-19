@@ -58,11 +58,37 @@ declare interface NFTData {
 
 declare interface OrderData {
     collection:     string
+    label:          string
     assetId: 		string
     price: 			string
     token: 	        string
-    assetOwner: 	string
-    expiresAt:      number
+    seller: 	    string
+    expires:        number
     bids?:			NftBidData[]
     status: 		'pending'|'cancel'|'success'
 }
+
+declare interface BidData {
+    id:         number
+    orderId:    number
+    collection:     string
+    label:          string
+    assetId: 		string
+    bidder:     string
+    token:      string
+    price:      number
+    expires:    number
+    timestamp:  number
+}
+
+// declare interface OrderData {
+//     id:         number
+//     seller:     string
+//     assetId:    number
+//     collection: string
+//     acceptedToken: string
+//     price:      number
+//     expires:    number
+//     bidCount:   number
+//     timestamp:  number
+// }

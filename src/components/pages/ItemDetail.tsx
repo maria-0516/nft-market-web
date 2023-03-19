@@ -27,29 +27,14 @@ export default function ItemDetail() {
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState<OrderData>({
         collection: '',
+        label: '',
         assetId: '',
         price: '',
         token: '',
-        assetOwner: '',
-        expiresAt: 0,
+        seller: '',
+        expires: 0,
         status: 'pending',
-        bids: [
-            {
-                bidder:			'0x75Afc064B92B90aAa81d5A5315C4367a03Af207C',
-                price:			1,
-                timestamp:		currentTime()
-            },
-            {
-                bidder:			'0x5A5315C4367a03Af290a675Afc0d4B92BAa8107C',
-                price:			1.7,
-                timestamp:		currentTime()
-            },
-            {
-                bidder:			'0xc064B927a03A90aA75AfBd5A5315C436a81f207C',
-                price:			0.8,
-                timestamp:		currentTime()
-            },
-        ]
+        bids: []
     })
     const [itemData, setItemData] = useState<NFTData>({
         collection:	'',
@@ -104,7 +89,7 @@ export default function ItemDetail() {
 
     const getRemainTime = () => {
         if (!!order) {
-            const countDownDate = order.expiresAt * 1000;
+            const countDownDate = order.expires * 1000;
             const now = new Date().getTime();
             const distance = countDownDate - now;
             if (distance < 0) {
@@ -431,7 +416,7 @@ export default function ItemDetail() {
                                         <p style={{ fontSize: '20px' }}>Bid History</p>
                                         <hr />
                                         <div className="spacer-20"></div>
-                                        {!!order?.assetOwner && (order?.bids || []).length > 0 && (
+                                        {!!order?.seller && (order?.bids || []).length > 0 && (
                                             <div className="de_tab_content">
                                                 <div className="tab-1 onStep fadeIn">
                                                     {(order?.bids || []).map(

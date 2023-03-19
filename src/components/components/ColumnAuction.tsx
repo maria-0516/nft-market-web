@@ -34,10 +34,11 @@ export default function ColumnAuction({name}: Props) {
     const [order, setOrder] = useState<OrderData>({
         collection: '',
         assetId: '',
+        label: '',
         price: '',
         token: '',
-        assetOwner: '',
-        expiresAt: 0,
+        seller: '',
+        expires: 0,
         status: 'pending',
     })
 
