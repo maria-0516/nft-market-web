@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Footer from '../menu/footer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
+import Action from '../../service';
 
 export default function ListedDomains() {
     const [state, { translateLang }] = useBlockchainContext() as any;
     const navigate = useNavigate();
     const [floorPrice, setFloorPrice] = useState(0);
     const [volumns, setVolumns] = useState([]);
+    const [orders, setOrders] = useState<NFTData[]>([])
 
     useEffect(() => {
         if (state.orderList?.length !== 0) {
@@ -28,24 +30,39 @@ export default function ListedDomains() {
         }
     }, [state.orderList]);
 
-    useEffect(() => {
-        let bump = [] as any;
-        state.collectionNFT.map((collectionItem: any) => {
-            let floorBump = [] as any;
-            for (let i = 0; i < collectionItem.items.length; i++) {
-                if (collectionItem.items[i].marketdata.price !== '') {
-                    floorBump.push(Number(collectionItem.items[i].marketdata.price));
-                }
+    const readOrders = async () => {
+        const response = await Action.all_orders({});
+        if (response.success) {
+            if (!!response.data) {
+                setOrders(response.data)
             }
-            floorBump.sort();
-            if (floorBump.length === 0) bump.push(0);
-            else bump.push(parseFloat(floorBump[0].toFixed(3)));
-        });
-        setFloorPrice(bump as any);
-    }, [state.collectionNFT]);
+        } else {
+            console.log("readOrders")
+        }
+    }
 
-    const handle = (address: any) => {
-        navigate(`/collection/${address}`);
+    useEffect(() => {
+        readOrders()
+    }, [])
+
+    // useEffect(() => {
+    //     let bump = [] as any;
+    //     state.collectionNFT.map((collectionItem: any) => {
+    //         let floorBump = [] as any;
+    //         for (let i = 0; i < collectionItem.items.length; i++) {
+    //             if (collectionItem.items[i].marketdata.price !== '') {
+    //                 floorBump.push(Number(collectionItem.items[i].marketdata.price));
+    //             }
+    //         }
+    //         floorBump.sort();
+    //         if (floorBump.length === 0) bump.push(0);
+    //         else bump.push(parseFloat(floorBump[0].toFixed(3)));
+    //     });
+    //     setFloorPrice(bump as any);
+    // }, [state.collectionNFT]);
+
+    const handle = (name: string) => {
+        navigate(`/domain/${name}`);
     };
 
     return (
@@ -147,18 +164,18 @@ export default function ListedDomains() {
                                 <div className="price-body rt-pt-10">
                                     <ul className="rt-list">
                                         {
-                                            state.collectionNFT.map((item: any, index: number) => (
-                                                <li className="clearfix" key={index} onClick={() => handle(item.address)}>
+                                            orders.map((i: NFTData, k: number) => (
+                                                <li className="clearfix" key={k} onClick={() => handle(i.name)}>
                                                     <a style={{cursor: 'pointer'}}>
-                                                        {item.metadata.name}
-                                                        <span className="float-right">{(floorPrice as any)[index]} FTM</span>
+                                                        {i.name.length > 25 ? i.name.slice(0,22) + '...eth' : i.name}
+                                                        <span className="float-right">{`${i.marketData?.price} ${i.marketData?.token}`}</span>
                                                     </a>
                                                 </li>
                                             ))
                                         }
-                                        <li className="clearfix">
+                                        {/* <li className="clearfix">
                                             <a style={{cursor: 'pointer'}}>
-                                                billgates.eth
+                                                {"ddddddddddddddddddddddddddddddd.eth".length > 25 ? "ddddddddddddddddddddddddddddddd.eth".slice(0,23) + '...eth' : "ddddddddddddddddddddddddddddddd.eth"}
                                                 <span className="float-right">5 ETH</span>
                                             </a>
                                         </li>
@@ -197,7 +214,7 @@ export default function ListedDomains() {
                                                 maria.eth
                                                 <span className="float-right">2 ETH</span>
                                             </a>
-                                        </li>
+                                        </li> */}
                                     </ul>
                                 </div>
                                 <div className="price-footer rt-mt-30 text-center">

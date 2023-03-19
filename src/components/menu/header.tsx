@@ -3,10 +3,10 @@ import { Breakpoint, BreakpointProvider, setDefaultBreakpoints } from 'react-soc
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useOnclickOutside from 'react-cool-onclickoutside';
 import { useBlockchainContext } from '../../context';
-import { useWallet } from 'use-wallet';
 import SearchModal from '../components/searchModal';
 import { changeNetwork } from '../../utils';
 import config from '../../config.json'
+import { useWallet } from 'use-wallet';
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 
@@ -27,6 +27,7 @@ const NavLink = (props: any) => (
 
 const Header = () => {
     const navigate = useNavigate();
+    const wallet = useWallet();
 
     const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
@@ -42,8 +43,8 @@ const Header = () => {
 		sub1: false,
 		sub2: false
 	});
+    const [menu, setMenu] = useState('')
 	const [langMenu, setLangMenu] = useState(false)
-    const wallet = useWallet();
 	const location = useLocation()
     const [status, setStatus] = useState({
         search: ''
@@ -116,6 +117,7 @@ const Header = () => {
         }
     }, [state.allNFT, nftFilter]);
     const checkNetwork = async () => {
+        console.log("checkNetwork")
         try {
             const {ethereum} = wallet
             //if metamask is connected and wallet is not connected ( chain error))
@@ -150,82 +152,78 @@ const Header = () => {
             });
             localStorage.setItem('isConnected', "0");
         } else {
-            // wallet.connect()
-
             wallet.connect()
-            // .then((res) => {
-            //     (async () => {
-            //         try {
-            //             //if metamask is connected and wallet is not connected ( chain error))
-            //             if (wallet.status === 'error') {
-            //                 var accounts = await window.ethereum.request({
-            //                     method: 'eth_accounts'
-            //                 });
-            //                 if (accounts.length > 0) {
-            //                     await changeNetwork(wallet.ethereum, 'ethereum');
-            //                     wallet.connect();
-            //                 }
-            //             }
-            //             localStorage.setItem('isConnected', "1");
-            //         } catch (err) {
-            //             console.log((err as any).message);
-            //         }
-            //     })();
-            // });
         }
     };
 
-    // const handleBtnClick1 = () => {
-    //     setOpenMenu1(!openMenu1);
-    // };
-    // const handleBtnClick2 = () => {
-    //     setOpenMenu2(!openMenu2);
-    // };
-    // const handleBtnClick3 = () => {
-    //     setOpenMenu3(!openMenu3);
-    // };
     const closeMenu1 = () => {
         setOpenMenu1(false);
     };
-    // const closeMenu2 = () => {
-    //     setOpenMenu2(false);
-    // };
-    // const closeMenu3 = () => {
-    //     setOpenMenu3(false);
-    // };
-    // const ref1 = useOnclickOutside(() => {
-    //     closeMenu1();
-    // });
-    // const ref2 = useOnclickOutside(() => {
-    //     closeMenu2();
-    // });
-    // const ref3 = useOnclickOutside(() => {
-    //     closeMenu3();
-    // });
-
-    useEffect(() => {
-
+    const onConnectWallet = async () => {
         console.log("wallet-status", wallet.status)
-        if (wallet.status==='disconnected' && localStorage.getItem('isConnected')==="1") {
-            localStorage.setItem('isConnected', "0")
-            if (!walletInited) {
-                setWalletInited(true)
-                wallet.connect()
+        try {
+            if (wallet.ethereum) {
+                const chainId = await wallet.ethereum.request({
+                    method: 'eth_chainId'
+                });
+                if (Number(chainId)!==config.chainId) {
+                    console.log('NowchainId', chainId)
+                    await changeNetwork(wallet.ethereum, config.chainId);
+                    return
+                } else if (wallet.status==='disconnected' && localStorage.getItem('isConnected')==="1") {
+                    // localStorage.setItem('isConnected', "0")
+                    if (!walletInited) {
+                        setWalletInited(true)
+                        wallet.connect()
+                    }
+                    // wallet.connect();
+                } else if ((wallet.status==='connected' || wallet.status==='error'/*  || wallet.status==='connecting' */) && localStorage.getItem('isConnected')==="0") {
+                    localStorage.setItem('isConnected', "1")
+                    checkNetwork()
+                }
             }
-            // wallet.connect();
-        } else if (wallet.status==='connected' && localStorage.getItem('isConnected')==="0") {
-            localStorage.setItem('isConnected', "1")
-            checkNetwork()
+        } catch (error) {
+            console.log("connect-wallet", error)
         }
-    }, [wallet.status]);
+    }
+
+	React.useEffect(()=>{
+		if (wallet.error) console.log('wallet error', wallet.error)
+	}, [wallet.error])
+
 
     useEffect(() => {
-        
+        onConnectWallet()
+    }, [wallet.status, wallet.account]);
+
+    useEffect(() => {
         window.addEventListener('scroll', onScroll);
         return () => {
             window.removeEventListener('scroll', onScroll);
         };
     }, []);
+
+    useEffect(() => {
+        if (location.pathname==='/') {
+            setMenu('Buy Crypto Domains')
+        } else if (location.pathname.indexOf('listed-domains')===1) {
+            setMenu('Listed Crypto Domains')
+        } else if (location.pathname.indexOf('how-work')===1) {
+            setMenu('How it works')
+        } else if (location.pathname.indexOf('partnership')===1) {
+            setMenu('Partnership')
+        } else if (location.pathname.indexOf('faq')===1) {
+            setMenu('Faq')
+        } else if (location.pathname.indexOf('cns-token')===1) {
+            setMenu('CNS Token')
+        } else if (location.pathname.indexOf('auction')===1) {
+            setMenu('List Domain For Sale')
+        } else if (/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1))) {
+            setMenu('My Domains')
+        } else if (location.pathname.indexOf('domain')===1) {
+            setMenu(location.pathname.slice(location.pathname.lastIndexOf('/')+1))
+        }
+    }, [location.pathname])
 
     const onScroll = () => {
         const sticky = 170
@@ -240,8 +238,6 @@ const Header = () => {
     }
 
     const onSearch = () => {
-        /* setSearch({search: status.search}) */
-        
         if (status.search.length < 3) return;
         let search = status.search.slice(-4)==='.eth' ? status.search : `${status.search}.eth`
         navigate(`/domain/${search}`);
@@ -249,250 +245,6 @@ const Header = () => {
 
     return (
         <>
-            {/* <header id="myHeader" className="navbar white">
-                <div className="container">
-                    <div className="row w-100-nav">
-                        <div className="logo px-0">
-                            <div className="navbar-title navbar-item">
-                                <NavLink to="/">
-                                    <img src="/img/logo.png" className="d-block" alt="#" />
-                                    <img src="/img/logo.png" className="d-3" alt="#" />
-                                    <img src="/img/logo.png" className="d-none" alt="#" />
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div className="search">
-                            <input
-                                type="text"
-                                id="quick_search"
-                                className="xs-hide"
-                                placeholder={translateLang('seachtext')}
-                                value={searchKey}
-                                onChange={(e) => setSearchKey(e.target.value.trim())}
-                                onFocus={() => setFocused(true)}
-                                onBlur={() => setFocused(false)}
-                            />
-
-                            {searchModal && (
-                                <SearchModal
-                                    className="xs-hide"
-                                    collectionDatas={collectionDatas}
-                                    nftDatas={nftDatas}
-                                />
-                            )}
-                        </div>
-
-                        <BreakpointProvider>
-                            <Breakpoint l down>
-                                {showmenu && (
-                                    <div className="menu">
-                                        <button
-                                            className="btn-main sm-style"
-                                            onClick={handleConnect}>
-                                            {wallet.status == 'connected'
-                                                ? wallet.account?.slice(0, 4) +
-                                                  '...' +
-                                                  wallet.account?.slice(-4)
-                                                : 'Connect'}
-                                        </button>
-
-                                        <div className="navbar-item">
-                                            <div ref={ref1}>
-                                                <div
-                                                    className="dropdown-custom dropdown-toggle btn"
-                                                    onClick={handleBtnClick1}>
-                                                    {translateLang('explore')}
-                                                    <span className="lines"></span>
-                                                </div>
-                                                {openMenu1 && (
-                                                    <div className="item-dropdown">
-                                                        <div
-                                                            className="dropdown"
-                                                            onClick={closeMenu1}>
-                                                            <NavLink
-                                                                to="/explore"
-                                                                onClick={() => btn_icon(!showmenu)}>
-                                                                {translateLang('allnfts')}
-                                                            </NavLink>
-                                                            <NavLink
-                                                                to="/Collections"
-                                                                onClick={() => btn_icon(!showmenu)}>
-                                                                {translateLang('collection')}
-                                                            </NavLink>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="navbar-item">
-                                            <NavLink
-                                                to={`/${state.auth.address}`}
-                                                onClick={() => btn_icon(!showmenu)}>
-                                                {translateLang('profile')}
-                                                <span className="lines"></span>
-                                            </NavLink>
-                                        </div>
-                                        <div className="navbar-item">
-                                            <div ref={ref2}>
-                                                <div
-                                                    className="dropdown-custom dropdown-toggle btn"
-                                                    onClick={handleBtnClick2}>
-                                                    {translateLang('create')}
-                                                    <span className="lines"></span>
-                                                </div>
-                                                {openMenu2 && (
-                                                    <div className="item-dropdown">
-                                                        <div
-                                                            className="dropdown"
-                                                            onClick={closeMenu2}>
-                                                            <NavLink
-                                                                to="/create/nft"
-                                                                onClick={() => btn_icon(!showmenu)}>
-                                                                {translateLang('createnft')}
-                                                            </NavLink>
-                                                            <NavLink
-                                                                to="/create/collection"
-                                                                onClick={() => btn_icon(!showmenu)}>
-                                                                {translateLang('createcollection')}
-                                                            </NavLink>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                        {/* <div className="navbar-item">
-                                        <NavLink
-                                            to="/lazy-mint"
-                                            onClick={() => btn_icon(!showmenu)}
-                                        >
-                                            {translateLang('lazymint')}
-                                            <span className="lines"></span>
-                                        </NavLink>
-                                    </div> */}
-                                    {/*  <div className="spacer-single"></div>
-                                        <div className="search">
-                                            <input
-                                                type="text"
-                                                id="quick_search"
-                                                className="lg-hide"
-                                                placeholder={translateLang('seachtext')}
-                                                value={searchKey}
-                                                onChange={(e) =>
-                                                    setSearchKey(e.target.value.trim())
-                                                }
-                                                onFocus={() => setFocused(true)}
-                                                onBlur={() => setFocused(false)}
-                                            />
-                                            {searchModal && (
-                                                <SearchModal
-                                                    collectionDatas={collectionDatas}
-                                                    nftDatas={nftDatas}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="spacer-single"></div>
-                                    </div>
-                                )}
-                            </Breakpoint>
-
-                            <Breakpoint xl>
-                                <div className="menu">
-                                    <div className="navbar-item">
-                                        <div ref={ref1}>
-                                            <div
-                                                className="dropdown-custom dropdown-toggle btn"
-                                                onMouseEnter={handleBtnClick1}
-                                                onMouseLeave={closeMenu1}>
-                                                {translateLang('explore')}
-                                                <span className="lines"></span>
-                                                {openMenu1 && (
-                                                    <div className="item-dropdown">
-                                                        <div
-                                                            className="dropdown"
-                                                            onClick={closeMenu1}>
-                                                            <NavLink to="/explore">
-                                                                {translateLang('allnfts')}
-                                                            </NavLink>
-                                                            <NavLink to="/Collections">
-                                                                {translateLang('collection')}
-                                                            </NavLink>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="navbar-item">
-                                        <NavLink to={`/${state.auth.address}`}>
-                                            {translateLang('profile')}
-                                            <span className="lines"></span>
-                                        </NavLink>
-                                    </div>
-                                    <div className="navbar-item">
-                                        <div ref={ref2}>
-                                            <div
-                                                className="dropdown-custom dropdown-toggle btn"
-                                                onMouseEnter={handleBtnClick2}
-                                                onMouseLeave={closeMenu2}>
-                                                {translateLang('create')}
-                                                <span className="lines"></span>
-                                                {openMenu2 && (
-                                                    <div className="item-dropdown">
-                                                        <div
-                                                            className="dropdown"
-                                                            onClick={closeMenu2}>
-                                                            <NavLink to="/create/nft">
-                                                                {translateLang('createnft')}
-                                                            </NavLink>
-                                                            <NavLink to="/create/collection">
-                                                                {translateLang('createcollection')}
-                                                            </NavLink>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="mainside lg-style">
-                                    {wallet.status == 'connected' && (
-                                        <div
-                                            className="switch_network"
-                                            onBlur={() =>
-                                                setTimeout(() => setSwitchFocus(false), 100)
-                                            }>
-                                            <button
-                                                className="btn-main"
-                                                onClick={() => setSwitchFocus(!switchFocus)}>
-                                                Switch Network
-                                            </button>
-                                            {switchFocus && (
-                                                <div>
-                                                    <span>Bitcoin evm</span>
-                                                    <span>Spagetti testnet</span>
-                                                    <span>Fantom</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                    <button className="btn-main" onClick={handleConnect}>
-                                        {wallet.status==='connecting' ? 'Connecting...' : (
-                                            (wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect'
-                                        )}
-                                    </button>
-                                </div>
-                            </Breakpoint>
-                        </BreakpointProvider>
-                    </div>
-
-                    <button className="nav-icon" onClick={() => btn_icon(!showmenu)}>
-                        <div className="menu-line white"></div>
-                        <div className="menu-line1 white"></div>
-                        <div className="menu-line2 white"></div>
-                    </button>
-                </div>
-            </header> */}
             <header className='rt-site-header rt-fixed-top white-menu'>
 				<div className="top-header">
 				<div className="container">
@@ -520,8 +272,8 @@ const Header = () => {
 										<li>EN</li>
 									</ul>
 								</li>
-								<li><a href="#"><i className="icofont-telegram"></i></a></li>
-								<li><a href="#"><i className="icofont-twitter"></i></a></li>
+								<li><a href=""><i className="icofont-telegram"></i></a></li>
+								<li><a href=""><i className="icofont-twitter"></i></a></li>
 			
 							</ul>
 						</div>
@@ -566,8 +318,8 @@ const Header = () => {
 							<div className="ml-auto d-flex align-items-center">
 									<div className="main-menu">
 									<ul className={mobileMenu.main ? 'show' : ''}>
-										<li><Link to="/">Home</Link></li>
-										<li><Link to="/listed-domains">Buy Domain</Link></li>
+										<li className={menu==='Buy Crypto Domains' ? 'current-menu-item' : ''}><Link to="/">Home</Link></li>
+										<li className={menu==='Listed Crypto Domains' ? 'current-menu-item' : ''}><Link to="/listed-domains">Buy Domain</Link></li>
 									
 										{/* <li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub1 ? 'block' : ''}`}}>
@@ -576,17 +328,15 @@ const Header = () => {
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li> */}
-                                        {state.auth.isAuth && <li ><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link></li>}
-										<li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
+                                        {state.auth.isAuth && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link></li>}
+										<li className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`} onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
 												<li><Link to="/how-work">How It Works</Link></li>
 												<li><Link to="/faq">FAQ</Link></li>
 												<li><Link to="/partnership">Partnership</Link></li>
 											</ul>
 										</li>
-										<li><Link to="/cns-token">CNS Token</Link>
-										
-										</li>
+										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="/cns-token">CNS Token</Link></li>
 									</ul>
 								</div>
 							<div className="rt-nav-tolls d-flex align-items-center">
@@ -611,27 +361,16 @@ const Header = () => {
 
 					<div className="row rt-breadcump-height align-items-center">
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
-							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong">
-								{location.pathname==='/' ? 'Buy Crypto Domains' : ''}
-								{location.pathname.indexOf('listed-domains')===1 ? 'Listed Crypto Domains' : ''}
-								{location.pathname.indexOf('how-work')===1 ? 'How it works' : ''}
-								{location.pathname.indexOf('faq')===1 ? 'Faq' : ''}
-								{location.pathname.indexOf('partnership')===1 ? 'Partnership' : ''}
-								{location.pathname.indexOf('cns-token')===1 ? 'CNS Token' : ''}
-								{location.pathname.indexOf('auction')===1 ? 'List Domain For Sale' : ''}
-								{/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) ? 'My Domains' : ''}
-								{location.pathname.indexOf('domain')===1 ? `${location.pathname.slice(location.pathname.lastIndexOf('/')+1)}` : ''}
-							</h4>
+							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong" style={{lineBreak: `${location.pathname.indexOf('domain')===1 ? 'anywhere' : 'auto'}`}}>{menu}</h4>
                             {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>}
-                            {/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1)) && <p style={{marginTop: '4rem'}}>{state.auth.address}</p>}
+                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{state.auth.address?.slice(0, 8) + '...' + state.auth.address?.slice(-8)}</p>}
 							{
-								(location.pathname==='/' || location.pathname.indexOf('listed-domains')===1) && (
+								(menu === 'Listed Crypto Domains' || menu === 'Buy Crypto Domains') && (
 									<div className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
 										data-animation="wow fadeInUp">
 										<input type="text" placeholder="enter a new search" value={status.search} onChange={e=>setStatus({...status, search: e.target.value})} onKeyDown={e=>e.key==='Enter' && onSearch()} />
 								
-										<button className="rt-btn rt-gradient pill rt-Bshadow-1" onClick={onSearch}>
-											Search <span><i className="icofont-simple-right"></i></span>
+										<button className="rt-btn rt-gradient pill rt-Bshadow-1" onClick={onSearch}>Search <span><i className="icofont-simple-right"></i></span>
 										</button>
 									</div>
 								)

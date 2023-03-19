@@ -10,32 +10,36 @@ const supportChainId = config.chainId;
 // setMulticallAddress(supportChainId, multicallAddress);
 
 const RPCS = {
-    // 1: "http://13.59.118.124/eth",
-    [config.chainId]: 'https://rpc.ftm.tools/'
+    1: config.rpc[0],
+    5: "https://rpc.ankr.com/eth_goerli",
+    // [config.chainId]: 'https://rpc.ftm.tools/'
     // 4002: 'https://ftm-test.babylonswap.finance'
     // 4: 'http://85.206.160.196'
     // 1337: "http://localhost:7545",
     // 31337: "http://localhost:8545/",
 };
 const providers = {
-    // 1: new ethers.providers.JsonRpcProvider(RPCS[1]),
+    1: new ethers.providers.JsonRpcProvider(RPCS[1]),
+    5: new ethers.providers.JsonRpcProvider(RPCS[5]),
     // 4002: new ethers.providers.JsonRpcProvider(RPCS[4002])
     // 4: new ethers.providers.JsonRpcBatchProvider(RPCS[4])
-    [config.chainId]: new ethers.providers.JsonRpcBatchProvider(RPCS[config.chainId])
+    // [config.chainId]: new ethers.providers.JsonRpcBatchProvider(RPCS[config.chainId])
     // 1337: new ethers.providers.JsonRpcProvider(RPCS[1337]),
     // 31337: new ethers.providers.JsonRpcProvider(RPCS[31337]),
-};
+} as any;
 
-const provider = providers[supportChainId];
+// const provider = providers[supportChainId];
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+const signer = provider.getSigner();
 
 const testToken = new ethers.Contract(Addresses.TestToken, Abis.ERC20, provider);
 
-const marketplaceContract = new ethers.Contract(Addresses.Marketplace, Abis.Marketplace, provider);
+const marketplaceContract = new ethers.Contract(Addresses.Marketplace, Abis.Marketplace, signer);
 
 const storeFontContract = new ethers.Contract(Addresses.StoreFront, Abis.StoreFront, provider);
 
 const getNFTContract = (address: any) => {
-    return new ethers.Contract(address, Abis.NFT, provider);
+    return new ethers.Contract(address, Abis.NFT, signer);
 };
 const getTokenContract = (address: any) => {
     return new ethers.Contract(address, Abis.ERC20, provider);

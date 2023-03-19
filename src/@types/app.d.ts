@@ -17,7 +17,6 @@ declare interface Window {
 declare interface NftBidData {
 	bidder:			string
     price:			number
-    token:			string
     timestamp:		number
 }
 
@@ -49,13 +48,17 @@ declare interface NFTData {
     likes?: 		string[]
     isOffchain?: 	boolean
     metadata?: 		NftMetaData
-    listed:         boolean
+    marketData: {
+        seller?:     string
+        price?:      string
+        token?:      string
+        created?:    number
+    }
 }
 
 declare interface OrderData {
     collection:     string
     assetId: 		string
-    name:           string
     price: 			string
     token: 	        string
     assetOwner: 	string

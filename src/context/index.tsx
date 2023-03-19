@@ -300,11 +300,19 @@ export default function Provider({ children }: {children: any}) {
 
     /* ------------ NFT Section ------------- */
     const mintNFT = async (url: any, collection: any) => {
-        const NFTContract1 = getNFTContract(collection);
-
-        const signedNFTContract1 = NFTContract1.connect(state.signer);
-        const tx = await signedNFTContract1.mint(url);
-        await tx.wait();
+       try {
+            const NFTContract1 = getNFTContract(collection);
+            // const provider = new ethers.providers.Web3Provider(window.ethereum)
+            // const signer = provider.getSigner();
+            const signedNFTContract1 = NFTContract1.connect(state.signer);
+            const tx = await signedNFTContract1.mint(url);
+            await tx.wait();
+            const _tx = await signedNFTContract1.getMetadatas()
+            await _tx.wait()
+            console.log("tokenuri tx", _tx)
+       } catch (err) {
+            console.log("mintNFT", err)
+       }
     };
 
     // NFT on sale
@@ -312,12 +320,13 @@ export default function Provider({ children }: {children: any}) {
         try {
             const { nftAddress, assetId, name, currency, price, expiresAt } = props;
 
-            const signedMarketplaceContract = marketplaceContract.connect(state.signer);
-            const tx = await signedMarketplaceContract.createOrder(
+            // const signedMarketplaceContract = marketplaceContract.connect(state.signer);
+            // const provider = new ethers.providers.Web3Provider(window.ethereum)
+            // const signer = provider.getSigner();
+            const tx = await marketplaceContract.createOrder(
                 nftAddress,
                 state.auth.address,
                 assetId,
-                name,
                 currency,
                 toBigNum(price, 18),
                 expiresAt
@@ -335,10 +344,13 @@ export default function Provider({ children }: {children: any}) {
         try {
             const { assetId, nftAddress } = props;
 
-            const NFTContract = getNFTContract(nftAddress);
-            const signedNFTContract1 = NFTContract.connect(state.signer);
 
-            const tx = await signedNFTContract1.approve(addresses.Marketplace, assetId);
+            const NFTContract = getNFTContract(nftAddress);
+            // const signedNFTContract1 = NFTContract.connect(wallet.account || '');
+            // console.log("approve", wallet.account)
+            // const args = [addresses.Marketplace, assetId]
+            // const estimatedGas = await signedNFTContract1.estimateGas.method(args)
+            const tx = await NFTContract.approve(addresses.Marketplace, assetId/* , { gasLimit: Number(estimatedGas) * 1.5 } */)
             await tx.wait();
 
             return true;
