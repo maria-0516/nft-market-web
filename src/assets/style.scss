@@ -3809,7 +3809,7 @@ i.font60 {
     flex-direction: column;
 }
 
-.nft__item {
+.nft_item {
     display: flex;
     flex-direction: column;
     position: relative;
@@ -3820,24 +3820,26 @@ i.font60 {
     -webkit-border-radius: 15px;
     margin: 10px 10px 25px;
     background: #fff;
-    transition: 0.7s;
     box-shadow: 0 0 8px 0 #fff;
+    color: #000;
 
     h4 {
         font-weight: 800;
         font-size: 15px;
-        margin-bottom: 5px;
+    }
+    p {
+        margin: 0;
     }
 
-    &:hover {
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    // &:hover {
+    //     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 
-        .nft__item_wrap {
-            .item__user__info {
-                opacity: 1;
-            }
-        }
-    }
+    //     .nft__item_wrap {
+    //         .item__user__info {
+    //             opacity: 1;
+    //         }
+    //     }
+    // }
 
     .nft__item_wrap {
         text-align: center;
@@ -3920,7 +3922,7 @@ i.font60 {
 
     .nft__item_info {
         line-height: 28px;
-        margin-bottom: -22px;
+        // margin-bottom: -22px;
         padding-left: 7px;
 
         > span {
@@ -6044,8 +6046,8 @@ img.img-rounded {
     }
 
     .container {
-        padding-left: 30px;
-        padding-right: 30px;
+        padding-left: 5px;
+        padding-right: 5px;
     }
 
     .author_list {
@@ -6165,3 +6167,69 @@ header {
 
 .mt {margin-top: 0.5em;}
 .mt-1 {margin-top: 1em;}
+
+
+.modal{
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	
+	.modal-overlay{
+		z-index: 10;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		position: fixed;
+		background: rgba(0,0,0,0.3);
+	}
+	.modal-container{
+		z-index: 11;
+		padding: 0 2em 2em 2em;
+		width: 550px;
+		height: auto;
+		border-radius: 10px;
+		background-color: white;
+		.modal-close{
+			font-size: 2em;
+			cursor: pointer;
+			// color:white;
+		}
+		@media (max-width: 576px) {
+			width: 100%;
+			margin-left: 10px;
+			margin-right: 10px;
+			transform: none
+		}
+	}
+}
+
+.d {
+    display: flex;
+    &.column {
+        flex-direction: column;
+    }
+    &.center {
+        justify-content: center;
+    }
+    &.middle {
+        align-items: center;
+    }
+    &.between {
+        justify-content: space-between;
+    }
+    &.end {
+        justify-content: flex-end;
+    }
+    &.start {
+        justify-content: flex-start;
+    }
+    &.gap {
+        gap: 1em;
+    }
+}

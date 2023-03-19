@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useLayoutEffect } from 'react';
+import React, { useState, useMemo, useLayoutEffect, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Tab, Tabs } from 'react-bootstrap';
 import { FaCog, FaShareAlt, FaTwitter, FaFacebook, FaCopy } from 'react-icons/fa';
@@ -24,7 +24,7 @@ export default function Author() {
     const { address } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const [state] = useBlockchainContext() as any;
+    const [state, {setLoading}] = useBlockchainContext() as any;
     const [openMenu, setOpenMenu] = useState('forsale');
     const [openShare, setOpenShare] = useState(false);
     const [copyStatus, setCopyStatus] = useState('Copy');
@@ -41,23 +41,28 @@ export default function Author() {
 	}
 
     const readNfts = async () => {
-        const formData = new FormData();
-        formData.append('p', String(status.page + 1));
-        formData.append('address', state.auth.address);
-        // formData.append('query', );
-
-        const response = await Action.user_nfts(formData);
-        if (response.success) {
-            let _data = [] as Array<NFTData>
-            if (response.data?.length > 0) {
-                response.data.map((i: any ,k: any) => _data.push(i))
+        setLoading("loading")
+        try {
+            const formData = new FormData();
+            formData.append('p', String(status.page + 1));
+            formData.append('address', state.auth.address);
+            // formData.append('query', );
+    
+            const response = await Action.user_nfts(formData);
+            if (response.success) {
+                let _data = [] as Array<NFTData>
+                if (response.data?.length > 0) {
+                    response.data.map((i: any ,k: any) => _data.push(i))
+                }
+                setNfts([..._data])
+                setStatus({...status, total: response.meta.total})
+            } else {
+                console.log("readNftsError")
             }
-            setNfts([..._data])
-            setStatus({...status, total: response.meta.total})
-        } else {
-            console.log("readNftsError")
+        } catch (error) {
+            console.log("readNfts", error)
         }
-        return
+        setLoading("")
     }
 
     React.useEffect(() => {
@@ -100,6 +105,13 @@ export default function Author() {
                 console.log(err);
             });
     };
+
+    // useEffect(() => {
+    //     console.log("dddddddddd")
+    //     if (!state.auth.isAuth) {
+    //         navigate('/')
+    //     }
+    // }, [wallet.status])
 
     return (
         <div>
@@ -255,49 +267,43 @@ export default function Author() {
                                 <div className="tab-pane fade-in-bottom show active" id="rt-tab-1" role="tabpanel"
                                     aria-labelledby="rt-tab-1-tab">
                                     <div className="table-responsive">
-                                        {
-                                            nfts.length!==0? (
-                                                <table className="table domain-table">
-                                                    <thead>
-                                                        <tr className="rt-light-gray">
-                                                            <th className="text-323639 rt-strong f-size-18">Domain</th>
-                                                            <th className="text-323639 rt-strong f-size-18">Price</th>
-                                                            <th className="text-323639 rt-strong f-size-18">Expire Date</th>
-                                                            <th className="text-323639 rt-strong f-size-18 text-right"></th>
+                                        {nfts.length!==0? (
+                                            <table className="table domain-table">
+                                                <thead>
+                                                    <tr className="rt-light-gray">
+                                                        <th className="text-323639 rt-strong f-size-18">Domain</th>
+                                                        <th className="text-323639 rt-strong f-size-18">Price</th>
+                                                        <th className="text-323639 rt-strong f-size-18">Expire Date</th>
+                                                        <th className="text-323639 rt-strong f-size-18 text-right"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {nfts.map((i: NFTData, k) => (
+                                                        <tr onClick={()=>navigate(`/domain/${i.name}`)}>
+                                                            <th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
+                                                            <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{!!i.marketData?.created ? `${i.marketData?.price} ${state.currencies[0].value===i.marketData?.token ? state.currencies[0].label : state.currencies[1].label}` : i.attributes?.cost}</td>
+                                                            <td className="f-size-18 f-size-md-18 rt-semiblod text-338">{new Date((i.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</td>
+                                                            <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm4 pill">{!!i.marketData?.created ? 'Listed' : 'List it now!'}</a></td>
                                                         </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {
-                                                            nfts.map((i: NFTData, k) => (
-                                                                <tr onClick={()=>navigate(`/domain/${i.name}`)}>
-                                                                    <th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
-                                                                    <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.attributes?.cost}</td>
-                                                                    <td className="f-size-18 f-size-md-18 rt-semiblod text-338">{new Date((i.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</td>
-                                                                    <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm4 pill">List it now!</a></td>
-                                                                </tr>
-                                                            ))
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            ) : (
-                                                <div style={{display: 'flex', justifyContent: 'center'}}>
-                                                    <div className='text-323639 rt-strong f-size-30'>No domains</div>
-                                                </div>
-                                            )
-                                        }
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        ) : (
+                                            <div style={{display: 'flex', justifyContent: 'center'}}>
+                                                <div className='text-323639 rt-strong f-size-30'>No domains</div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {
-                    status.total > 1 && (
-                        <div style={{display: 'flex', justifyContent: 'center', marginTop: '2em'}}>
-                            <Pager page={status.page} total={status.total} onChange={page=>onPage(page)} />
-                        </div>
-                    )
-                }
+                {status.total > 1 && (
+                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '2em'}}>
+                        <Pager page={status.page} total={status.total} onChange={page=>onPage(page)} />
+                    </div>
+                )}
             </section>
         </div>
     );

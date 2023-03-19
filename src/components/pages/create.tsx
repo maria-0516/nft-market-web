@@ -25,27 +25,27 @@ export default function Createpage() {
     const [loading, setLoading] = useState(false);
     const [currentCollection, setCurrentCollection] = useState('');
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        // setCollections([
-        //     {
-        //         name: state.collectionNFT[0]?.metadata?.name || '',
-        //         owner: state.collectionNFT[0]?.address || ''
-        //     }
-        // ]);
-        const data = [] as Array<{name: string, owner: string}>
-        for (let i = 0; i < state.collectionNFT.length; i++) {
-            if (state.collectionNFT[i].metadata.fee_recipent === state.auth.address) {
-                data.push({
-                    name: state.collectionNFT[i].metadata.name,
-                    owner: state.collectionNFT[i].address
-                });
+    //     // setCollections([
+    //     //     {
+    //     //         name: state.collectionNFT[0]?.metadata?.name || '',
+    //     //         owner: state.collectionNFT[0]?.address || ''
+    //     //     }
+    //     // ]);
+    //     const data = [] as Array<{name: string, owner: string}>
+    //     for (let i = 0; i < state.collectionNFT.length; i++) {
+    //         if (state.collectionNFT[i].metadata.fee_recipent === state.auth.address) {
+    //             data.push({
+    //                 name: state.collectionNFT[i].metadata.name,
+    //                 owner: state.collectionNFT[i].address
+    //             });
                 
-            }
-        }
-        setCollections((state: any) => [...data]);
-        setCurrentCollection(data[0]?.owner || '')
-    }, [state]);
+    //         }
+    //     }
+    //     setCollections((state: any) => [...data]);
+    //     setCurrentCollection(data[0]?.owner || '')
+    // }, [state]);
 
     const handleSubmit = async () => {
         try {
@@ -92,7 +92,8 @@ export default function Createpage() {
 
             const uploadData = await Action.nft_mint(formData);
             if (uploadData.success) {
-                await mintNFT(uploadData.url, currentCollection);
+                console.log("mint backend success")
+                await mintNFT(uploadData.url, Addresses.NFT.NFT1);
                 NotificationManager.success(translateLang('imageupload_success'));
                 reset();
             } else {

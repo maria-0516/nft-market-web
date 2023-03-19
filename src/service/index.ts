@@ -20,6 +20,20 @@ const all_nfts = async (formData: any) => {
     }
 }
 
+const all_orders = async (formData: any) => {
+    try {
+        var res = await axios.post('/api/all-orders', formData);
+        if (!res.data.success) {
+            return false;
+        }
+
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 const user_nfts = async (formData: any) => {
     try {
         var res = await axios.post('/api/user-nfts', formData);
@@ -49,6 +63,18 @@ const name_nft = async (formData: any) => {
 const name_order = async (formData: any) => {
     try {
         var res = await axios.post('/api/name-order', formData);
+        if (!res.data.success) {
+            return false;
+        }
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+const edit_order = async (formData: any) => {
+    try {
+        var res = await axios.post('/api/edit-order', formData);
         if (!res.data.success) {
             return false;
         }
@@ -194,7 +220,9 @@ const Action = {
     all_nfts,
     user_nfts,
     name_nft,
-    name_order
+    name_order,
+    edit_order,
+    all_orders
 };
 
 export default Action;

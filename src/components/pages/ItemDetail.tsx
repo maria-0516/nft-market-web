@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import Footer from '../menu/footer';
 import moment from 'moment';
-import M_itemdetailRedux from '../components/M_ItemdetailRedex';
 import { useBlockchainContext } from '../../context';
 import BuyModal from '../components/BuyModal';
 import { currentTime, styledAddress } from '../../utils';
@@ -11,10 +9,11 @@ import Action from '../../service';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
 import config from '../../config.json'
+import Dialog from '../components/Dialog';
 
 // const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
 
-export default function Colection() {
+export default function ItemDetail() {
     const wallet = useWallet();
     const { name } = useParams();
     const navigate = useNavigate();
@@ -29,12 +28,28 @@ export default function Colection() {
     const [order, setOrder] = useState<OrderData>({
         collection: '',
         assetId: '',
-        name: 'coin777.eth',
         price: '',
         token: '',
         assetOwner: '',
         expiresAt: 0,
         status: 'pending',
+        bids: [
+            {
+                bidder:			'0x75Afc064B92B90aAa81d5A5315C4367a03Af207C',
+                price:			1,
+                timestamp:		currentTime()
+            },
+            {
+                bidder:			'0x5A5315C4367a03Af290a675Afc0d4B92BAa8107C',
+                price:			1.7,
+                timestamp:		currentTime()
+            },
+            {
+                bidder:			'0xc064B927a03A90aA75AfBd5A5315C436a81f207C',
+                price:			0.8,
+                timestamp:		currentTime()
+            },
+        ]
     })
     const [itemData, setItemData] = useState<NFTData>({
         collection:	'',
@@ -42,61 +57,71 @@ export default function Colection() {
         creator: 	'',
         owner: 		'',
         name: 		'',
-        listed:     false
+        marketData: {}
     });
     const [status, setStatus] = useState({
-        remainTime: 0
+        remainTime: "",
+        showEdit: false,
+        bidPrice: 0
     })
 
     React.useEffect(() => {
         let flag = 0
-        // if (order.name === itemData.name) {
-            flag = order.assetOwner===state.auth.address ? 2 : 4
-        // } else {
+        if (order.assetId===itemData.tokenId) {
+            flag = itemData.marketData?.seller===state.auth.address ? 2 : 4
+        } else {
             flag = itemData.owner===state.auth.address ? 1 : 3
-        // }
+        }
         setPageFlag(flag)
-    }, [itemData])
+    }, [itemData, wallet.status])
 
-    const readNfts = async () => {
+    const readNft = async () => {
         const formData = new FormData();
         formData.append('name', name || '');
 
         const response = await Action.name_nft(formData);
+        // console.log(response)
         if (response.success) {
             if (!!response.data) {
+                // if (!!response.data.marketData?.seller) {
+                //     readOrder(response.data.collection, response.data.tokenId)
+                // }
                 setItemData(response.data)
+                if (!!response.order) {
+                    // setOrder(response.order)
+                }
             }
         } else {
-            console.log("readNftsError")
+            console.log("readNftError")
         }
-        return
-    }
-
-    const readOrder = async () => {
-        const formData = new FormData();
-        formData.append('name', name || '');
-
-        const response = await Action.name_order(formData);
-        if (response.success) {
-            if (!!response.data) {
-                setOrder(response.data)
-            }
-        } else {
-            console.log("readNftsError")
-        }
-        return
     }
 
     useEffect(() => {
-        readNfts()
+        // const timer = setTimeout(getRemainTime, 1000 * 60 * 60)
+        // return () => clearTimeout(timer)
+        getRemainTime()
+    }, [location.pathname])
+
+    const getRemainTime = () => {
+        if (!!order) {
+            const countDownDate = order.expiresAt * 1000;
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+            if (distance < 0) {
+                setStatus({...state, remainTime: 'End'})
+                return
+            }
+            const day = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            // const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            // const second = Math.floor((distance % (1000 * 60)) / 1000);
+            setStatus({...status, remainTime: `${day} day, ${hour} hours`})
+        }
+	}
+
+    useEffect(() => {
+        readNft()
     }, [])
-
-    useEffect(() => {
-        if (itemData.listed) {
-            readOrder()
-        }
-    }, [itemData.listed])
 
     // useEffect(() => {
     //     if (order.name !== "")
@@ -176,7 +201,7 @@ export default function Colection() {
     // }, [state.collectionNFT]);
 
     const handleBuy = async () => {
-        if (order.name !== itemData.name) return
+        if (order.assetId!==itemData.tokenId) return
         if (!state.signer) {
             wallet.connect();
             // navigate('/signPage');
@@ -202,7 +227,7 @@ export default function Colection() {
     };
 
     const handleApproveBid = async () => {
-        if (order.name !== itemData.name) return
+        if (order.assetId!==itemData.tokenId) return
         try {
             if (itemData !== null) {
                 setLoading(true);
@@ -224,7 +249,7 @@ export default function Colection() {
         }
     };
 
-    const handleSell = () => {
+    const toAuction = () => {
         navigate(`/auction/${itemData.name}`);
     };
 
@@ -275,481 +300,220 @@ export default function Colection() {
                     'Loading...'
                 ) : (
                     <>
-                        {/* <div className="row mt-md-5 pt-md-4">
-                            <div className="col-md-5 text-center">
-                                <div style={{ position: 'sticky', top: '120px' }}>
-                                    <img
-                                        src={
-                                            itemData?.metadata?.image ||
-                                            '../../img/collections/coll-item-3.jpg'
-                                        }
-                                        className="mb-sm-30 item_image"
-                                        alt=""
-                                    />
-                                    {/* <div className="social-link">
-                                        {itemData?.metadata?.external_url1 != '' && (
-                                            <a href={itemData?.metadata?.external_url1}>
-                                                <i className="fa fa-twitter-square"></i>
-                                            </a>
-                                        )}
-                                        {itemData?.metadata?.external_url2 != '' && (
-                                            <a href={itemData?.metadata?.external_url2}>
-                                                <i className="fa fa-facebook-square"></i>
-                                            </a>
-                                        )}
-                                        {itemData?.metadata?.external_url3 != '' && (
-                                            <a href={itemData?.metadata?.external_url3}>
-                                                <i className="fa fa-instagram"></i>
-                                            </a>
-                                        )}
-                                        {itemData?.metadata?.external_url4 != '' && (
-                                            <a href={itemData?.metadata?.external_url4}>
-                                                <i className="fa fa-pinterest-square"></i>
-                                            </a>
-                                        )}
-                                    </div>
-                                    <div className="item_info_like">
-                                        <div onClick={HandleLike} className="like">
-                                            <i className="fa fa-heart"></i>
-                                            {'  '}
-                                            {itemData?.likes?.length}
-                                        </div>
-                                        <div className="item_author">
-                                            <p>{'Owned by'}</p>
-                                            <span onClick={() => navigate(`/${itemData?.owner}`)}>
-                                                {state.usersInfo[itemData?.owner]?.image ? (
-                                                    <img
-                                                        className="lazy"
-                                                        src={state.usersInfo[itemData?.owner].image}
-                                                        alt=""
-                                                    />
-                                                ) : (
-                                                    <Jazzicon
-                                                        diameter={100}
-                                                        seed={Math.round(
-                                                            (Number(itemData?.owner) /
-                                                                Number(
-                                                                    '0xffffffffffffffffffffffffffffffffffffffffff'
-                                                                )) *
-                                                                10000000
-                                                        )}
-                                                    />
-                                                )}
-                                                <div className="author_list_info">
-                                                    <span>{styledAddress(itemData?.owner)}</span>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-md-7">
-                                <div className="item_info">
-                                    <Link to={`/collection/${correctCollection.address}`}>
-                                        {state.collectionNFT.map((item: any) => {
-                                            if (item.address === itemData.collectionAddress)
-                                                return item.metadata.name;
-                                        })}
-                                    </Link>
-                                    <h2>{itemData?.metadata?.name || `#${itemData.tokenID}`}</h2>
-                                    <div className="spacer-10"></div>
-                                    <h3>
-                                        {itemData?.marketdata?.price === '' ? (
-                                            <span style={{ color: 'grey' }}>
-                                                Not listed for sale
-                                            </span>
-                                        ) : (
-                                            <span style={{ color: 'grey' }}>
-                                                Listed for{' '}
-                                                <b style={{ color: 'black' }}>
-                                                    {itemData?.marketdata?.price +
-                                                        ' ' +
-                                                        getCurrency(
-                                                            itemData.marketdata?.acceptedToken
-                                                        )?.label}
-                                                </b>
-                                            </span>
-                                        )}
-                                    </h3>
-                                    <p>{itemData?.metadata?.description}</p>
-                                    <div>
-                                        {itemData === null ? (
-                                            'Loading...'
-                                        ) : (
-                                            <div className="mainside">
-                                                {pageFlag === 1 ? (
-                                                    <div className="attribute">
-                                                        <button
-                                                            className="btn-main round-button"
-                                                            onClick={handleSell}>
-                                                            {translateLang('btn_sell')}
-                                                        </button>
-                                                    </div>
-                                                ) : pageFlag === 2 ? (
-                                                    <div>
-                                                        {loading ? (
-                                                            <button className="btn-main round-button">
-                                                                <span
-                                                                    className="spinner-border spinner-border-sm"
-                                                                    aria-hidden="true"></span>
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                className="btn-main round-button"
-                                                                onClick={handleCancel}>
-                                                                {translateLang('btn_cancel')}
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                ) : pageFlag === 3 ? null : (
-                                                    <div>
-                                                        {loading ? (
-                                                            <button className="btn-main round-button">
-                                                                <span
-                                                                    className="spinner-border spinner-border-sm"
-                                                                    aria-hidden="true"></span>
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                className="btn-main round-button"
-                                                                onClick={handleBuy}>
-                                                                {translateLang('btn_buynow')}
-                                                            </button>
-                                                        )}
-                                                        {loading ? (
-                                                            <button className="btn-main round-button">
-                                                                <span
-                                                                    className="spinner-border spinner-border-sm"
-                                                                    aria-hidden="true"></span>
-                                                            </button>
-                                                        ) : (
-                                                            <button
-                                                                className="btn-main round-button"
-                                                                onClick={() => setModalShow(true)}>
-                                                                {translateLang('btn_makeoffer')}
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="spacer-40"></div>
-                                    <hr />
-                                    <div className="spacer-20"></div>
-                                    {itemData.marketdata.bidders.length > 0 && (
-                                        <p>
-                                            Current High Bid{' '}
-                                            {itemData?.marketdata?.bidPrices[0] +
-                                                ' ' +
-                                                itemData?.marketdata?.bidTokens[0]}{' '}
-                                            by{' '}
-                                            {itemData?.marketdata?.bidders[0].slice(0, 4) +
-                                                '...' +
-                                                itemData?.marketdata?.bidders[0].slice(-4)}
-                                        </p>
-                                    )}
-                                    {itemData?.marketdata?.endTime === '' ? null : (
-                                        <>
-                                            <div className="titme_track">
-                                                <p>{translateLang('saletime')}</p>
-                                                <div>
-                                                    {timeFlag ? null : (
-                                                        <>
-                                                            <h3>{expireTime[0]}d : </h3>
-                                                            <h3>{expireTime[1]}h : </h3>
-                                                            <h3>{expireTime[2]}m : </h3>
-                                                            <h3>{expireTime[3]}s</h3>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="spacer-10"></div>
-                                        </>
-                                    )}
-                                    {itemData?.metadata?.attributes.length > 0 && (
-                                        <>
-                                            <div className="spacer-10"></div>
-                                            <p style={{ fontSize: '20px' }}>Attributes</p>
-                                        </>
-                                    )}
-                                    <div className="de_tab">
+                        <section className="page-content-area">
+                            <div className="container">
+                                {!!itemData.tokenId ? (
+                                    <>
                                         <div className="row">
-                                            {itemData?.metadata?.attributes.map((item: any, index: any) => (
-                                                <M_itemdetailRedux
-                                                    key={index}
-                                                    type={item.key || item.trait_type}
-                                                    per={item.value}
-                                                    percent={
-                                                        Number(
-                                                            itemData.attributeRarityies[index]
-                                                        ).toFixed(3) + '%'
-                                                    }
-                                                />
-                                            ))}
-                                        </div>
-                                        <div className="spacer-10"></div>
-                                        {pageFlag === 2 || pageFlag === 4 ? (
-                                            <>
-                                                <div className="spacer-10"></div>
-                                                <p style={{ fontSize: '20px' }}>Bid History</p>
-                                                <hr />
-                                                <div className="spacer-20"></div>
-                                                {itemData.marketdata.bidders.length > 0 ? (
-                                                    <div className="de_tab_content">
-                                                        <div className="tab-1 onStep fadeIn">
-                                                            {itemData?.marketdata?.bidders.map(
-                                                                (bidder: any, index: any) => (
-                                                                    <>
-                                                                        <div className="p_list">
-                                                                            <div className="p_list_pp">
-                                                                                <span>
-                                                                                    {state
-                                                                                        .usersInfo[
-                                                                                        bidder
-                                                                                    ]?.image ? (
-                                                                                        <img
-                                                                                            className="lazy"
-                                                                                            src={
-                                                                                                state
-                                                                                                    .usersInfo[
-                                                                                                    bidder
-                                                                                                ]
-                                                                                                    ?.image
-                                                                                            }
-                                                                                            alt=""
-                                                                                        />
-                                                                                    ) : (
-                                                                                        <Jazzicon
-                                                                                            diameter={
-                                                                                                100
-                                                                                            }
-                                                                                            seed={Math.round(
-                                                                                                (Number(
-                                                                                                    bidder
-                                                                                                ) /
-                                                                                                    Number(
-                                                                                                        '0xffffffffffffffffffffffffffffffffffffffffff'
-                                                                                                    )) *
-                                                                                                    10000000
-                                                                                            )}
-                                                                                        />
-                                                                                    )}
-                                                                                </span>
-                                                                            </div>
-                                                                            <div className="p_list_info">
-                                                                                <b>
-                                                                                    {
-                                                                                        itemData
-                                                                                            ?.marketdata
-                                                                                            ?.bidPrices[
-                                                                                            index
-                                                                                        ]
-                                                                                    }{' '}
-                                                                                    {
-                                                                                        itemData
-                                                                                            ?.marketdata
-                                                                                            ?.bidTokens[
-                                                                                            index
-                                                                                        ]
-                                                                                    }
-                                                                                </b>{' '}
-                                                                                {translateLang(
-                                                                                    'bid'
-                                                                                )}
-                                                                                {translateLang(
-                                                                                    'by'
-                                                                                )}{' '}
-                                                                                <b>
-                                                                                    {styledAddress(
-                                                                                        bidder
-                                                                                    )}
-                                                                                </b>{' '}
-                                                                                {translateLang(
-                                                                                    'at'
-                                                                                )}{' '}
-                                                                                <b>
-                                                                                    {itemData
-                                                                                        ?.marketdata
-                                                                                        ?.bidTime
-                                                                                        ? moment(
-                                                                                              Number(
-                                                                                                  itemData
-                                                                                                      ?.marketdata
-                                                                                                      ?.bidTime[
-                                                                                                      index
-                                                                                                  ]
-                                                                                              )
-                                                                                          ).format(
-                                                                                              'lll'
-                                                                                          )
-                                                                                        : ''}
-                                                                                </b>
-                                                                            </div>
-                                                                            {index === 0 &&
-                                                                            itemData?.marketdata
-                                                                                .owner ===
-                                                                                state.auth
-                                                                                    .address ? (
-                                                                                loading ? (
-                                                                                    <button className="btn-main round-button">
-                                                                                        <span
-                                                                                            className="spinner-border spinner-border-sm"
-                                                                                            aria-hidden="true"></span>
-                                                                                    </button>
-                                                                                ) : (
-                                                                                    <button
-                                                                                        className="btn-main round-button"
-                                                                                        onClick={
-                                                                                            handleApproveBid
-                                                                                        }>
-                                                                                        {translateLang(
-                                                                                            'btn_approvebid'
-                                                                                        )}
-                                                                                    </button>
-                                                                                )
-                                                                            ) : null}
-                                                                        </div>
-                                                                        <div className="spacer-10"></div>
-                                                                    </>
-                                                                )
+                                            <div className="col-lg-7">
+                                                    <div className="imil-box rt-mb-30">
+                                                        <div className="rt-box-style-2">
+                                                            <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData.name}</h4>  
+                                                            <div onClick={HandleLike} className="like">
+                                                                <i className="fa fa-heart"></i>
+                                                                {'  '}
+                                                                {itemData.likes?.length || 0}
+                                                            </div> 
+                                                            <h5 className="f-size-18 rt-light3">is for sale</h5>
+                                                        
+                                                            <div>Network: Ethereum</div>
+                                                            <div className="row rt-mt-50">
+                                                                <div className="domain-border col-lg-4">
+                                                                    <span className="d-block f-size-24 rt-semiblod">2 Months</span>
+                                                                    <span className="d-block f-size-16 rt-light3">Age</span>
+                                                                </div>
+                                                                <div className="domain-border col-lg-4">
+                                                                    <span className="d-block f-size-24 rt-semiblod">ENS Service</span>
+                                                                    <span className="d-block f-size-16 rt-light3">Provider</span>
+                                                                </div>
+                                                                <div className="col-lg-4">
+                                                                    <span className="d-block f-size-24 rt-semiblod">{new Date((itemData.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</span>
+                                                                    <span className="d-block f-size-16 rt-light3">Expires</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                
+                                                    </div>
+                                                    <div className="rt-box-style-2 rt-mb-30 rt-dorder-off">
+                                                        <span className="f-size-18"><span className="rt-strong">Ads: </span>Do you want to post your advertisement here? Contact us!</span>
+                                                    </div>
+                                                    <div className="rt-box-style-2 rt-mb-30">
+                                                        <div className="f-size-18 rt-light3 line-height-34" style={{display: 'flex', gap: '1em'}}>
+                                                            <div>Seller:</div>
+                                                            <div style={{display: 'flex', gap: '0.5em'}}>
+                                                                {state.usersInfo[itemData.owner]?.image ? (
+                                                                    <img
+                                                                        className="lazy"
+                                                                        src={state.usersInfo[itemData.owner].image}
+                                                                        alt=""
+                                                                        style={{width: 32, height: 32, borderRadius: '50%'}}
+                                                                    />
+                                                                ) : (
+                                                                    <Jazzicon
+                                                                        diameter={32}
+                                                                        seed={Math.round(
+                                                                            (Number(itemData.owner) /
+                                                                                Number(
+                                                                                    '0xffffffffffffffffffffffffffffffffffffffffff'
+                                                                                )) *
+                                                                                10000000
+                                                                        )}
+                                                                    />
+                                                                )}
+                                                                <div className="author_list_info">
+                                                                    <span>{styledAddress(itemData.owner)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                            <div className="col-lg-5">
+                                                <div className="rt-box-style-3">
+                                                    <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
+                                                        {(pageFlag===1 || pageFlag===2) ? 'This is your domain' : (order.assetId===itemData.tokenId ? 'This domain is in auction' : 'This domain is not listed')}
+                                                    </div>
+                                                    <div className="rt-p-30">
+                                                        {order.assetId===itemData.tokenId && (
+                                                            <>
+                                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                                    <span className="f-size-20 rt-light3">Current price:</span>
+                                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> {order.token===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}</span></span>
+                                                                </div>
+                                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                                <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
+                                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} {order.token===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label} ({config.fee}%)</span>
+                                                                </div>
+                                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                                <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
+                                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} {order.token===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}</span>
+                                                                </div>
+                                                                <div className="d-flex justify-content-between rt-mb-20">
+                                                                    <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
+                                                                    <span className="f-size-20 rt-light3 text-eb7">{status.remainTime}</span>
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                        <div className="rt-form ">
+                                                            {/* <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
+                                                            {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button> */}
+                                                            {pageFlag===1 && (
+                                                                <>
+                                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={toAuction}>Sell Your Domain</button>
+                                                                </>
+                                                            )}
+                                                            {pageFlag===2 && (
+                                                                <>
+                                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={toAuction}>Edit Your Listing</button>
+                                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={()=>setStatus({...state, showEdit: true})}>Cancel Your Listing</button>
+                                                                </>
+                                                            )}
+                                                            {pageFlag===3 && (
+                                                                <>
+                                                                    <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
+                                                                    <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Place Bid (in auction mode)</button>
+                                                                    <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Sell Your Domain</button>
+                                                                </>
+                                                            )}
+                                                            {pageFlag===4 && (
+                                                                <>
+                                                                    <input type="number" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount" value={status.bidPrice} onChange={e=>setStatus({...status, bidPrice: Number(e.target.value)})} />
+                                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleApproveBid}>Place Bid (in auction mode)</button>
+                                                                    {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button> */}
+                                                                    {/* <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button> */}
+                                                                </>
                                                             )}
                                                         </div>
                                                     </div>
-                                                ) : (
-                                                    'No bid history'
-                                                )}
-                                            </>
-                                        ) : null}
-                                    </div>
-                                    <div className="spacer-40"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <BuyModal show={modalShow} setShow={setModalShow} correctItem={itemData} /> */}
-                        <section className="page-content-area">
-                            <div className="container">
-                            <div className="row">
-                                <div className="col-lg-7">
-                                        <div className="imil-box rt-mb-30">
-                                            <div className="rt-box-style-2">
-                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{itemData.name}</h4>  
-                                                <div onClick={HandleLike} className="like">
-                                                    <i className="fa fa-heart"></i>
-                                                    {'  '}
-                                                    {itemData.likes?.length || 0}
-                                                </div> 
-                                                <h5 className="f-size-18 rt-light3">is for sale</h5>
-                                            
-                                            Network: Ethereum
-                                                <div className="row rt-mt-50">
-                                                    <div className="domain-border col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod"></span>
-                                                        <span className="d-block f-size-16 rt-light3">Age</span>
-                                                    </div>
-                                                    <div className="domain-border col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod">ENS Service</span>
-                                                        <span className="d-block f-size-16 rt-light3">Provider</span>
-                                                    </div>
-                                                    <div className="col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod">{new Date((itemData.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</span>
-                                                        <span className="d-block f-size-16 rt-light3">Expires</span>
-                                                    </div>
                                                 </div>
                                             </div>
-                                    
                                         </div>
-                                        <div className="rt-box-style-2 rt-mb-30 rt-dorder-off">
-                                            <span className="f-size-18"><span className="rt-strong">Ads: </span>Do you want to post your advertisement here? Contact us!</span>
-                                        </div>
-                                        <div className="rt-box-style-2 rt-mb-30">
-                                            <div className="f-size-18 rt-light3 line-height-34" style={{display: 'flex', gap: '1em'}}>
-                                                <div>Seller:</div>
-                                                <div style={{display: 'flex', gap: '0.5em', cursor: 'pointer'}} onClick={() => navigate(`/${itemData.owner}`)}>
-                                                    {state.usersInfo[itemData.owner]?.image ? (
-                                                        <img
-                                                            className="lazy"
-                                                            src={state.usersInfo[itemData.owner].image}
-                                                            alt=""
-                                                            style={{width: 32, height: 32, borderRadius: '50%'}}
-                                                        />
-                                                    ) : (
-                                                        <Jazzicon
-                                                            diameter={32}
-                                                            seed={Math.round(
-                                                                (Number(itemData.owner) /
-                                                                    Number(
-                                                                        '0xffffffffffffffffffffffffffffffffffffffffff'
-                                                                    )) *
-                                                                    10000000
-                                                            )}
-                                                        />
+                                        <div className="spacer-10"></div>
+                                        <p style={{ fontSize: '20px' }}>Bid History</p>
+                                        <hr />
+                                        <div className="spacer-20"></div>
+                                        {!!order?.assetOwner && (order?.bids || []).length > 0 && (
+                                            <div className="de_tab_content">
+                                                <div className="tab-1 onStep fadeIn">
+                                                    {(order?.bids || []).map(
+                                                        (i: NftBidData, index: any) => (
+                                                            <>
+                                                                <div className="p_list">
+                                                                    <div className="p_list_pp">
+                                                                        <span>
+                                                                            {state.usersInfo[i.bidder]?.image ? (
+                                                                                <img className="lazy" src={state.usersInfo[i.bidder]?.image} alt="" />
+                                                                            ) : (
+                                                                                <Jazzicon diameter={100}
+                                                                                    seed={Math.round((Number(i.bidder) / Number('0xffffffffffffffffffffffffffffffffffffffffff')) *10000000)}
+                                                                                />
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="p_list_info">
+                                                                        <b>
+                                                                            {index}{' '}
+                                                                            {index}
+                                                                        </b>{' '}
+                                                                        {translateLang(
+                                                                            'bid'
+                                                                        )}
+                                                                        {translateLang(
+                                                                            'by'
+                                                                        )}{' '}
+                                                                        <b>
+                                                                            {styledAddress(i.bidder)}
+                                                                        </b>{' '}
+                                                                        {translateLang(
+                                                                            'at'
+                                                                        )}{' '}
+                                                                        <b>
+                                                                            {i.timestamp? moment(Number(i.timestamp)).format('lll'): ''}
+                                                                        </b>
+                                                                    </div>
+                                                                    {index === 0 && itemData.marketData?.seller === state.auth.address ? (
+                                                                        loading ? (
+                                                                            <button className="btn-main round-button">
+                                                                                <span
+                                                                                    className="spinner-border spinner-border-sm"
+                                                                                    aria-hidden="true"></span>
+                                                                            </button>
+                                                                        ) : (
+                                                                            <button
+                                                                                className="btn-main round-button"
+                                                                                onClick={
+                                                                                    handleApproveBid
+                                                                                }>
+                                                                                {translateLang(
+                                                                                    'btn_approvebid'
+                                                                                )}
+                                                                            </button>
+                                                                        )
+                                                                    ) : null}
+                                                                </div>
+                                                                <div className="spacer-10"></div>
+                                                            </>
+                                                        )
                                                     )}
-                                                    <div className="author_list_info">
-                                                        <span>{styledAddress(itemData.owner)}</span>
-                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                </div>
-                                <div className="col-lg-5">
-                                    <div className="rt-box-style-3">
-                                        <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
-                                            {order.name===itemData.name ? 'This domain is in auction' : 'This domain is not listed'}
-                                        </div>
-                                        <div className="rt-p-30">
-                                            {order.name===itemData.name && (
-                                                <>
-                                                    <div className="d-flex justify-content-between rt-mb-20">
-                                                        <span className="f-size-20 rt-light3">Current price:</span>
-                                                        <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> {order.token}</span></span>
-                                                    </div>
-                                                    <div className="d-flex justify-content-between rt-mb-20">
-                                                    <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
-                                                        <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} {order.token} ({config.fee}%)</span>
-                                                    </div>
-                                                    <div className="d-flex justify-content-between rt-mb-20">
-                                                    <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
-                                                        <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} {order.token}</span>
-                                                    </div>
-                                                    <div className="d-flex justify-content-between rt-mb-20">
-                                                        <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
-                                                        <span className="f-size-20 rt-light3 text-eb7">1 day,10 hours</span>
-                                                    </div>
-                                                </>
-                                            )}
-                                            <div className="rt-form ">
-                                                {/* <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
-                                                {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button> */}
-                                                {pageFlag===1 && (
-                                                    <>
-                                                        <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleSell}>Sell Your Domain</button>
-                                                    </>
-                                                )}
-                                                {pageFlag===2 && (
-                                                    <>
-                                                        <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
-                                                    </>
-                                                )}
-                                                {pageFlag===3 && (
-                                                    <>
-                                                        <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
-                                                        <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Place Bid (in auction mode)</button>
-                                                        <button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Sell Your Domain</button>
-                                                    </>
-                                                )}
-                                                {pageFlag===4 && (
-                                                    <>
-                                                        <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
-                                                        {/* <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button> */}
-                                                        {/* <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button> */}
-                                                    </>
-                                                )}
+                                        )} 
+                                        {/* : (
+                                            <div>
+                                                'No bid history'
                                             </div>
+                                        ) */}
+                                    </>
+                                ) : (
+                                    <div className="row">
+                                        <div className="col-xl-12 col-lg-8 mx-auto text-center wow fade-in-bottom" data-wow-duration="1s">
+                                            <h2 className="rt-section-title">
+                                                Not Found
+                                            </h2>
+                                            <p className="rt-mb-0 rt-light3 line-height-34 section-paragraph">
+                                            </p>
                                         </div>
                                     </div>
-                                </div>
-                                </div>
+                                )}
                             </div>
                             <div>
                             {/* <div>
@@ -816,6 +580,17 @@ export default function Colection() {
                             </div> */}
                         </div>
                             {/* <BuyModal show={modalShow} setShow={setModalShow} correctItem={itemData} /> */}
+                            {status.showEdit && (
+                                <Dialog onClose={()=>setStatus({...state, showEdit: false})}>
+                                    <div className='d column gap'>
+                                        <div style={{fontSize: '20px',textAlign: 'center'}}>Are you sure you want to cancel this transaction?</div>
+                                        <div className='d center middle gap'>
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={()=>setStatus({...state, showEdit: false})}>Cancel</button>
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleCancel}>OK</button>
+                                        </div>
+                                    </div>
+                                </Dialog>
+                            )}
                         </section>
                     </>
                 )}

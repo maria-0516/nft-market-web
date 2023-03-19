@@ -455,6 +455,24 @@
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "getMetadatas",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenid",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "string",
+                    "name": "uri",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -878,9 +896,9 @@
             "inputs": [
                 {
                     "indexed": false,
-                    "internalType": "bytes32",
+                    "internalType": "uint256",
                     "name": "id",
-                    "type": "bytes32"
+                    "type": "uint256"
                 }
             ],
             "name": "OrderCancelled",
@@ -891,9 +909,9 @@
             "inputs": [
                 {
                     "indexed": false,
-                    "internalType": "bytes32",
+                    "internalType": "uint256",
                     "name": "id",
-                    "type": "bytes32"
+                    "type": "uint256"
                 },
                 {
                     "indexed": true,
@@ -940,9 +958,9 @@
             "inputs": [
                 {
                     "indexed": false,
-                    "internalType": "bytes32",
+                    "internalType": "uint256",
                     "name": "id",
-                    "type": "bytes32"
+                    "type": "uint256"
                 },
                 {
                     "indexed": true,
@@ -965,9 +983,9 @@
             "inputs": [
                 {
                     "indexed": false,
-                    "internalType": "bytes32",
+                    "internalType": "uint256",
                     "name": "id",
-                    "type": "bytes32"
+                    "type": "uint256"
                 },
                 {
                     "indexed": false,
@@ -1277,6 +1295,19 @@
         },
         {
             "inputs": [],
+            "name": "lastOrderId",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "maxCutPerMillion",
             "outputs": [
                 {
@@ -1304,9 +1335,9 @@
             "name": "orderByAssetId",
             "outputs": [
                 {
-                    "internalType": "bytes32",
+                    "internalType": "uint256",
                     "name": "id",
-                    "type": "bytes32"
+                    "type": "uint256"
                 },
                 {
                     "internalType": "address",

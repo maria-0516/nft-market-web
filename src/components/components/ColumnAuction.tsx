@@ -14,7 +14,7 @@ interface Props {
     name: string
 }
 
-export default function Responsive({name}: Props) {
+export default function ColumnAuction({name}: Props) {
     const navigate = useNavigate();
     const [state, { onsaleNFT, onsaleLazyNFT, translateLang, approveNFT, checkNFTApprove }] =
         useBlockchainContext() as any;
@@ -24,13 +24,22 @@ export default function Responsive({name}: Props) {
         creator: 	'',
         owner: 		'',
         name: 		'',
-        listed:     false
+        marketData: {}
     });
     const [price, setPrice] = useState('');
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
     const [approveFlag, setApproveFlag] = useState(false);
     const [currency, setCurrency] = useState(state.currencies[0].value);
+    const [order, setOrder] = useState<OrderData>({
+        collection: '',
+        assetId: '',
+        price: '',
+        token: '',
+        assetOwner: '',
+        expiresAt: 0,
+        status: 'pending',
+    })
 
     // useEffect(() => {
     //     const initialDate = new Date();
@@ -46,6 +55,9 @@ export default function Responsive({name}: Props) {
         if (response.success) {
             if (!!response.data) {
                 setNft(response.data)
+                if (!!response.order) {
+                    setOrder(response.order)
+                }
             }
         } else {
             console.log("readNftsError")
@@ -91,58 +103,58 @@ export default function Responsive({name}: Props) {
 
         try {
             setLoading(true);
-            if (!nft.isOffchain) {
-                let txOnSale = await onsaleNFT({
-                    nftAddress: nft.collection,
-                    assetId: nft.tokenId,
-                    name: nft.name,
-                    currency: currency,
-                    price: price,
-                    expiresAt: moment(date).valueOf()
-                });
+            // if (!nft.isOffchain) {
+            let txOnSale = await onsaleNFT({
+                nftAddress: nft.collection,
+                assetId: nft.tokenId,
+                name: nft.name,
+                currency: currency,
+                price: price,
+                expiresAt: moment(date).valueOf()
+            });
 
-                if (txOnSale) {
-                    // NotificationManager.success(translateLang('listing_success'));
-                    toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
-                    navigate('/explore');
-                } else {
-                    // NotificationManager.error(translateLang('listingerror'));
-                    toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
-                }
-                setLoading(false);
+            if (txOnSale) {
+                // NotificationManager.success(translateLang('listing_success'));
+                toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
+                navigate('/explore');
             } else {
-                const lazyAction = await Action.lazy_onsale({
-                    nftAddress: nft.collection,
-                    assetId: nft.tokenId,
-                    currency: currency,
-                    priceGwei: toBigNum(price, 18),
-                    expiresAt: moment(date).valueOf()
-                });
-
-                if (!lazyAction.success) {
-                    setLoading(false);
-                    // NotificationManager.error(translateLang('listingerror'));
-                    toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
-                    return;
-                }
-
-                let txOnSale = await onsaleLazyNFT({
-                    tokenId: nft.tokenId,
-                    priceGwei: toBigNum(price, 18),
-                    expiresAt: moment(date).valueOf(),
-                    singature: lazyAction.result
-                });
-
-                if (txOnSale) {
-                    // NotificationManager.success(translateLang('listing_success'));
-                    toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
-                    navigate('/explore');
-                } else {
-                    // NotificationManager.error(translateLang('listingerror'));
-                    toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
-                }
-                setLoading(false);
+                // NotificationManager.error(translateLang('listingerror'));
+                toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
             }
+            setLoading(false);
+            // } else {
+            //     const lazyAction = await Action.lazy_onsale({
+            //         nftAddress: nft.collection,
+            //         assetId: nft.tokenId,
+            //         currency: currency,
+            //         priceGwei: toBigNum(price, 18),
+            //         expiresAt: moment(date).valueOf()
+            //     });
+
+            //     if (!lazyAction.success) {
+            //         setLoading(false);
+            //         // NotificationManager.error(translateLang('listingerror'));
+            //         toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
+            //         return;
+            //     }
+
+            //     let txOnSale = await onsaleLazyNFT({
+            //         tokenId: nft.tokenId,
+            //         priceGwei: toBigNum(price, 18),
+            //         expiresAt: moment(date).valueOf(),
+            //         singature: lazyAction.result
+            //     });
+
+            //     if (txOnSale) {
+            //         // NotificationManager.success(translateLang('listing_success'));
+            //         toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
+            //         navigate('/explore');
+            //     } else {
+            //         // NotificationManager.error(translateLang('listingerror'));
+            //         toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
+            //     }
+            //     setLoading(false);
+            // }
         } catch (err) {
             console.log(err);
             setLoading(false);
@@ -168,6 +180,28 @@ export default function Responsive({name}: Props) {
         }
         setLoading(false);
     };
+
+    const handleEdit = async () => {
+        try {
+            if (price === '') return;
+            if (!moment(date).isValid()) return;
+            const formData = new FormData();
+            formData.append('collection', nft.collection || '');
+            formData.append('assetId', nft.tokenId || '');
+            formData.append('currency', currency || '');
+            formData.append('price', price || '');
+            formData.append('expiresAt', String(Math.round(moment(date).valueOf() / 1e3)) || '');
+    
+            const response = await Action.edit_order(formData);
+            // console.log(response)
+            if (!response.success) {
+                console.log("handleEditError")
+            }
+            navigate(`domain/${nft.name}`);
+        } catch (error) {
+            console.log("handleEdit", error)
+        }
+    }
 
     return (
         <>
@@ -200,7 +234,7 @@ export default function Responsive({name}: Props) {
                                             </p> */}
                                             {/* <div className="spacer-single"></div> */}
                                             <h5>{translateLang('sellprice')}</h5>
-                                            <input type="text" className="form-control rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" />
+                                            {/* <input type="text" className="form-control rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
                                             <div className="price mt">
                                                 <div
                                                     style={{
@@ -208,10 +242,11 @@ export default function Responsive({name}: Props) {
                                                     }}>
                                                     <select
                                                         className="form-control"
+                                                        style={{height: '100%'}}
                                                         onChange={(e) => {
                                                             setCurrency(e.target.value);
                                                         }}>
-                                                        {state.currencies.map((currency: any, index: any) => (
+                                                        {state.currencies.map((currency: any, index: number) => (
                                                             <option value={currency.value} key={index}>
                                                                 {currency.label}
                                                             </option>
@@ -254,27 +289,41 @@ export default function Responsive({name}: Props) {
                                         </div>
 
                                         <div className="spacer-40"></div>
-                                        {loading ? (
-                                            <button className="btn-main">
-                                                <span
-                                                    className="spinner-border spinner-border-sm"
-                                                    aria-hidden="true"></span>
-                                            </button>
-                                        ) : approveFlag || nft.isOffchain ? (
-                                            <button
-                                                className="btn-main"
-                                                disabled={
-                                                    price === '' || !moment(date).isValid()
-                                                        ? true
-                                                        : false
-                                                }
-                                                onClick={handlelist}>
-                                                {translateLang('btn_completelisting')}
-                                            </button>
+                                        {!!order ? (
+                                            <>
+                                            {loading ? (
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">
+                                                        <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
+                                                    </button>
+                                                ) : (
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleEdit}>
+                                                        Edit
+                                                    </button>
+                                                )}
+                                            </>
                                         ) : (
-                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleApprove}>
-                                                {'Approve'}
-                                            </button>
+                                            <>
+                                                {loading ? (
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">
+                                                        <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
+                                                    </button>
+                                                ) : approveFlag || nft.isOffchain ? (
+                                                    <button
+                                                        className="rt-btn rt-gradient pill d-block rt-mb-15"
+                                                        disabled={
+                                                            price === '' || !moment(date).isValid()
+                                                                ? true
+                                                                : false
+                                                        }
+                                                        onClick={handlelist}>
+                                                        {translateLang('btn_completelisting')}
+                                                    </button>
+                                                ) : (
+                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleApprove}>
+                                                        {'Approve'}
+                                                    </button>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>
@@ -283,7 +332,7 @@ export default function Responsive({name}: Props) {
                             <div className="col-lg-5">
                                 <div className='rt-box-style-2'>
                                     <h5>{translateLang('previewitem')}</h5>
-                                    <div className="nft__item m-0">
+                                    <div className="nft_item m-0">
                                         <div className="author_list_pp"></div>
                                         {/* <div className="nft__item_wrap">
                                             <span>
@@ -301,23 +350,22 @@ export default function Responsive({name}: Props) {
                                         <div className="nft__item_info">
                                             <div className="sell_preview">
                                                 <div>
-                                                    <p>
-                                                        {/* {nft.name.length > 15
-                                                            ? correctCollection.metadata?.name.slice(
+                                                    <p style={{fontWeight: '600'}}>
+                                                        {nft.name.length > 15
+                                                            ? nft.name.slice(
                                                                 0,
                                                                 15
                                                             ) + '...'
-                                                            : correctCollection.metadata?.name} */}
-                                                        {nft.name}
+                                                            : nft.name}
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p>
+                                                    <p style={{fontWeight: '500'}}>
                                                         {price === ''
-                                                            ? '0  FTM'
+                                                            ? `0 ${currency===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}`
                                                             : price?.length > 15
-                                                            ? price.slice(0, 15) + '...' + '  FTM'
-                                                            : price + '  FTM'}
+                                                            ? price.slice(0, 15) + '...' + ` ${currency===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}`
+                                                            : price + ` ${currency===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}`}
                                                     </p>
                                                 </div>
                                             </div>

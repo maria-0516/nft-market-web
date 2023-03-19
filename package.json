@@ -7,6 +7,7 @@
     "dependencies": {
         "@1stquad/react-bootstrap-datetimepicker": "^1.0.25",
         "@apollo/client": "^3.7.10",
+        "@myetherwallet/mewconnect-web-client": "^2.2.0-beta.18",
         "@tim-soft/react-spring-web": "^9.0.0-beta.36",
         "axios": "^0.26.1",
         "bootstrap": "^5.1.1",

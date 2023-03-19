@@ -28,6 +28,7 @@ import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken';
 import Loading from './components/Loading';
+import { useWallet } from 'use-wallet';
 
 // const httpLink = createHttpLink({
 //     uri: config.graphql
@@ -52,10 +53,14 @@ import Loading from './components/Loading';
 
 const PrivateRoute = ({ children }: {children: any}) => {
     const location = useLocation();
-
+    const wallet = useWallet();
     const [state, {}] = useBlockchainContext() as any;
 
     if (!state.auth.isAuth) {
+        if (wallet.status==='connected' && localStorage.getItem('isConnected')==="0") {
+            return children;
+            // checkNetwork()
+        }
         // NotificationManager.warning('Please connect wallet');
         toast('Please connect wallet', {position: "top-right", autoClose: 2000})
         return <Navigate to="/" replace state={{ from: location }} />;
@@ -93,36 +98,36 @@ const App = () => {
                                         </PrivateRoute>
                                     }
                                 /> */}
-                                <Route
+                                {/* <Route
                                     path="/create/collection"
                                     element={
                                         <PrivateRoute>
                                             <CreateCollection />
                                         </PrivateRoute>
                                     }
-                                />
-                                <Route
+                                /> */}
+                                {/* <Route
                                     path="/create/nft"
                                     element={
-                                        <PrivateRoute>
+                                        // <PrivateRoute>
                                             <Create />
-                                        </PrivateRoute>
+                                        // </PrivateRoute>
                                     }
-                                />
-                                <Route
+                                /> */}
+                                {/* <Route
                                     path="/lazy-mint"
                                     element={
                                         <PrivateRoute>
                                             <LazyCreate />
                                         </PrivateRoute>
                                     }
-                                />
+                                /> */}
                                 <Route
                                     path="/auction/:name"
                                     element={
-                                        <PrivateRoute>
+                                        // <PrivateRoute>
                                             <Auction />
-                                        </PrivateRoute>
+                                        // </PrivateRoute>
                                     }
                                 />
                                 <Route path="/domain/:name" element={<ItemDetail />}/>
