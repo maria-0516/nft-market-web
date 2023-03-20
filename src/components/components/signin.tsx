@@ -34,7 +34,7 @@ const SignIn = (props: any) => {
                 }
             });
         } else {
-            updateAuth(response.data);
+            // updateAuth(response.data);
             // NotificationManager.success(translateLang('sigin_success'));
             toast(translateLang('sigin_success'), {position: "top-right", autoClose: 2000})
         }

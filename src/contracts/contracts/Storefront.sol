@@ -31,6 +31,9 @@ contract Storefront is Ownable, Pausable {
 	struct Bid {
 		uint id;// Bid Id
 		uint orderId;
+		address collection;
+		string label;
+		uint assetId;
 		address bidder;// Bidder address
 		address token;// accepted token for trading item
 		uint price;// Price for the bid in wei
@@ -40,6 +43,7 @@ contract Storefront is Ownable, Pausable {
 	
 	struct Order {
 		uint id; // // Order ID
+		string label;
 		address seller; // Owner of the NFT
 		uint assetId;
 		address collection;// NFT registry address
@@ -101,9 +105,12 @@ contract Storefront is Ownable, Pausable {
 	uint public lastBidId = 20000001;
 	uint public constant MAX_BID_LIMIT = 100;
 
+
 	mapping(uint => Order) public orderById; // orderId => Order
+	mapping(uint => uint) public orderByTokenId; // tokenId => orderId
 	mapping(uint => uint[]) public buckets; // timestamp => orderId[]
 	mapping(address => uint[]) ordersByOwner; // address => orderId[]
+	
 	
 	mapping(uint => Bid) public bidById; // bidId => Bid
 	mapping(uint => uint[]) public bidsByOrderId; // orderId => bidId[]
@@ -202,8 +209,9 @@ contract Storefront is Ownable, Pausable {
 				}
 			}
 		}
+		
+		delete orderByTokenId[orderById[_orderId].assetId];
 		delete orderById[_orderId];
-		// delete bidsByOrderId[_orderId];
 	}
 
 	function _deleteBid(address _bidder, uint _orderId, uint _bidId) internal {
@@ -251,6 +259,9 @@ contract Storefront is Ownable, Pausable {
 		require(order.id != 0, "Marketplace: asset not published");
 		require(order.expires >= block.timestamp, "Marketplace: order expired");
 	}
+	function verifyTokenId(string memory _name, uint _tokenId) public pure returns(bool) {
+        return uint(keccak256(bytes(_name)))==_tokenId;
+    }
 
 	/**
 	 * @dev Creates a new order
@@ -260,13 +271,14 @@ contract Storefront is Ownable, Pausable {
 	 * @param _price - Price in Wei for the supported coin
 	 * @param _expires - Duration of the order (in hours)
 	 */
-	function createOrder(address _collection, uint _assetId, address _acceptedToken, uint _price, uint _expires) public whenNotPaused {
+	function createOrder(address _collection, string memory _label, uint _assetId, address _acceptedToken, uint _price, uint _expires) public whenNotPaused {
 		// Check nft registry
+		require(verifyTokenId(_label, _assetId), "Marketplace: invalid domain name");
 		IERC721 nftRegistry = _requireERC721(_collection);
 		require(nftRegistry.ownerOf(_assetId) == msg.sender, "Marketplace: Only the asset owner can create orders");
 		require(_price > 0, "Marketplace: Price should be bigger than 0");
 		require(_expires > block.timestamp + 1 minutes, "Marketplace: expires should be more than 1 minute");
-		require(_expires <= block.timestamp + 180, "Marketplace: expires should be less than 180 days");
+		require(_expires <= block.timestamp + 180 days, "Marketplace: expires should be less than 180 days");
 		if (_acceptedToken!=address(0)) require(acceptedTokens[_acceptedToken], "Marketplace: accept token must be whitelisted");
 		// get NFT asset from seller
 		nftRegistry.transferFrom(msg.sender, address(this), _assetId);
@@ -276,6 +288,7 @@ contract Storefront is Ownable, Pausable {
 			id: lastOrderId,
 			seller: msg.sender,
 			collection: _collection,
+			label: _label,
 			assetId: _assetId,
 			acceptedToken: _acceptedToken,
 			price: _price,
@@ -283,6 +296,7 @@ contract Storefront is Ownable, Pausable {
 			expires: _expires,
 			timestamp: block.timestamp
 		});
+		orderByTokenId[_assetId] = lastOrderId;
 		_deleteExpiredBucket();
 		buckets[block.timestamp - block.timestamp % 10 days].push(lastOrderId);
 		ordersByOwner[msg.sender].push(lastOrderId);
@@ -399,6 +413,9 @@ contract Storefront is Ownable, Pausable {
 			bidById[lastBidId] = Bid({
 				id: lastBidId,
 				orderId: _orderId,
+				collection: _order.collection,
+				label: _order.label,
+				assetId: _order.assetId,
 				bidder: msg.sender,
 				token: _order.acceptedToken,
 				price: _price,
@@ -499,6 +516,11 @@ contract Storefront is Ownable, Pausable {
 		}
 	}
 	
+	function getOrderByTokenId(uint _assetId) public view returns(Order memory _order) {
+		uint _orderId = orderByTokenId[_assetId];
+		_order = orderById[_orderId];
+	}
+
 	function getOrdersByAddress(address _owner, uint _page, uint _limit) public view returns(Order[] memory _orders) {
 		uint _start = _page * _limit;
 		uint _skip = 0;
@@ -542,6 +564,27 @@ contract Storefront is Ownable, Pausable {
 					if (_order.id==0 || _order.expires < block.timestamp) {
 						_bid.expires = 0;
 					}
+					_bids[_index++] = _bid;
+				} else {
+					break;
+				}
+			}
+		}
+	}
+
+	function getBidsByOrderId(uint _orderId, uint _page, uint _limit) public view returns(Bid[] memory _bids) {
+		// uint _start = _page * _limit;
+		uint _skip = _page * _limit;
+		uint _index = 0;
+		uint _count = bidsByOrderId[_orderId].length;
+		_bids = new Bid[](_limit);
+		
+		for (uint k = 0; k < _count; k++) {
+			Bid memory _bid = bidById[bidsByOrderId[_orderId][k]];
+			if (block.timestamp < _bid.expires) {
+				if (_skip > 0) {
+					_skip--;
+				} else if (_index < _limit) {
 					_bids[_index++] = _bid;
 				} else {
 					break;

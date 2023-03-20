@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import moment from 'moment';
 import { useBlockchainContext } from '../../context';
 import BuyModal from '../components/BuyModal';
@@ -10,10 +10,13 @@ import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
 import config from '../../config.json'
 import Dialog from '../components/Dialog';
+import { getEnsDomainByName, makeTokenId } from '../../thegraph';
+import { storefront } from '../../contracts';
 
 // const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
 
 export default function ItemDetail() {
+    const location = useLocation()
     const wallet = useWallet();
     const { name } = useParams();
     const navigate = useNavigate();
@@ -26,6 +29,7 @@ export default function ItemDetail() {
     const [timeFlag, setTimeFlag] = useState(true);
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState<OrderData>({
+        id: 0,
         collection: '',
         label: '',
         assetId: '',
@@ -42,7 +46,8 @@ export default function ItemDetail() {
         creator: 	'',
         owner: 		'',
         name: 		'',
-        marketData: {}
+        expires:    0
+        // marketData: {}
     });
     const [status, setStatus] = useState({
         remainTime: "",
@@ -50,34 +55,33 @@ export default function ItemDetail() {
         bidPrice: 0
     })
 
-    React.useEffect(() => {
-        let flag = 0
-        if (order.assetId===itemData.tokenId) {
-            flag = itemData.marketData?.seller===state.auth.address ? 2 : 4
-        } else {
-            flag = itemData.owner===state.auth.address ? 1 : 3
-        }
-        setPageFlag(flag)
-    }, [itemData, wallet.status])
+    // React.useEffect(() => {
+    //     let flag = 0
+    //     if (order.assetId===itemData.tokenId) {
+    //         // flag = itemData.marketData?.seller===state.auth.address ? 2 : 4
+    //     } else {
+    //         flag = itemData.owner===state.auth.address ? 1 : 3
+    //     }
+    //     setPageFlag(flag)
+    // }, [itemData, wallet.status])
 
     const readNft = async () => {
-        const formData = new FormData();
-        formData.append('name', name || '');
-
-        const response = await Action.name_nft(formData);
-        // console.log(response)
-        if (response.success) {
-            if (!!response.data) {
-                // if (!!response.data.marketData?.seller) {
-                //     readOrder(response.data.collection, response.data.tokenId)
-                // }
-                setItemData(response.data)
-                if (!!response.order) {
-                    // setOrder(response.order)
+        try {
+            if (name) {
+                const json = await getEnsDomainByName(name)
+                setItemData(json as any)
+                const label = name.slice(0, -4);
+                const _tokenId = makeTokenId(label);
+                const order = await storefront.getOrderByTokenId(_tokenId)
+                console.log("order", order)
+                if (order.id) {
+                    setOrder(order)
+                    const bids = await storefront.getBidsByOrderId(10000006, 0, 100)
+                    console.log("bids", bids[0])
                 }
             }
-        } else {
-            console.log("readNftError")
+        } catch (error) {
+            console.log('readNft', error)
         }
     }
 
@@ -299,7 +303,7 @@ export default function ItemDetail() {
                                                                 {'  '}
                                                                 {itemData.likes?.length || 0}
                                                             </div> 
-                                                            <h5 className="f-size-18 rt-light3">is for sale</h5>
+                                                            {/* <h5 className="f-size-18 rt-light3">is for sale</h5> */}
                                                         
                                                             <div>Network: Ethereum</div>
                                                             <div className="row rt-mt-50">
@@ -312,7 +316,7 @@ export default function ItemDetail() {
                                                                     <span className="d-block f-size-16 rt-light3">Provider</span>
                                                                 </div>
                                                                 <div className="col-lg-4">
-                                                                    <span className="d-block f-size-24 rt-semiblod">{new Date((itemData.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</span>
+                                                                    <span className="d-block f-size-24 rt-semiblod">{new Date((itemData.expires || 0) * 1000).toLocaleDateString()}</span>
                                                                     <span className="d-block f-size-16 rt-light3">Expires</span>
                                                                 </div>
                                                             </div>
@@ -455,7 +459,7 @@ export default function ItemDetail() {
                                                                             {i.timestamp? moment(Number(i.timestamp)).format('lll'): ''}
                                                                         </b>
                                                                     </div>
-                                                                    {index === 0 && itemData.marketData?.seller === state.auth.address ? (
+                                                                    {index === 0 /* && itemData.marketData?.seller === state.auth.address */ ? (
                                                                         loading ? (
                                                                             <button className="btn-main round-button">
                                                                                 <span

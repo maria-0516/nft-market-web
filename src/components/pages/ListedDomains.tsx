@@ -21,28 +21,39 @@ export default function ListedDomains() {
     })
 
     useEffect(() => {
-        if (state.orderList?.length !== 0) {
-            let bump = 0;
-            let bumpArr = [] as any;
-            state.collectionNFT.map((collectionItem: any) => {
-                const currentVolumn = state.orderList.filter((item: any) => {
-                    return item.contractAddress === collectionItem && item.status === 'success';
-                });
+        // if (state.orderList?.length !== 0) {
+        //     let bump = 0;
+        //     let bumpArr = [] as any;
+        //     state.collectionNFT.map((collectionItem: any) => {
+        //         const currentVolumn = state.orderList.filter((item: any) => {
+        //             return item.contractAddress === collectionItem && item.status === 'success';
+        //         });
 
-                currentVolumn.map((item: any) => {
-                    bump += Number(item.price);
-                });
-                bumpArr.push(parseFloat(bump.toFixed(3)));
-            });
+        //         currentVolumn.map((item: any) => {
+        //             bump += Number(item.price);
+        //         });
+        //         bumpArr.push(parseFloat(bump.toFixed(3)));
+        //     });
 
-            setVolumns(bumpArr);
-        }
+        //     setVolumns(bumpArr);
+        // }
     }, [state.orderList]);
 
     const readOrders = async () => {
         try {
-            const result = await storefront.register(status.page, status.limit);
-
+            const result = await storefront.getOrders(status.page, status.limit);
+            setOrders(result.map((i: any)=>({
+                id:             Number(i.id),
+                collection:     '',
+                label:          i.label,
+                assetId: 		i.assetId.toString(),
+                price: 			ethers.utils.formatEther(i.price),
+                token: 	        tokens[i.acceptedToken],
+                seller: 	    i.seller,
+                expires:        Number(i.expires),
+                status: 		'pending'
+            })).filter((i: any)=>i.id!==0))
+            console.log(result[0])
         } catch (error) {
             console.log("readOrders", error)
         }
@@ -58,7 +69,7 @@ export default function ListedDomains() {
 
     useEffect(() => {
         readOrders()
-    }, [])
+    }, [status.page])
 
     // useEffect(() => {
     //     let bump = [] as any;
@@ -182,7 +193,7 @@ export default function ListedDomains() {
                                             orders.map((i: OrderData, k: number) => (
                                                 <li className="clearfix" key={k} onClick={() => handle(i.label)}>
                                                     <a style={{cursor: 'pointer'}}>
-                                                        {i.label.length > 25 ? i.label.slice(0,22) + '...eth' : i.label}
+                                                        {i.label.length > 25 ? i.label.slice(0,22) + '...' : i.label}.eth
                                                         <span className="float-right">{i.price} {tokens[i.assetId]}</span>
                                                     </a>
                                                 </li>
@@ -232,9 +243,9 @@ export default function ListedDomains() {
                                         </li> */}
                                     </ul>
                                 </div>
-                                <div className="price-footer rt-mt-30 text-center">
-                                    <a href="">View More </a>
-                                </div>
+                                {/* <div className="price-footer rt-mt-30 text-center">
+                                    <button cl>View More</button>
+                                </div> */}
                             </div>
                         </div>
                         {/* <div className="col-lg-6 col-md-6 mx-auto rt-mb-30 wow fade-in-bottom">

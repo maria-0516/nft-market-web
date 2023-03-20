@@ -328,7 +328,7 @@ const Header = () => {
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li> */}
-                                        {state.auth.isAuth && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link></li>}
+                                        {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link></li>}
 										<li className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`} onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
 												<li><Link to="/how-work">How It Works</Link></li>
@@ -362,7 +362,7 @@ const Header = () => {
 					<div className="row rt-breadcump-height align-items-center">
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
 							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong" style={{lineBreak: `${location.pathname.indexOf('domain')===1 ? 'anywhere' : 'auto'}`}}>{menu}</h4>
-                            {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>}
+                            {/* {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>} */}
                             {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{state.auth.address?.slice(0, 8) + '...' + state.auth.address?.slice(-8)}</p>}
 							{
 								(menu === 'Listed Crypto Domains' || menu === 'Buy Crypto Domains') && (

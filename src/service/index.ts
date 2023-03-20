@@ -173,12 +173,12 @@ const user_create = async (account: any) => {
 
 const user_login = async (account: any) => {
     try {
-        var res = await axios.post('/api/user-login', { address: account });
-        if (res.data.status) {
-            return res.data.data;
-        } else {
-            return false;
-        }
+        // var res = await axios.post('/api/user-login', { address: account });
+        // if (res.data.status) {
+        //     return res.data.data;
+        // } else {
+        //     return false;
+        // }
     } catch (err) {
         return false;
     }

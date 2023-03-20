@@ -13,6 +13,9 @@ import { useBlockchainContext } from '../../context';
 import { copyToClipboard } from '../../utils';
 import Pager from '../components/Pager';
 import Action from '../../service';
+import { getEnsDomainsByAddress } from '../../thegraph';
+import { storefront, tokens } from '../../contracts';
+import { ethers } from 'ethers';
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
@@ -29,7 +32,7 @@ export default function Author() {
     const [openShare, setOpenShare] = useState(false);
     const [copyStatus, setCopyStatus] = useState('Copy');
     const [ownFlag, setOwnFlag] = useState(false);
-    const [nfts, setNfts] = useState<Array<NFTData>>([])
+    const [orders, setOrders] = useState<Array<OrderData>>([])
     const [status, setStatus] = useState({
         limit: 10,
 		page: 0,
@@ -43,22 +46,40 @@ export default function Author() {
     const readNfts = async () => {
         setLoading("loading")
         try {
-            const formData = new FormData();
-            formData.append('p', String(status.page + 1));
-            formData.append('address', state.auth.address);
-            // formData.append('query', );
-    
-            const response = await Action.user_nfts(formData);
-            if (response.success) {
-                let _data = [] as Array<NFTData>
-                if (response.data?.length > 0) {
-                    response.data.map((i: any ,k: any) => _data.push(i))
-                }
-                setNfts([..._data])
-                setStatus({...status, total: response.meta.total})
-            } else {
-                console.log("readNftsError")
+            if (address) {
+                const rows = await getEnsDomainsByAddress(address.toLowerCase(), status.page * status.limit, status.limit)
+                const orders = await storefront.getOrders(0, 100)
+
+                console.log(orders)
+                setOrders(orders.map((i: any)=>({
+                    id:             Number(i.id),
+                    collection:     '',
+                    label:          i.label,
+                    assetId: 		i.assetId.toString(),
+                    price: 			ethers.utils.formatEther(i.price),
+                    token: 	        tokens[i.token],
+                    seller: 	    i.seller,
+                    expires:        Number(i.expires),
+                    status: 		'pending'
+                })).filter((i: any)=>i.id!==0))
             }
+            
+            // const formData = new FormData();
+            // formData.append('p', String(status.page + 1));
+            // formData.append('address', state.auth.address);
+            // // formData.append('query', );
+    
+            // const response = await Action.user_nfts(formData);
+            // if (response.success) {
+            //     let _data = [] as Array<NFTData>
+            //     if (response.data?.length > 0) {
+            //         response.data.map((i: any ,k: any) => _data.push(i))
+            //     }
+            //     setNfts([..._data])
+            //     setStatus({...status, total: response.meta.total})
+            // } else {
+            //     console.log("readNftsError")
+            // }
         } catch (error) {
             console.log("readNfts", error)
         }
@@ -67,12 +88,12 @@ export default function Author() {
 
     React.useEffect(() => {
         readNfts()
-    }, [state.page])
+    }, [address, status.page])
 
-    useLayoutEffect(() => {
-        if (address === state.auth.address) setOwnFlag(true);
-        else setOwnFlag(false);
-    }, [address, state.auth.address]);
+    // useLayoutEffect(() => {
+    //     if (address === state.auth.address) setOwnFlag(true);
+    //     else setOwnFlag(false);
+    // }, [address, state.auth.address]);
 
     const activitiesData = useMemo(() => {
         return state.activities.filter((item: any) => {
@@ -267,7 +288,7 @@ export default function Author() {
                                 <div className="tab-pane fade-in-bottom show active" id="rt-tab-1" role="tabpanel"
                                     aria-labelledby="rt-tab-1-tab">
                                     <div className="table-responsive">
-                                        {nfts.length!==0? (
+                                        {orders.length!==0? (
                                             <table className="table domain-table">
                                                 <thead>
                                                     <tr className="rt-light-gray">
@@ -278,12 +299,12 @@ export default function Author() {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {nfts.map((i: NFTData, k) => (
-                                                        <tr onClick={()=>navigate(`/domain/${i.name}`)}>
-                                                            <th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
-                                                            <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{!!i.marketData?.created ? `${i.marketData?.price} ${state.currencies[0].value===i.marketData?.token ? state.currencies[0].label : state.currencies[1].label}` : i.attributes?.cost}</td>
-                                                            <td className="f-size-18 f-size-md-18 rt-semiblod text-338">{new Date((i.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</td>
-                                                            <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm4 pill">{!!i.marketData?.created ? 'Listed' : 'List it now!'}</a></td>
+                                                    {orders.map((i, k) => (
+                                                        <tr key={k} onClick={()=>navigate(`/domain/${i.label}.eth`)}>
+                                                            <th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.label}.eth</th>
+                                                            <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.price}</td>
+                                                            <td className="f-size-18 f-size-md-18 rt-semiblod text-338">{new Date((i.expires || 0) * 1000).toLocaleDateString()}</td>
+                                                            <td className="text-right"><a href="#" className="rt-btn rt-gradient2 rt-sm4 pill">Cancel</a></td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

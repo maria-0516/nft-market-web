@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useState, useMemo } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 import Select from 'react-select';
@@ -9,6 +10,7 @@ import { useBlockchainContext } from '../../context';
 import Action from '../../service';
 import Pager from '../components/Pager';
 import { useNavigate } from 'react-router-dom';
+import { getEnsDomains } from '../../thegraph';
 
 const customStyles = {
     option: (base: any, state: any) => ({
@@ -60,7 +62,7 @@ export default function Explore() {
     const [status, setStatus] = useState({
         limit: 10,
 		page: 0,
-        total: 0
+        total: 500
     })
     const navigate = useNavigate();
 
@@ -68,78 +70,106 @@ export default function Explore() {
 		setStatus({...status, page})
 	}
 
-    // status filter
-    const filter1 = useCallback(
-        (item: any) => {
-            switch (option1) {
-                case 'forsale':
-                    return (
-                        item?.owner?.toUpperCase() === state.addresses?.Marketplace?.toUpperCase()
-                    );
-                case 'all':
-                    return (
-                        item?.owner?.toUpperCase() !== state.addresses?.Marketplace?.toUpperCase()
-                    );
-                default:
-                    return true;
-            }
-        },
-        [option1]
-    );
+    // // status filter
+    // const filter1 = useCallback(
+    //     (item: any) => {
+    //         switch (option1) {
+    //             case 'forsale':
+    //                 return (
+    //                     item?.owner?.toUpperCase() === state.addresses?.Marketplace?.toUpperCase()
+    //                 );
+    //             case 'all':
+    //                 return (
+    //                     item?.owner?.toUpperCase() !== state.addresses?.Marketplace?.toUpperCase()
+    //                 );
+    //             default:
+    //                 return true;
+    //         }
+    //     },
+    //     [option1]
+    // );
 
-    const filter2 = useCallback((item: any) => {
-        return true;
-    }, []);
+    // const filter2 = useCallback((item: any) => {
+    //     return true;
+    // }, []);
 
-    //search filter
-    const filter3 = useCallback(
-        (item: any) => {
-            const searchParams = ['owner', 'name', 'description', 'collectionAddress'];
-            return searchParams.some((newItem) => {
-                return (
-                    item[newItem]?.toString().toLowerCase().indexOf(searchWord.toLowerCase()) >
-                        -1 ||
-                    item['metadata'][newItem]
-                        ?.toString()
-                        .toLowerCase()
-                        .indexOf(searchWord.toLowerCase()) > -1
-                );
-            });
-        },
-        [searchWord]
-    );
+    // //search filter
+    // const filter3 = useCallback(
+    //     (item: any) => {
+    //         const searchParams = ['owner', 'name', 'description', 'collectionAddress'];
+    //         return searchParams.some((newItem) => {
+    //             return (
+    //                 item[newItem]?.toString().toLowerCase().indexOf(searchWord.toLowerCase()) >
+    //                     -1 ||
+    //                 item['metadata'][newItem]
+    //                     ?.toString()
+    //                     .toLowerCase()
+    //                     .indexOf(searchWord.toLowerCase()) > -1
+    //             );
+    //         });
+    //     },
+    //     [searchWord]
+    // );
 
-    // sort option
-    const sortBy = useCallback(
-        (a: any, b: any) => {
-            let res = true;
-            switch (selectedOption2.value) {
-                case 'Rating':
-                    res = Number(a.likes?.length) < Number(b.likes?.length);
-                    break;
-                case 'PriceLTH':
-                    if (a.marketdata?.price == null || Number(b.marketdata?.price) == 0) return -1;
-                    res = Number(a.marketdata?.price) > Number(b.marketdata?.price);
-                    break;
-                case 'PriceHTL':
-                    if (a.marketdata?.price == null || Number(b.marketdata?.price) == 0) return -1;
-                    res = Number(b.marketdata?.price) > Number(a.marketdata?.price);
-                    break;
-                case 'NameASC':
-                    res = a.metadata?.name > b.metadata?.name;
-                    break;
-                case 'NameDESC':
-                    res = b.metadata?.name > a.metadata?.name;
-                    break;
-                default:
-                    res = true;
-            }
-            return res ? 1 : -1;
-        },
-        [selectedOption2]
-    );
+    // // sort option
+    // const sortBy = useCallback(
+    //     (a: any, b: any) => {
+    //         let res = true;
+    //         switch (selectedOption2.value) {
+    //             case 'Rating':
+    //                 res = Number(a.likes?.length) < Number(b.likes?.length);
+    //                 break;
+    //             case 'PriceLTH':
+    //                 if (a.marketdata?.price == null || Number(b.marketdata?.price) == 0) return -1;
+    //                 res = Number(a.marketdata?.price) > Number(b.marketdata?.price);
+    //                 break;
+    //             case 'PriceHTL':
+    //                 if (a.marketdata?.price == null || Number(b.marketdata?.price) == 0) return -1;
+    //                 res = Number(b.marketdata?.price) > Number(a.marketdata?.price);
+    //                 break;
+    //             case 'NameASC':
+    //                 res = a.metadata?.name > b.metadata?.name;
+    //                 break;
+    //             case 'NameDESC':
+    //                 res = b.metadata?.name > a.metadata?.name;
+    //                 break;
+    //             default:
+    //                 res = true;
+    //         }
+    //         return res ? 1 : -1;
+    //     },
+    //     [selectedOption2]
+    // );
 
     const readNfts = async () => {
+        setLoading("1")
+        try {
+
+            const rows = await getEnsDomains(status.page * status.limit, status.limit)
+            // console.log(rows)
+            setNfts(rows)
+            // setNfts([..._data])
+            // const formData = new FormData();
+            // formData.append('p', String(status.page + 1));
+            // // formData.append('query', );
+
+            // const response = await Action.all_nfts(formData);
+            // if (response.success) {
+            //     let _data = [] as NFTData[]
+            //     if (response.data?.length > 0) {
+            //         response.data.map((i: NFTData ,k: any) => _data.push(i))
+            //     }
+            //     setNfts([..._data])
+            //     setStatus({...status, total: response.meta.total})
+            // } else {
+            //     console.log("readNftsError")
+            // }
+        } catch (error) {
+            console.log("readNfts", error)
+        }
+        setLoading("")
+    }
+    /* const readNfts = async () => {
         setLoading("1")
         try {
             const formData = new FormData();
@@ -161,15 +191,15 @@ export default function Explore() {
             console.log("readNfts", error)
         }
         setLoading("")
-    }
+    } */
 
     React.useEffect(() => {
         readNfts()
     }, [status.page])
 
-    const handleClick = (name: string, listed: string) => {
-        navigate(`/domain/${name}`);
-    };
+    // const handleClick = (name: string, listed: string) => {
+    //     navigate(`/domain/${name}`);
+    // };
 
     return (
         <div>
@@ -295,7 +325,7 @@ export default function Explore() {
                                             <tbody>
                                                 {
                                                     nfts.map((i: NFTData, index: number) => (
-                                                        <tr key={index} onClick={() => handleClick(i.name, i.marketData?.seller || "")}>
+                                                        <tr key={index}>
                                                             <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.name}</th>
                                                             <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.owner.slice(0, 8) + '...' + i.owner.slice(-5)}</code></td>
                                                             <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.attributes?.expiryDate || 0) * 1000).toDateString()}</th>

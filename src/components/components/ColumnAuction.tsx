@@ -24,7 +24,7 @@ export default function ColumnAuction({name}: Props) {
         creator: 	'',
         owner: 		'',
         name: 		'',
-        marketData: {}
+        // marketData: {}
     });
     const [price, setPrice] = useState('');
     const [date, setDate] = useState(new Date());
@@ -32,6 +32,7 @@ export default function ColumnAuction({name}: Props) {
     const [approveFlag, setApproveFlag] = useState(false);
     const [currency, setCurrency] = useState(state.currencies[0].value);
     const [order, setOrder] = useState<OrderData>({
+        id: 0,
         collection: '',
         assetId: '',
         label: '',
@@ -72,14 +73,14 @@ export default function ColumnAuction({name}: Props) {
 
     useEffect(() => {
         (async () => {
-            setApproveFlag(nft.isOffchain || true);
-            if (nft !== null && !nft.isOffchain) {
-                const validation = await checkNFTApprove({
-                    assetId: nft.tokenId,
-                    nftAddress: nft.collection
-                });
-                setApproveFlag(validation);
-            }
+            // setApproveFlag(nft.isOffchain || true);
+            // if (nft !== null && !nft.isOffchain) {
+            //     const validation = await checkNFTApprove({
+            //         assetId: nft.tokenId,
+            //         nftAddress: nft.collection
+            //     });
+            //     setApproveFlag(validation);
+            // }
         })();
     }, [nft]);
 
@@ -308,7 +309,7 @@ export default function ColumnAuction({name}: Props) {
                                                     <button className="rt-btn rt-gradient pill d-block rt-mb-15">
                                                         <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
                                                     </button>
-                                                ) : approveFlag || nft.isOffchain ? (
+                                                ) : approveFlag/*  || nft.isOffchain */ ? (
                                                     <button
                                                         className="rt-btn rt-gradient pill d-block rt-mb-15"
                                                         disabled={

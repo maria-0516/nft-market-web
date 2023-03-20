@@ -36,9 +36,9 @@ declare interface NftMetaData {
 declare interface NFTData {
 	collection:		string // =collection.address - collectionAddress
     tokenId:		string
-    creator: 		string // creator address
     owner: 			string // owner address
-	name: 			string
+	creator: 		string // creator address
+    name: 			string
     attributes?:     {
         expiryDate: number
         created:    number,
@@ -46,17 +46,21 @@ declare interface NFTData {
         texts:      string[]
     }
     likes?: 		string[]
-    isOffchain?: 	boolean
-    metadata?: 		NftMetaData
-    marketData: {
-        seller?:     string
-        price?:      string
-        token?:      string
-        created?:    number
-    }
+    expires?:           number
+    created?:          number
+    cost?:           number
+    // isOffchain?: 	boolean
+    // metadata?: 		NftMetaData
+    // marketData: {
+    //     seller?:     string
+    //     price?:      string
+    //     token?:      string
+    //     created?:    number
+    // }
 }
 
 declare interface OrderData {
+    id:             number
     collection:     string
     label:          string
     assetId: 		string
