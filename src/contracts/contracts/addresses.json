@@ -1,6 +1,6 @@
 {
-    "storefront": "0x297DCa55AB97cfd49563b5b20d7B44206D4618A0",
-    "nft": "0xdb98E916316E919b38108E5FB1434d56201a6eB6",
+    "storefront": "0x25ecc1821cfE10f1f4Aa9259A3bc1bA9eE4bAa65",
+    "nft": "0xc4097Eef727a1eBcD03C914A2366FE45Fff47553",
     "tokenIds": [
         {
             "label": "bittrex",
@@ -9,6 +9,10 @@
         {
             "label": "coindash",
             "tokenId": "1047244300711308005502691544352853532897644948485530147806652033478270764633"
+        },
+        {
+            "label": "locations",
+            "tokenId": "217186629421343442058574315717344430350387817465866244494234513886299410962"
         }
     ]
 }

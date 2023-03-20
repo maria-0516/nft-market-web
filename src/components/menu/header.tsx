@@ -337,7 +337,7 @@ const Header = () => {
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li> */}
-                                        {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to={`/${!!wallet.account ? wallet.account : ''}`}>Sell Your Domain</Link></li>}
+                                        {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains">Sell Your Domain</Link></li>}
 										<li className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`} onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
 												<li><Link to="/how-work">How It Works</Link></li>

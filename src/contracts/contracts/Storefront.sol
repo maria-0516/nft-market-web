@@ -115,6 +115,7 @@ contract Storefront is Ownable, Pausable {
     uint256 public constant maxCutPerMillion = 300000; // 30% cut
     
     uint256 public royaltyPerMillion=0;
+    address public treasury;
 	/**
 	 * @dev Initialize this contract. Acts as a constructor
 	 */
@@ -144,6 +145,10 @@ contract Storefront is Ownable, Pausable {
 	// 	tokens.push(_weth);
 	// }
 
+	function setTreasury(address _treasury) public onlyOwner {
+		treasury = _treasury;
+	}
+	
 	function addtoken(address _token) public onlyOwner {
 		tokens[_token] = true;
 	}
@@ -491,8 +496,10 @@ contract Storefront is Ownable, Pausable {
 		uint _fee = _price * cutPerMillion / 1e6;
 		if (_order.token == address(0)) {
 			TransferHelper.safeTransferETH(_order.seller, _price - _fee);
+			if (treasury!=address(0)) TransferHelper.safeTransferETH(treasury, _fee);
 		} else {
 			TransferHelper.safeTransfer(_order.token, _order.seller, _price - _fee);
+			if (treasury!=address(0)) TransferHelper.safeTransfer(treasury, _order.seller, _price - _fee);
 		}
 		IERC721(_order.collection).transferFrom(address(this), _buyer, _order.assetId);
 		orderById[_orderId].dealPrice = _price;

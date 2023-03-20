@@ -42,7 +42,7 @@ export const provider = new ethers.providers.JsonRpcProvider(config.rpc[0])
 export const storefront = new ethers.Contract(Addresses.storefront, storefrontAbi, provider);
 
 export const tokens = {
-    '0x0000000000000000000000000000000000000000': "ETH"
+    '0x0000000000000000000000000000000000000000': "ETH",
 } as {[key: string]: string}
 // const getNFTContract = (address: any) => new ethers.Contract(address, Abis.NFT, signer);
 // const getTokenContract = (address: any) => {
