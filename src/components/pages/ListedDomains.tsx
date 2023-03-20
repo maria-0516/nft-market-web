@@ -87,9 +87,9 @@ export default function ListedDomains() {
     //     setFloorPrice(bump as any);
     // }, [state.collectionNFT]);
 
-    const handle = (name: string) => {
-        navigate(`/domain/${name}`);
-    };
+    // const handle = (name: string) => {
+    //     navigate(`/domain/${name}`);
+    // };
 
     return (
         // <div>
@@ -191,11 +191,11 @@ export default function ListedDomains() {
                                     <ul className="rt-list">
                                         {
                                             orders.map((i: OrderData, k: number) => (
-                                                <li className="clearfix" key={k} onClick={() => handle(i.label)}>
-                                                    <a style={{cursor: 'pointer'}}>
+                                                <li className="clearfix" key={k}>
+                                                    <Link to={`/domain/${i.label}.eth`} style={{cursor: 'pointer'}}>
                                                         {i.label.length > 25 ? i.label.slice(0,22) + '...' : i.label}.eth
                                                         <span className="float-right">{i.price} {tokens[i.assetId]}</span>
-                                                    </a>
+                                                    </Link>
                                                 </li>
                                             ))
                                         }

@@ -325,7 +325,7 @@ export default function Explore() {
                                             <tbody>
                                                 {
                                                     nfts.map((i: NFTData, index: number) => (
-                                                        <tr key={index}>
+                                                        <tr key={index} onClick={()=>navigate(`/domain/${i.name}`)} style={{cursor: 'pointer'}}>
                                                             <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.name}</th>
                                                             <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.owner.slice(0, 8) + '...' + i.owner.slice(-5)}</code></td>
                                                             <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.attributes?.expiryDate || 0) * 1000).toDateString()}</th>

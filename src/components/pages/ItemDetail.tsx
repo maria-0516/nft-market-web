@@ -11,10 +11,20 @@ import { toast } from 'react-toastify';
 import config from '../../config.json'
 import Dialog from '../components/Dialog';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
-import { storefront } from '../../contracts';
+import { storefront, tokens } from '../../contracts';
+import { ethers } from 'ethers';
 
 // const ownerAddress = "0x124d95e702ddb23547e83e53ecbfbd76e051f840"
 
+interface BidItem {
+    id:         number
+    assetId: 	string
+    bidder:     string
+    token:      string
+    price:      string
+    expires:    number
+    timestamp:  number
+}
 export default function ItemDetail() {
     const location = useLocation()
     const wallet = useWallet();
@@ -37,9 +47,9 @@ export default function ItemDetail() {
         token: '',
         seller: '',
         expires: 0,
-        status: 'pending',
-        bids: []
+        status: 'pending'
     })
+    const [bids, setBids] = useState<BidItem[]>([])
     const [itemData, setItemData] = useState<NFTData>({
         collection:	'',
         tokenId:	'',
@@ -73,11 +83,21 @@ export default function ItemDetail() {
                 const label = name.slice(0, -4);
                 const _tokenId = makeTokenId(label);
                 const order = await storefront.getOrderByTokenId(_tokenId)
-                console.log("order", order)
-                if (order.id) {
+                const _orderId = Number(order.id)
+                // console.log("order", order)
+                if (_orderId) {
                     setOrder(order)
-                    const bids = await storefront.getBidsByOrderId(10000006, 0, 100)
+                    const bids = await storefront.getBidsByOrderId(_orderId, 0, 100) as BidData[]
                     console.log("bids", bids[0])
+                    setBids(bids.map(i=>({
+                        id:         Number(i.id),
+                        assetId: 	i.assetId.toString(),
+                        bidder:     i.bidder,
+                        token:      tokens[i.token],
+                        price:      ethers.utils.formatEther(i.price),
+                        expires:    Number(i.expires),
+                        timestamp:  Number(i.timestamp)
+                    })).filter(i=>i.id!==0))
                 }
             }
         } catch (error) {
@@ -420,11 +440,9 @@ export default function ItemDetail() {
                                         <p style={{ fontSize: '20px' }}>Bid History</p>
                                         <hr />
                                         <div className="spacer-20"></div>
-                                        {!!order?.seller && (order?.bids || []).length > 0 && (
                                             <div className="de_tab_content">
                                                 <div className="tab-1 onStep fadeIn">
-                                                    {(order?.bids || []).map(
-                                                        (i: NftBidData, index: any) => (
+                                                    {bids.map((i: any, index: any) => (
                                                             <>
                                                                 <div className="p_list">
                                                                     <div className="p_list_pp">
@@ -440,7 +458,6 @@ export default function ItemDetail() {
                                                                     </div>
                                                                     <div className="p_list_info">
                                                                         <b>
-                                                                            {index}{' '}
                                                                             {index}
                                                                         </b>{' '}
                                                                         {translateLang(
@@ -485,12 +502,6 @@ export default function ItemDetail() {
                                                     )}
                                                 </div>
                                             </div>
-                                        )} 
-                                        {/* : (
-                                            <div>
-                                                'No bid history'
-                                            </div>
-                                        ) */}
                                     </>
                                 ) : (
                                     <div className="row">
