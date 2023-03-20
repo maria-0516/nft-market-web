@@ -40,14 +40,17 @@ export default function ItemDetail() {
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState<OrderData>({
         id: 0,
-        collection: '',
         label: '',
-        assetId: '',
-        price: '',
-        token: '',
         seller: '',
+        assetId: '',
+        collection: '',
+        token: '',
+        price: 0,
         expires: 0,
-        status: 'pending'
+        timestamp: 0,
+        bidder: '',
+        bidPrice: 0,
+        dealPrice: 0,
     })
     const [bids, setBids] = useState<BidItem[]>([])
     const [itemData, setItemData] = useState<NFTData>({
@@ -75,33 +78,48 @@ export default function ItemDetail() {
     //     setPageFlag(flag)
     // }, [itemData, wallet.status])
 
-    const readNft = async () => {
+    const readData = async () => {
         try {
             if (name) {
                 const json = await getEnsDomainByName(name)
                 setItemData(json as any)
                 const label = name.slice(0, -4);
                 const _tokenId = makeTokenId(label);
-                const order = await storefront.getOrderByTokenId(_tokenId)
-                const _orderId = Number(order.id)
-                // console.log("order", order)
-                if (_orderId) {
-                    setOrder(order)
-                    const bids = await storefront.getBidsByOrderId(_orderId, 0, 100) as BidData[]
-                    console.log("bids", bids[0])
-                    setBids(bids.map(i=>({
-                        id:         Number(i.id),
-                        assetId: 	i.assetId.toString(),
-                        bidder:     i.bidder,
-                        token:      tokens[i.token],
-                        price:      ethers.utils.formatEther(i.price),
-                        expires:    Number(i.expires),
-                        timestamp:  Number(i.timestamp)
-                    })).filter(i=>i.id!==0))
-                }
+                const order = await storefront.getOrderByTokenId(_tokenId) as OrderData
+                if (order.label==='') return
+                setOrder({
+                    id: Number(order.id),
+                    label: order.assetId,
+                    seller: order.seller,
+                    assetId: order.assetId.toString(),
+                    collection: order.collection,
+                    token: order.token,
+                    price: Number(ethers.utils.formatEther(order.price)),
+                    expires: Number(order.expires),
+                    timestamp: Number(order.timestamp),
+                    bidder: order.bidder,
+                    bidPrice: Number(ethers.utils.formatEther(order.bidPrice)),
+                    dealPrice: Number(ethers.utils.formatEther(order.dealPrice)),
+                })
+                // const _orderId = Number(order.id)
+                // // console.log("order", order)
+                // if (_orderId) {
+                //     setOrder(order)
+                //     const bids = await storefront.getBidsByOrderId(_orderId, 0, 100) as BidData[]
+                //     console.log("bids", bids[0])
+                //     setBids(bids.map(i=>({
+                //         id:         Number(i.id),
+                //         assetId: 	i.assetId.toString(),
+                //         bidder:     i.bidder,
+                //         token:      tokens[i.token],
+                //         price:      ethers.utils.formatEther(i.price),
+                //         expires:    Number(i.expires),
+                //         timestamp:  Number(i.timestamp)
+                //     })).filter(i=>i.id!==0))
+                // }
             }
         } catch (error) {
-            console.log('readNft', error)
+            console.log('readData', error)
         }
     }
 
@@ -129,7 +147,7 @@ export default function ItemDetail() {
 	}
 
     useEffect(() => {
-        readNft()
+        readData()
     }, [])
 
     // useEffect(() => {
@@ -155,107 +173,54 @@ export default function ItemDetail() {
     //             }, 1000);
     // }, [itemData]);
 
-    // useEffect(() => {
-    //     if (order.name !== "") {
-    //         if (itemData.owner?.toLowerCase() === state.addresses.Marketplace?.toLowerCase()) {
-    //             // on market
-    //             if (!state.auth?.address?.toLowerCase()) {
-    //                 setPageFlag(4);
-    //                 return;
-    //             }
-    //             itemData.marketdata?.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
-    //                 ? setPageFlag(2)
-    //                 : setPageFlag(4);
-    //         } else {
-    //             itemData.owner?.toLowerCase() === state.auth?.address?.toLowerCase()
-    //                 ? setPageFlag(1)
-    //                 : setPageFlag(3);
-    //         }
-    //     }
-    // }, [itemData, state.auth?.address]);
-
-    // useEffect(() => {
-    //     for (let i = 0; i < state.collectionNFT.length; i++) {
-    //         if (state.collectionNFT[i].address === collection) {
-    //             setCorrectCollection(state.collectionNFT[i]);
-    //             var itemData = state.collectionNFT[i].items.find((item: any) => item.tokenID === id);
-
-    //             let attributeRarityies = itemData?.metadata?.attributes.map((attribute: any, index: any) => {
-    //                 let itemsWithSameAttributes = state.collectionNFT[i].items.filter((item: any) => {
-    //                     let hasSameAttribute = item.metadata?.attributes.find((itemAttribute: any) => {
-    //                         if (
-    //                             (itemAttribute.key === attribute.key ||
-    //                                 itemAttribute.trait_type === attribute.trait_type) &&
-    //                             itemAttribute.value === attribute.value
-    //                         ) {
-    //                             return true;
-    //                         }
-    //                     });
-    //                     if (!!hasSameAttribute) {
-    //                         return true;
-    //                     }
-    //                     return false;
-    //                 });
-
-    //                 return (
-    //                     (itemsWithSameAttributes.length * 100) / state.collectionNFT[i].items.length
-    //                 );
-    //             });
-
-    //             if (!itemData) navigate('/explorer');
-    //             else setItemData({ ...itemData, attributeRarityies });
-    //             break;
-    //         }
-    //     }
-    // }, [state.collectionNFT]);
 
     const handleBuy = async () => {
-        if (order.assetId!==itemData.tokenId) return
-        if (!state.signer) {
-            wallet.connect();
-            // navigate('/signPage');
-            return;
-        }
-        try {
-            setLoading(true);
-            await buyNFT({
-                nftAddress: order.collection,
-                assetId: order.assetId,
-                price: order.price,
-                acceptedToken: order.token
-            });
-            // NotificationManager.success(translateLang('buynft_success'));
-            toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
-            setLoading(false);
-        } catch (err: any) {
-            console.log(err.message);
-            // NotificationManager.error(translateLang('buynft_error'));
-            toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
-            setLoading(false);
-        }
+        // if (order.assetId!==itemData.tokenId) return
+        // if (!state.signer) {
+        //     wallet.connect();
+        //     // navigate('/signPage');
+        //     return;
+        // }
+        // try {
+        //     setLoading(true);
+        //     await buyNFT({
+        //         nftAddress: order.collection,
+        //         assetId: order.assetId,
+        //         price: order.price,
+        //         acceptedToken: order.token
+        //     });
+        //     // NotificationManager.success(translateLang('buynft_success'));
+        //     toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
+        //     setLoading(false);
+        // } catch (err: any) {
+        //     console.log(err.message);
+        //     // NotificationManager.error(translateLang('buynft_error'));
+        //     toast(translateLang('buynft_error'), {position: "top-right", autoClose: 2000})
+        //     setLoading(false);
+        // }
     };
 
     const handleApproveBid = async () => {
-        if (order.assetId!==itemData.tokenId) return
-        try {
-            if (itemData !== null) {
-                setLoading(true);
+        // if (order.assetId!==itemData.tokenId) return
+        // try {
+        //     if (itemData !== null) {
+        //         setLoading(true);
 
-                await bidApprove({
-                    address: order.collection,
-                    id: order.assetId,
-                    price: order.price
-                });
-                // NotificationManager.success(translateLang('approve_succeess'));
-                toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
-                setLoading(false);
-            }
-        } catch (err: any) {
-            console.log(err.message);
-            setLoading(false);
-            // NotificationManager.error(translateLang('approve_error'));
-            toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
-        }
+        //         await bidApprove({
+        //             address: order.collection,
+        //             id: order.assetId,
+        //             price: order.price
+        //         });
+        //         // NotificationManager.success(translateLang('approve_succeess'));
+        //         toast(translateLang('approve_succeess'), {position: "top-right", autoClose: 2000})
+        //         setLoading(false);
+        //     }
+        // } catch (err: any) {
+        //     console.log(err.message);
+        //     setLoading(false);
+        //     // NotificationManager.error(translateLang('approve_error'));
+        //     toast(translateLang('approve_error'), {position: "top-right", autoClose: 2000})
+        // }
     };
 
     const toAuction = () => {
@@ -386,15 +351,15 @@ export default function ItemDetail() {
                                                             <>
                                                                 <div className="d-flex justify-content-between rt-mb-20">
                                                                     <span className="f-size-20 rt-light3">Current price:</span>
-                                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> {order.token===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}</span></span>
+                                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{order.price}</span></span><span className="f-size-24"> ETH</span></span>
                                                                 </div>
                                                                 <div className="d-flex justify-content-between rt-mb-20">
                                                                 <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
-                                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} {order.token===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label} ({config.fee}%)</span>
+                                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * config.fee / 100} ETH ({config.fee}%)</span>
                                                                 </div>
                                                                 <div className="d-flex justify-content-between rt-mb-20">
                                                                 <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
-                                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} {order.token===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}</span>
+                                                                    <span className="f-size-20 rt-light3 ">{Number(order.price) * (1 + config.fee / 100)} ETH</span>
                                                                 </div>
                                                                 <div className="d-flex justify-content-between rt-mb-20">
                                                                     <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
@@ -437,12 +402,17 @@ export default function ItemDetail() {
                                             </div>
                                         </div>
                                         <div className="spacer-10"></div>
-                                        <p style={{ fontSize: '20px' }}>Bid History</p>
+                                        <p style={{ fontSize: '20px' }}>Bid</p>
                                         <hr />
-                                        <div className="spacer-20"></div>
+                                        <div className='rt-box-style-2 rt-mb-30'>
+                                            <div>{order.bidder}</div>
+                                            <div>{order.bidPrice}</div>
+                                            <div>{order.bidder}</div>
+                                        </div>
+                                        {/* <div className="spacer-20"></div>
                                             <div className="de_tab_content">
                                                 <div className="tab-1 onStep fadeIn">
-                                                    {bids.map((i: any, index: any) => (
+                                                    {[order.bi].map((i: any, index: any) => (
                                                             <>
                                                                 <div className="p_list">
                                                                     <div className="p_list_pp">
@@ -476,7 +446,7 @@ export default function ItemDetail() {
                                                                             {i.timestamp? moment(Number(i.timestamp)).format('lll'): ''}
                                                                         </b>
                                                                     </div>
-                                                                    {index === 0 /* && itemData.marketData?.seller === state.auth.address */ ? (
+                                                                    {index === 0 /* && itemData.marketData?.seller === state.auth.address ? (
                                                                         loading ? (
                                                                             <button className="btn-main round-button">
                                                                                 <span
@@ -501,7 +471,7 @@ export default function ItemDetail() {
                                                         )
                                                     )}
                                                 </div>
-                                            </div>
+                                            </div> */}
                                     </>
                                 ) : (
                                     <div className="row">

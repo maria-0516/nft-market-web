@@ -33,14 +33,17 @@ export default function ColumnAuction({name}: Props) {
     const [currency, setCurrency] = useState(state.currencies[0].value);
     const [order, setOrder] = useState<OrderData>({
         id: 0,
-        collection: '',
-        assetId: '',
         label: '',
-        price: '',
-        token: '',
         seller: '',
+        assetId: '',
+        collection: '',
+        token: '',
+        price: 0,
         expires: 0,
-        status: 'pending',
+        timestamp: 0,
+        bidder: '',
+        bidPrice: 0,
+        dealPrice: 0,
     })
 
     // useEffect(() => {
