@@ -3,7 +3,7 @@ import Footer from '../menu/footer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
 import Action from '../../service';
-import { useWallet } from 'use-wallet';
+import { useWallet } from '../../use-wallet/src';
 import { ethers } from 'ethers';
 import addresses from '../../contracts/contracts/addresses.json'
 import { storefront, tokens } from '../../contracts';

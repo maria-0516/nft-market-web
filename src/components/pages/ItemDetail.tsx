@@ -4,7 +4,7 @@ import moment from 'moment';
 import { useBlockchainContext } from '../../context';
 import BuyModal from '../components/BuyModal';
 import { currentTime, styledAddress } from '../../utils';
-import { useWallet } from 'use-wallet';
+import { useWallet } from '../../use-wallet/src';
 import Action from '../../service';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';

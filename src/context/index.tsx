@@ -21,7 +21,7 @@ import addresses from '../contracts/contracts/addresses.json';
 import Action from '../service';
 
 import { translations } from '../components/language/translate';
-import { useWallet } from 'use-wallet';
+import { useWallet } from '../use-wallet/src';
 
 const BlockchainContext = createContext({});
 
