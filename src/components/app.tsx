@@ -86,7 +86,8 @@ const App = () => {
                                 <Route path="/listed-domains" element={<ListedDomains />} />
                                 {/* <Route path="/signPage" element={<Wallet />} /> */}
                                 {/* <Route path="/collection/:collection" element={<Collection />}/> */}
-                                <Route path="/:address" element={<Author />} />
+                                <Route path="/my-domains" element={<Author />} />
+                                
                                 <Route path="/how-work" element={<HowWork />} />
                                 <Route path="/faq" element={<Faq />} />
                                 <Route path="/partnership" element={<Partnership />} />
@@ -131,6 +132,7 @@ const App = () => {
                                     }
                                 />
                                 <Route path="/domain/:name" element={<ItemDetail />}/>
+                                <Route path="/:address" element={<Author />} />
                                 <Route path="*" element={<Navigate to={'/'} />} />
                             </Routes>
                             <Footer />

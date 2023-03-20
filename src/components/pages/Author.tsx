@@ -16,6 +16,7 @@ import Action from '../../service';
 import { getEnsDomainsByAddress } from '../../thegraph';
 import { storefront, tokens } from '../../contracts';
 import { ethers } from 'ethers';
+import { useWallet } from '../../use-wallet/src';
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
@@ -24,6 +25,7 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 export default function Author() {
+    const wallet = useWallet()
     const { address } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
@@ -38,6 +40,7 @@ export default function Author() {
 		page: 0,
         total: 0
     })
+    const account = address || wallet.account;
 
     const onPage = (page: number) => {
 		setStatus({...status, page})
@@ -46,8 +49,8 @@ export default function Author() {
     const readNfts = async () => {
         setLoading("loading")
         try {
-            if (address) {
-                const rows = await getEnsDomainsByAddress(address.toLowerCase(), status.page * status.limit, status.limit)
+            if (account) {
+                const rows = await getEnsDomainsByAddress(account.toLowerCase(), status.page * status.limit, status.limit)
                 const orders = await storefront.getOrders(0, 100)
 
                 console.log(orders)

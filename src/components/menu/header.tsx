@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Breakpoint, BreakpointProvider, setDefaultBreakpoints } from 'react-socks';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import useOnclickOutside from 'react-cool-onclickoutside';
 import { useBlockchainContext } from '../../context';
 import SearchModal from '../components/searchModal';
@@ -28,7 +28,8 @@ const NavLink = (props: any) => (
 const Header = () => {
     const navigate = useNavigate();
     const wallet = useWallet();
-
+    const { address } = useParams();
+    
     const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
     const [openMenu2, setOpenMenu2] = useState(false);
@@ -50,6 +51,8 @@ const Header = () => {
         search: ''
     })
     const [walletInited, setWalletInited] = useState(false)
+
+    const account = address || wallet.account
 
     useEffect(() => {
         if (searchKey.trim() !== '' && focused) {
@@ -218,8 +221,14 @@ const Header = () => {
             setMenu('CNS Token')
         } else if (location.pathname.indexOf('auction')===1) {
             setMenu('List Domain For Sale')
-        } else if (/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1))) {
+        } else if (location.pathname.indexOf('my-domains')===1) {
             setMenu('My Domains')
+        } else if (/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1))) {
+            if (account) {
+                setMenu(`${account.slice(0, 10)}...${account.slice(-4)}`)
+            } else {
+                setMenu("no selected address")
+            }
         } else if (location.pathname.indexOf('domain')===1) {
             setMenu(location.pathname.slice(location.pathname.lastIndexOf('/')+1))
         }
