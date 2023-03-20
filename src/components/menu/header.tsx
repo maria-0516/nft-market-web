@@ -6,7 +6,7 @@ import { useBlockchainContext } from '../../context';
 import SearchModal from '../components/searchModal';
 import { changeNetwork } from '../../utils';
 import config from '../../config.json'
-import { useWallet } from 'use-wallet';
+import { useWallet } from '../../use-wallet/src';
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 

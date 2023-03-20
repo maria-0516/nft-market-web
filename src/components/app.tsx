@@ -28,7 +28,7 @@ import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken';
 import Loading from './components/Loading';
-import { useWallet } from 'use-wallet';
+import { useWallet } from '../use-wallet/src';
 
 // const httpLink = createHttpLink({
 //     uri: config.graphql

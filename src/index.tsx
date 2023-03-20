@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from "react-dom/client";
-import { UseWalletProvider } from 'use-wallet'
+import { UseWalletProvider } from './use-wallet/src'
 import Provider from './context';
 import '@1stquad/react-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css';
 import 'react-notifications/lib/notifications.css';

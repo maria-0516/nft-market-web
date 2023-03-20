@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import moment from 'moment';
-import { useWallet } from 'use-wallet';
+import { useWallet } from '../../use-wallet/src';
 import { toast } from 'react-toastify';
 import { useBlockchainContext } from '../../context';
 
