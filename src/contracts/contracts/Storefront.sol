@@ -28,30 +28,19 @@ library TransferHelper {
 
 
 contract Storefront is Ownable, Pausable {
-	struct Bid {
-		uint id;// Bid Id
-		uint orderId;
-		address collection;
-		string label;
-		uint assetId;
-		address bidder;// Bidder address
-		address token;// accepted token for trading item
-		uint price;// Price for the bid in wei
-		uint expires;// Time when this bid ends
-		uint timestamp; // created time
-	}
-	
 	struct Order {
 		uint id; // // Order ID
 		string label;
 		address seller; // Owner of the NFT
 		uint assetId;
 		address collection;// NFT registry address
-		address acceptedToken;// accepted token for trading item
+		address token;// accepted token for trading item
 		uint price;// Price (in wei) for the published item
 		uint expires;// Time when this sale ends
-		uint bidCount; // 
-		uint timestamp; // created time
+		uint timestamp;// Time when this sale ends
+		address bidder;// Bidder address
+		uint bidPrice;// Price for the bid in wei
+		uint dealPrice; // non-zero, means success
 	}
 
 	// ORDER EVENTS
@@ -60,7 +49,7 @@ contract Storefront is Ownable, Pausable {
 		address indexed seller,
 		address indexed collection,
 		uint indexed assetId,
-		address acceptedToken,
+		address token,
 		uint price,
 		uint expires
 	);
@@ -78,14 +67,11 @@ contract Storefront is Ownable, Pausable {
 	// BID EVENTS
 	event BidCreated(
 		uint id,
-		address indexed collection,
-		uint indexed assetId,
 		address indexed bidder,
-		uint price,
-		uint expires
+		uint price
 	);
 
-	event BidUpdated(uint id, uint price, uint expires);
+	event BidUpdated(uint id, uint price);
 	event BidAccepted(uint id);
 	event BidCancelled(uint id);
 
@@ -100,21 +86,16 @@ contract Storefront is Ownable, Pausable {
 	//using SafeERC20 for IERC20;
 
 	// address public weth;
-	mapping(address=>bool) public acceptedTokens;
+	mapping(address=>bool) public tokens;
 	uint public lastOrderId = 10000001;
-	uint public lastBidId = 20000001;
-	uint public constant MAX_BID_LIMIT = 100;
-
+	// uint public constant MAX_BID_LIMIT = 100;
 
 	mapping(uint => Order) public orderById; // orderId => Order
 	mapping(uint => uint) public orderByTokenId; // tokenId => orderId
 	mapping(uint => uint[]) public buckets; // timestamp => orderId[]
 	mapping(address => uint[]) ordersByOwner; // address => orderId[]
-	
-	
-	mapping(uint => Bid) public bidById; // bidId => Bid
-	mapping(uint => uint[]) public bidsByOrderId; // orderId => bidId[]
-	mapping(address => uint[]) bidsByOwner; // address => orderId[]
+	mapping(uint => Order) trades; // index => order
+	uint public tradeCount;
 
 	//mapping(address => uint[]) getOrdersByOwner; // address => orderId[]
 
@@ -130,8 +111,8 @@ contract Storefront is Ownable, Pausable {
 	event ChangedFeePerMillion(uint256 cutPerMillion);
 
     // Market fee on sales
-    uint256 public cutPerMillion=0;
-    uint256 public constant maxCutPerMillion = 100000; // 10% cut
+    uint256 public cutPerMillion = 100000;
+    uint256 public constant maxCutPerMillion = 300000; // 30% cut
     
     uint256 public royaltyPerMillion=0;
 	/**
@@ -139,7 +120,7 @@ contract Storefront is Ownable, Pausable {
 	 */
 	constructor() {
 		// weth = _weth;
-		// acceptedTokens.push(_weth);
+		// tokens.push(_weth);
 	}
 
 	
@@ -160,15 +141,15 @@ contract Storefront is Ownable, Pausable {
     }
 	// function setWETH(address _weth) public onlyOwner {
 	// 	weth = _weth;
-	// 	acceptedTokens.push(_weth);
+	// 	tokens.push(_weth);
 	// }
 
-	function addAcceptedToken(address _acceptedToken) public onlyOwner {
-		acceptedTokens[_acceptedToken] = true;
+	function addtoken(address _token) public onlyOwner {
+		tokens[_token] = true;
 	}
 
-	function removeAcceptedToken(address _acceptedToken) public onlyOwner {
-		delete acceptedTokens[_acceptedToken];
+	function removetoken(address _token) public onlyOwner {
+		delete tokens[_token];
 	}
 
 	/**
@@ -179,86 +160,6 @@ contract Storefront is Ownable, Pausable {
 		return (_setPaused) ? _pause() : _unpause();
 	}
 
-	function _deleteOrder(address _owner, uint _orderId, uint _timestamp) internal {
-		uint _bucket = _timestamp - _timestamp % 1 days;
-		uint _count = buckets[_bucket].length;
-		if (_count==0) {
-			delete buckets[_bucket];
-		} else if (buckets[_bucket][_count - 1]==_orderId) {
-			buckets[_bucket].pop();
-		} else {
-			for (uint k = 0; k < _count; k++) {
-				if (buckets[_bucket][k]==_orderId) {
-					buckets[_bucket][k] = buckets[_bucket][_count - 1];
-					buckets[_bucket].pop();
-					break;
-				}
-			}
-		}
-		_count = ordersByOwner[_owner].length;
-		if (_count==0) {
-			delete ordersByOwner[_owner];
-		} else if (ordersByOwner[_owner][_count - 1]==_orderId) {
-			ordersByOwner[_owner].pop();
-		} else {
-			for (uint k = 0; k < _count; k++) {
-				if (ordersByOwner[_owner][k]==_orderId) {
-					ordersByOwner[_owner][k] = ordersByOwner[_owner][_count - 1];
-					ordersByOwner[_owner].pop();
-					break;
-				}
-			}
-		}
-		
-		delete orderByTokenId[orderById[_orderId].assetId];
-		delete orderById[_orderId];
-	}
-
-	function _deleteBid(address _bidder, uint _orderId, uint _bidId) internal {
-		uint _count = bidsByOwner[_bidder].length;
-		if (_count==1) {
-			delete bidsByOwner[_bidder];
-		} else if (bidsByOwner[_bidder][_count - 1] == _bidId) {
-			bidsByOwner[_bidder].pop();
-		} else {
-			for (uint k = 0; k < _count; k++) {
-				if (bidsByOwner[_bidder][k] == _bidId) {
-					bidsByOwner[_bidder][k] = bidsByOwner[_bidder][_count - 1];
-					bidsByOwner[_bidder].pop();
-					break;
-				}
-			}
-		}
-		// delete in bidsByOrderId
-		_count = bidsByOrderId[_orderId].length;
-		if (_count==1) {
-			delete bidsByOrderId[_orderId];
-		} else if (bidsByOrderId[_orderId][_count - 1] == _bidId) {
-			bidsByOrderId[_orderId].pop();
-		} else {
-			for (uint k = 0; k < _count; k++) {
-				if (bidsByOrderId[_orderId][k] == _bidId) {
-					bidsByOrderId[_orderId][k] = bidsByOrderId[_orderId][_count - 1];
-					bidsByOrderId[_orderId].pop();
-					break;
-				}
-			}
-		}
-		// delete bidById
-		delete bidById[_bidId];
-	}
-	function _deleteExpiredBucket() internal {
-		if (buckets[block.timestamp - 31 days].length!=0) delete buckets[block.timestamp - 31 days];
-	}
-	/**
-	 * @dev Internal function gets Order by nftRegistry and assetId. Checks for the order validity
-	 * @param _orderId - ID of order
-	 */
-	function _validateOrder(uint _orderId) internal view returns (Order memory order) {
-		order = orderById[_orderId];
-		require(order.id != 0, "Marketplace: asset not published");
-		require(order.expires >= block.timestamp, "Marketplace: order expired");
-	}
 	function verifyTokenId(string memory _name, uint _tokenId) public pure returns(bool) {
         return uint(keccak256(bytes(_name)))==_tokenId;
     }
@@ -267,11 +168,11 @@ contract Storefront is Ownable, Pausable {
 	 * @dev Creates a new order
 	 * @param _collection - Non fungible registry address
 	 * @param _assetId - ID of the published NFT
-	 * @param _acceptedToken - accepted token to buy NFT
+	 * @param _token - accepted token to buy NFT
 	 * @param _price - Price in Wei for the supported coin
 	 * @param _expires - Duration of the order (in hours)
 	 */
-	function createOrder(address _collection, string memory _label, uint _assetId, address _acceptedToken, uint _price, uint _expires) public whenNotPaused {
+	function createOrder(address _collection, string memory _label, uint _assetId, address _token, uint _price, uint _expires) public whenNotPaused {
 		// Check nft registry
 		require(verifyTokenId(_label, _assetId), "Marketplace: invalid domain name");
 		IERC721 nftRegistry = _requireERC721(_collection);
@@ -279,7 +180,7 @@ contract Storefront is Ownable, Pausable {
 		require(_price > 0, "Marketplace: Price should be bigger than 0");
 		require(_expires > block.timestamp + 1 minutes, "Marketplace: expires should be more than 1 minute");
 		require(_expires <= block.timestamp + 180 days, "Marketplace: expires should be less than 180 days");
-		if (_acceptedToken!=address(0)) require(acceptedTokens[_acceptedToken], "Marketplace: accept token must be whitelisted");
+		if (_token!=address(0)) require(tokens[_token], "Marketplace: accept token must be whitelisted");
 		// get NFT asset from seller
 		nftRegistry.transferFrom(msg.sender, address(this), _assetId);
 
@@ -290,17 +191,19 @@ contract Storefront is Ownable, Pausable {
 			collection: _collection,
 			label: _label,
 			assetId: _assetId,
-			acceptedToken: _acceptedToken,
+			token: _token,
 			price: _price,
-			bidCount: 0,
 			expires: _expires,
-			timestamp: block.timestamp
+			timestamp: block.timestamp,
+			bidder: address(0),
+			bidPrice: 0,
+			dealPrice: 0
 		});
 		orderByTokenId[_assetId] = lastOrderId;
 		_deleteExpiredBucket();
 		buckets[block.timestamp - block.timestamp % 10 days].push(lastOrderId);
 		ordersByOwner[msg.sender].push(lastOrderId);
-		emit OrderCreated(lastOrderId, msg.sender, _collection, _assetId, _acceptedToken, _price, _expires);
+		emit OrderCreated(lastOrderId, msg.sender, _collection, _assetId, _token, _price, _expires);
 		lastOrderId++;
 	}
 
@@ -312,10 +215,9 @@ contract Storefront is Ownable, Pausable {
 	function cancelOrder(uint _orderId) public whenNotPaused {
 		Order memory _order = _validateOrder(_orderId);
         require(_order.seller == msg.sender || msg.sender == owner(), "Marketplace: unauthorized sender");
-
         IERC721(_order.collection).transferFrom(address(this), msg.sender, _order.assetId);
-
-		_deleteOrder(_order.seller, _orderId, _order.timestamp);
+		_deleteOrder(_order.seller, address(0), _orderId, _order.timestamp);
+		if (_order.bidder!=address(0)) _refundBid(_order.bidder, _order.token, _order.bidPrice);
 		emit OrderCancelled(_orderId);
 	}
 
@@ -333,9 +235,9 @@ contract Storefront is Ownable, Pausable {
         require(_order.seller == msg.sender || msg.sender == owner(), "Marketplace: unauthorized sender");
 		require(_price > 0, "Marketplace: Price should be bigger than 0");
 		require(_expires > block.timestamp + 1 minutes, "Marketplace: expires should be more than 1 minute");
-		require(_expires <= block.timestamp + 30 days, "Marketplace: expires should be less than 30 days");
-		// require(order.acceptedToken == _acceptedToken || order.bidCount==0, "Marketplace: order has bidders");
-		// order.acceptedToken = _acceptedToken;
+		require(_expires <= block.timestamp + 180 days, "Marketplace: expires should be less than 30 days");
+		// require(order.token == _token || order.bidCount==0, "Marketplace: order has bidders");
+		// order.token = _token;
 		orderById[_orderId].price = _price;
 		orderById[_orderId].expires = _expires;
 
@@ -349,18 +251,10 @@ contract Storefront is Ownable, Pausable {
 	 */
 	function executeOrder(uint _orderId, uint _price) public payable whenNotPaused {
 		Order memory _order = _validateOrder(_orderId);
-		/// Check the execution price matches the order price
-		require(_order.price == _price, "Marketplace: invalid price");
-		uint _fee = _price * cutPerMillion / 1e6;
-		if (_order.acceptedToken == address(0)) {
-			require(_order.price == msg.value, "Marketplace: invalid price");
-			TransferHelper.safeTransferETH(_order.seller, _price - _fee);
-		} else {
-			TransferHelper.safeTransferFrom(_order.acceptedToken, msg.sender, address(this), _price);
-			TransferHelper.safeTransfer(_order.acceptedToken, _order.seller, _price - _fee);
-		}
-		IERC721(_order.collection).transferFrom(address(this), msg.sender, _order.assetId);
-		_deleteOrder(_order.seller, _orderId, _order.timestamp);
+		require(_order.price == _price, "Marketplace: invalid price"); // Check the execution price matches the order price
+		if (_order.bidder!=address(0)) _refundBid(_order.bidder, _order.token, _order.bidPrice);
+		_executeOrder(_orderId, msg.sender, _price);
+		_deleteOrder(_order.seller, address(0), _orderId, _order.timestamp);
 		emit OrderSuccessful(_orderId, msg.sender, _price);
 	}
 
@@ -368,22 +262,13 @@ contract Storefront is Ownable, Pausable {
 	 * @dev Places a bid for a published NFT and checks for the asset fingerprint
 	 * @param _orderId - ID of the published NFT
 	 * @param _price - Bid price in weth currency
-	 * @param _expires - Bid expiration time
 	 */
-	function placeBid(uint _orderId, uint _price, uint _expires) public payable whenNotPaused {
+	function placeBid(uint _orderId, uint _price) public payable whenNotPaused {
 		Order memory _order = _validateOrder(_orderId);
-		if (_expires > _order.expires) _expires = _order.expires;
-
-		uint _oldBidId;
-		for (uint k = 0; k < bidsByOwner[msg.sender].length; k++) {
-			if (bidById[bidsByOwner[msg.sender][k]].orderId == _orderId) {
-				_oldBidId = bidsByOwner[msg.sender][k];
-				break;
-			}
-		}
-		if (_oldBidId!=0) {
-			uint _oldPrice = bidById[_oldBidId].price;
-			if (_order.acceptedToken == address(0)) {
+		require(_order.bidPrice==0 || _order.bidPrice < _price, "Marketplace: bid count reached limitation");
+		if (_order.bidder==msg.sender) {
+			uint _oldPrice = _order.bidPrice;
+			if (_order.token == address(0)) {
 				uint _value = _oldPrice + msg.value;
 				require(_value >= _price, "Marketplace: bid count reached limitation");
 				if (_value - _price > 1e14) { // 0.0001
@@ -392,94 +277,57 @@ contract Storefront is Ownable, Pausable {
 				}
 			} else {
 				if (_oldPrice > _price) {
-					TransferHelper.safeTransfer(_order.acceptedToken, msg.sender, _oldPrice - _price);
+					TransferHelper.safeTransfer(_order.token, msg.sender, _oldPrice - _price);
 				} else if (_oldPrice < _price) {
-					TransferHelper.safeTransferFrom(_order.acceptedToken, msg.sender, address(this), _price - _oldPrice);
+					TransferHelper.safeTransferFrom(_order.token, msg.sender, address(this), _price - _oldPrice);
 				}
 			}
-			bidById[_oldBidId].price = _price;
-			bidById[_oldBidId].expires = _expires;
-            emit BidUpdated(_oldBidId, _price, _expires);
 		} else {
-			require(_order.bidCount < MAX_BID_LIMIT, "Marketplace: bid count reached limitation");
-			require(bidsByOwner[msg.sender].length < MAX_BID_LIMIT, "Marketplace: bid count reached limitation");
-
-			if (_order.acceptedToken == address(0)) {
+			if (_order.bidder!=address(0)) _refundBid(_order.bidder, _order.token, _order.bidPrice);
+			if (_order.token == address(0)) {
 				require(msg.value == _price, "Marketplace: invalid price");
 			} else {
-				TransferHelper.safeTransferFrom(_order.acceptedToken, msg.sender, address(this), _price);
+				TransferHelper.safeTransferFrom(_order.token, msg.sender, address(this), _price);
 			}
-			_order.bidCount++;
-			bidById[lastBidId] = Bid({
-				id: lastBidId,
-				orderId: _orderId,
-				collection: _order.collection,
-				label: _order.label,
-				assetId: _order.assetId,
-				bidder: msg.sender,
-				token: _order.acceptedToken,
-				price: _price,
-				expires: _expires,
-				timestamp: block.timestamp
-			});
-			bidsByOrderId[_orderId].push(lastBidId);
-			bidsByOwner[msg.sender].push(lastBidId);
-
             emit BidCreated(
-                lastBidId,
-                _order.collection,
-                _order.assetId,
+                _orderId,
                 msg.sender, // bidder
-                _price,
-                _expires
+                _price
             );
-            lastBidId++;
+			ordersByOwner[msg.sender].push(_orderId);
 		}
+		orderById[_orderId].bidder = msg.sender;
+		orderById[_orderId].bidPrice = _price;
 
-		
+		emit BidUpdated(_orderId, _price);
 	}
 
 	/**
 	 * @dev Cancel an already published bid, can only be canceled by seller or the contract owner
-	 * @param _bidId - ID of the published NFT
+	 * @param _orderId - ID of the published NFT
 	 */
-	function cancelBid(uint _bidId) public whenNotPaused {
-		Bid memory _bid = bidById[_bidId];
-		require(_bid.id != 0, "Marketplace: invalid bid id");
-		// Order memory _order = orderById[_bid.orderId];
-		// require(_order.id != 0, "Marketplace: invalid bid id");
-		require(_bid.bidder == msg.sender || msg.sender == owner(), "Marketplace: Unauthorized sender");
-		// refund bid amount
-		if (_bid.token == address(0)) {
-			TransferHelper.safeTransferETH(_bid.bidder, _bid.price);
-		} else {
-			TransferHelper.safeTransfer(_bid.token, _bid.bidder, _bid.price);
-		}
-		_deleteBid(_bid.bidder, _bid.orderId, _bidId);
-		emit BidCancelled(_bidId);
+	function cancelBid(uint _orderId) public whenNotPaused {
+		Order memory _order = orderById[_orderId];
+		require(_order.id != 0, "Marketplace: asset not published");
+		require(_order.dealPrice==0, "Marketplace: order already processed");
+		require(_order.bidder == msg.sender || msg.sender == owner(), "Marketplace: Unauthorized sender");
+		_refundBid(_order.bidder, _order.token, _order.bidPrice);
+		_order.bidder = address(0);
+		_order.bidPrice = 0;
+		emit BidCancelled(_orderId);
 	}
 
 	/**
 	 * @dev Executes the sale for a published NFT by accepting a current bid
-	 * @param _bidId - ID of bid
+	 * @param _orderId - ID of order id
 	 */
-	function acceptBid(uint _bidId) public whenNotPaused {
-		Bid memory _bid = bidById[_bidId];
-		require(_bid.id != 0, "Marketplace: bid invalid");
-		require(_bid.expires > block.timestamp, "Marketplace: bid expired");
-		Order memory _order = _validateOrder(_bid.orderId);
+	function acceptBid(uint _orderId) public whenNotPaused {
+		Order memory _order = _validateOrder(_orderId);
 		// item seller is the only allowed to accept a bid
 		require(_order.seller == msg.sender, "Marketplace: unauthorized sender");
-		uint _fee = _bid.price * cutPerMillion / 1e6;
-		if (_bid.token == address(0)) {
-			TransferHelper.safeTransferETH(_order.seller, _bid.price - _fee);
-		} else {
-			TransferHelper.safeTransfer(_bid.token, _order.seller, _bid.price - _fee);
-		}
-		IERC721(_order.collection).transferFrom(address(this), _bid.bidder, _order.assetId);
-		_deleteOrder(_order.seller, _bid.orderId, _order.timestamp);
-		_deleteBid(_bid.bidder, _bid.orderId, _bidId);
-		emit BidAccepted(_bidId);
+		_executeOrder(_orderId, _order.bidder, _order.bidPrice);
+		_deleteOrder(_order.seller, _order.bidder, _orderId, _order.timestamp);
+		emit BidAccepted(_orderId);
 	}
 
 	/**
@@ -515,7 +363,7 @@ contract Storefront is Ownable, Pausable {
             if (_count==_limit) break;
 		}
 	}
-	
+
 	function getOrderByTokenId(uint _assetId) public view returns(Order memory _order) {
 		uint _orderId = orderByTokenId[_assetId];
 		_order = orderById[_orderId];
@@ -542,57 +390,6 @@ contract Storefront is Ownable, Pausable {
 		}
 	}
 	
-	function getBidCountByAddress(address _owner) public view returns(uint) {
-		return bidsByOwner[_owner].length;
-	}
-
-	// if bid expires is zero,  it means order is invalid.
-	function getBidsByAddress(address _owner, uint _page, uint _limit) public view returns(Bid[] memory _bids) {
-		// uint _start = _page * _limit;
-		uint _skip = _page * _limit;
-		uint _index = 0;
-		uint _count = bidsByOwner[_owner].length;
-		_bids = new Bid[](_limit);
-		
-		for (uint k = 0; k < _count; k++) {
-			Bid memory _bid = bidById[bidsByOwner[_owner][k]];
-			if (block.timestamp < _bid.expires) {
-				if (_skip > 0) {
-					_skip--;
-				} else if (_index < _limit) {
-					Order memory _order = orderById[_bid.orderId];
-					if (_order.id==0 || _order.expires < block.timestamp) {
-						_bid.expires = 0;
-					}
-					_bids[_index++] = _bid;
-				} else {
-					break;
-				}
-			}
-		}
-	}
-
-	function getBidsByOrderId(uint _orderId, uint _page, uint _limit) public view returns(Bid[] memory _bids) {
-		// uint _start = _page * _limit;
-		uint _skip = _page * _limit;
-		uint _index = 0;
-		uint _count = bidsByOrderId[_orderId].length;
-		_bids = new Bid[](_limit);
-		
-		for (uint k = 0; k < _count; k++) {
-			Bid memory _bid = bidById[bidsByOrderId[_orderId][k]];
-			if (block.timestamp < _bid.expires) {
-				if (_skip > 0) {
-					_skip--;
-				} else if (_index < _limit) {
-					_bids[_index++] = _bid;
-				} else {
-					break;
-				}
-			}
-		}
-	}
-
 	function withdraw(address _token, address to) public onlyOwner {
 		require(to!=address(0), "Marketplace: should be non zero");		
 		if (_token==address(0)) {
@@ -603,9 +400,110 @@ contract Storefront is Ownable, Pausable {
 		}
 	}
 
+	
 	function _requireERC721(address _collection) internal view returns (IERC721) {
 		// require(_collection.isContract(), "The NFT Address should be a contract");
 		require(IERC721(_collection).supportsInterface(_INTERFACE_ID_ERC721), "The NFT contract has an invalid ERC721 implementation");
 		return IERC721(_collection);
+	}
+
+	function _deleteOrder(address _seller, address _buyer, uint _orderId, uint _timestamp) internal {
+		uint _bucket = _timestamp - _timestamp % 10 days;
+		// remove bucket
+		uint _count = buckets[_bucket].length;
+		if (_count==0) {
+			delete buckets[_bucket];
+		} else if (buckets[_bucket][_count - 1]==_orderId) {
+			buckets[_bucket].pop();
+		} else {
+			for (uint k = 0; k < _count; k++) {
+				if (buckets[_bucket][k]==_orderId) {
+					buckets[_bucket][k] = buckets[_bucket][_count - 1];
+					buckets[_bucket].pop();
+					break;
+				}
+			}
+		}
+		// remove seller order
+		_count = ordersByOwner[_seller].length;
+		if (_count==0) {
+			delete ordersByOwner[_seller];
+		} else if (ordersByOwner[_seller][_count - 1]==_orderId) {
+			ordersByOwner[_seller].pop();
+		} else {
+			for (uint k = 0; k < _count; k++) {
+				if (ordersByOwner[_seller][k]==_orderId) {
+					ordersByOwner[_seller][k] = ordersByOwner[_seller][_count - 1];
+					ordersByOwner[_seller].pop();
+					break;
+				}
+			}
+		}
+		// remove buyer order
+		if (_buyer!=address(0)) {
+			_count = ordersByOwner[_buyer].length;
+			if (_count==0) {
+				delete ordersByOwner[_buyer];
+			} else if (ordersByOwner[_buyer][_count - 1]==_orderId) {
+				ordersByOwner[_buyer].pop();
+			} else {
+				for (uint k = 0; k < _count; k++) {
+					if (ordersByOwner[_buyer][k]==_orderId) {
+						ordersByOwner[_buyer][k] = ordersByOwner[_buyer][_count - 1];
+						ordersByOwner[_buyer].pop();
+						break;
+					}
+				}
+			}
+		}
+		
+		delete orderByTokenId[orderById[_orderId].assetId];
+		delete orderById[_orderId];
+	}
+
+	function getTradeCount() public view returns(uint) {
+		return tradeCount;
+	}
+
+	function getTrades(uint page, uint limit) public view returns(Order[] memory _orders) {
+		_orders = new Order[](limit);
+		uint _start = page * limit;
+		for (uint k = _start; k < _start + limit; k++) {
+			_orders[k - _start] = trades[k];
+		}
+	}
+
+	function _deleteExpiredBucket() internal {
+		if (buckets[block.timestamp - 181 days].length!=0) delete buckets[block.timestamp - 181 days];
+	}
+	/**
+	 * @dev Internal function gets Order by nftRegistry and assetId. Checks for the order validity
+	 * @param _orderId - ID of order
+	 */
+	function _validateOrder(uint _orderId) internal view returns (Order memory order) {
+		order = orderById[_orderId];
+		require(order.id != 0, "Marketplace: asset not published");
+		require(order.expires >= block.timestamp, "Marketplace: order expired");
+	}
+
+	function _executeOrder(uint _orderId, address _buyer, uint _price) internal {
+		Order memory _order = orderById[_orderId];
+		uint _fee = _price * cutPerMillion / 1e6;
+		if (_order.token == address(0)) {
+			TransferHelper.safeTransferETH(_order.seller, _price - _fee);
+		} else {
+			TransferHelper.safeTransfer(_order.token, _order.seller, _price - _fee);
+		}
+		IERC721(_order.collection).transferFrom(address(this), _buyer, _order.assetId);
+		orderById[_orderId].dealPrice = _price;
+		trades[tradeCount++] = _order; // address => orderId[]
+	}
+	
+	function _refundBid(address _bidder, address _token, uint _price) internal {
+		if (_token == address(0)) {
+			TransferHelper.safeTransferETH(_bidder, _price);
+		} else {
+			TransferHelper.safeTransfer(_token, _bidder, _price);
+		}
 	}
 }
