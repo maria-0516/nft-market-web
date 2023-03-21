@@ -1,55 +1,23 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
-// import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
-// import { setContext } from '@apollo/client/link/context';
-
 
 import ScrollToTopBtn from './menu/ScrollToTop';
 import Header from './menu/header';
-import Home from './pages/home';
 import Explore from './pages/explore';
-import Collection from './pages/colection';
 import ItemDetail from './pages/ItemDetail';
 import Author from './pages/Author';
-import Profile from './pages/profile';
-import CreateCollection from './pages/createcollection';
-import Create from './pages/create';
-import LazyCreate from './pages/lazycreate';
-import Auction from './pages/Auction';
 import ListedDomains from './pages/ListedDomains';
 import { useBlockchainContext } from '../context';
 
-import { ToastContainer, toast } from 'react-toastify';
-import config from '../config.json'
+import { toast } from 'react-toastify';
 import Footer from './menu/footer';
 import HowWork from './pages/HowWork';
 import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken';
-import Loading from './components/Loading';
 import { useWallet } from '../use-wallet/src';
-
-// const httpLink = createHttpLink({
-//     uri: config.graphql
-// });
-
-// const authLink = setContext((_, { headers }) => {
-//     // get the authentication token from local storage if it exists
-//     const token = localStorage.getItem('marketplace_session');
-//     // return the headers to the context so httpLink can read them
-//     return {
-//         headers: {
-//             ...headers,
-//             authorization: token ? token : ''
-//         }
-//     };
-// });
-
-// const client = new ApolloClient({
-//     link: authLink.concat(httpLink),
-//     cache: new InMemoryCache()
-// });
+import Auction from './pages/Auction';
 
 const PrivateRoute = ({ children }: {children: any}) => {
     const location = useLocation();
@@ -70,80 +38,26 @@ const PrivateRoute = ({ children }: {children: any}) => {
 };
 
 const App = () => {
-    const [state, {loading}] = useBlockchainContext() as any;
-
-    console.log("loading", loading || '(none)')
     return (
         <div className="wraper">
             <Router>
-               
-                        
-                            <GlobalStyles />
-                            <Header />
-                            <Routes>
-                                {/* <Route path="/" element={<Home />} /> */}
-                                <Route path="/" element={<Explore />} />
-                                <Route path="/listed-domains" element={<ListedDomains />} />
-                                {/* <Route path="/signPage" element={<Wallet />} /> */}
-                                {/* <Route path="/collection/:collection" element={<Collection />}/> */}
-                                <Route path="/my-domains" element={<Author />} />
-                                
-                                <Route path="/how-work" element={<HowWork />} />
-                                <Route path="/faq" element={<Faq />} />
-                                <Route path="/partnership" element={<Partnership />} />
-                                <Route path="/cns-token" element={<CNSToken />} />
-                                {/* <Route path="/account/profile"
-                                    element={
-                                        <PrivateRoute>
-                                            <Profile />
-                                        </PrivateRoute>
-                                    }
-                                /> */}
-                                {/* <Route
-                                    path="/create/collection"
-                                    element={
-                                        <PrivateRoute>
-                                            <CreateCollection />
-                                        </PrivateRoute>
-                                    }
-                                /> */}
-                                {/* <Route
-                                    path="/create/nft"
-                                    element={
-                                        // <PrivateRoute>
-                                            <Create />
-                                        // </PrivateRoute>
-                                    }
-                                /> */}
-                                {/* <Route
-                                    path="/lazy-mint"
-                                    element={
-                                        <PrivateRoute>
-                                            <LazyCreate />
-                                        </PrivateRoute>
-                                    }
-                                /> */}
-                                <Route
-                                    path="/auction/:name"
-                                    element={
-                                        // <PrivateRoute>
-                                            <Auction />
-                                        // </PrivateRoute>
-                                    }
-                                />
-                                <Route path="/domain/:name" element={<ItemDetail />}/>
-                                <Route path="/:address" element={<Author />} />
-                                <Route path="*" element={<Navigate to={'/'} />} />
-                            </Routes>
-                            <Footer />
-                            <ScrollToTopBtn />
-                            {(!!loading) && (
-                                <div style={{position: 'fixed', top: 0, right: 0, bottom: 0, left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.25', zIndex: '10000'}}>
-                                    <Loading />
-                                </div>
-                            )}
-                    
-                {/* </ApolloProvider> */}
+                <GlobalStyles />
+                <Header />
+                <Routes>
+                    <Route path="/" element={<Explore />} />
+                    <Route path="/listed-domains" element={<ListedDomains />} />
+                    <Route path="/my-domains" element={<Author />} />
+                    <Route path="/how-work" element={<HowWork />} />
+                    <Route path="/faq" element={<Faq />} />
+                    <Route path="/partnership" element={<Partnership />} />
+                    <Route path="/cns-token" element={<CNSToken />} />
+                    <Route path="/auction/:name" element={<Auction />} />
+                    <Route path="/domain/:name" element={<ItemDetail />}/>
+                    <Route path="/address/:address" element={<Author />} />
+                    <Route path="*" element={<Navigate to={'/'} />} />
+                </Routes>
+                <Footer />
+                <ScrollToTopBtn />
             </Router>
         </div>
     );

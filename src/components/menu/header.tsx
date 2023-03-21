@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Breakpoint, BreakpointProvider, setDefaultBreakpoints } from 'react-socks';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import useOnclickOutside from 'react-cool-onclickoutside';
 import { useBlockchainContext } from '../../context';
-import SearchModal from '../components/searchModal';
 import { changeNetwork } from '../../utils';
 import config from '../../config.json'
 import { useWallet } from '../../use-wallet/src';
+import AnchorLink from 'react-anchor-link-smooth-scroll'
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 
@@ -32,12 +31,10 @@ const Header = () => {
     
     const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
-    const [openMenu2, setOpenMenu2] = useState(false);
-    const [openMenu3, setOpenMenu3] = useState(false);
     const [searchModal, setSearchModal] = useState(false);
     const [searchKey, setSearchKey] = useState('');
     const [focused, setFocused] = useState(false);
-    const [switchFocus, setSwitchFocus] = useState(false);
+    const [scroll, setScroll] = useState(false)
     const [headerClass, setHeaderClass] = useState("main-header rt-sticky");
     const [mobileMenu, setMobileMenu] = useState({
 		main: false,
@@ -174,16 +171,17 @@ const Header = () => {
                     await changeNetwork(wallet.ethereum, config.chainId);
                     return
                 } else if (wallet.status==='disconnected' && localStorage.getItem('isConnected')==="1") {
-                    // localStorage.setItem('isConnected', "0")
                     if (!walletInited) {
                         setWalletInited(true)
                         wallet.connect()
                     }
-                    // wallet.connect();
-                } else if ((wallet.status==='connected' || wallet.status==='error'/*  || wallet.status==='connecting' */) && localStorage.getItem('isConnected')==="0") {
+                } else if ((wallet.status==='connected' || wallet.status==='error') && localStorage.getItem('isConnected')==="0") {
                     localStorage.setItem('isConnected', "1")
                     checkNetwork()
                 }
+            } else if (!walletInited && localStorage.getItem('isConnected')==="1") {
+                setWalletInited(true)
+                wallet.connect()
             }
         } catch (error) {
             console.log("connect-wallet", error)
@@ -196,6 +194,7 @@ const Header = () => {
 
 
     useEffect(() => {
+        // console.log("onConnectWallet")
         onConnectWallet()
     }, [wallet.status, wallet.account]);
 
@@ -207,30 +206,33 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
-        if (location.pathname==='/') {
+        const _path = location.pathname
+        if (_path==='/') {
             setMenu('Buy Crypto Domains')
-        } else if (location.pathname.indexOf('listed-domains')===1) {
+        } else if (_path.indexOf('listed-domains')===1) {
             setMenu('Listed Crypto Domains')
-        } else if (location.pathname.indexOf('how-work')===1) {
+        } else if (_path.indexOf('how-work')===1) {
             setMenu('How it works')
-        } else if (location.pathname.indexOf('partnership')===1) {
+        } else if (_path.indexOf('partnership')===1) {
             setMenu('Partnership')
-        } else if (location.pathname.indexOf('faq')===1) {
+        } else if (_path.indexOf('faq')===1) {
             setMenu('Faq')
-        } else if (location.pathname.indexOf('cns-token')===1) {
+        } else if (_path.indexOf('cns-token')===1) {
             setMenu('CNS Token')
-        } else if (location.pathname.indexOf('auction')===1) {
+        } else if (_path.indexOf('auction')===1) {
             setMenu('List Domain For Sale')
-        } else if (location.pathname.indexOf('my-domains')===1) {
+        } else if (_path.indexOf('my-domains')===1) {
             setMenu('My Domains')
-        } else if (/^0x[0-9A-Fa-f]{40}$/.test(location.pathname.slice(1))) {
-            if (account) {
-                setMenu(`${account.slice(0, 10)}...${account.slice(-4)}`)
+        } else if (_path.indexOf('address')===1) {
+            const address = _path.replace('/address/', '')
+            if (/^0x[0-9A-Fa-f]{40}$/.test(address)) {
+                setMenu(`${address.slice(0, 6)}...${address.slice(-4)}`)
             } else {
                 setMenu("no selected address")
             }
-        } else if (location.pathname.indexOf('domain')===1) {
-            setMenu(location.pathname.slice(location.pathname.lastIndexOf('/')+1))
+        } else if (_path.indexOf('domain')===1) {
+            const menu = decodeURI(_path.slice(_path.lastIndexOf('/')+1))
+            setMenu(menu.length > 25 ? menu.slice(0, 22) + '...eth' : menu)
         }
     }, [location.pathname])
 
@@ -244,17 +246,33 @@ const Header = () => {
         if (window.pageYOffset > sticky) {
             closeMenu1();
         }
+        if (window.pageYOffset > 200) {
+            setScroll(true)
+        } else {
+            setScroll(false)
+        }
     }
 
-    const onSearch = () => {
+    const onSearch = async () => {
         if (status.search.length < 3) return;
-        let search = status.search.slice(-4)==='.eth' ? status.search : `${status.search}.eth`
-        navigate(`/domain/${search}`);
+        // if (location.pathname.indexOf('listed-domains')===1) {
+        //     const label = status.search.slice(0, status.search.lastIndexOf('.'))
+        //     const tokenId = makeTokenId(label)
+        //     const _order = await storefront().getOrderByTokenId(tokenId)
+        //     const id = Number(_order.id) || 0
+        //     if (!!id) {
+                
+        //     }
+
+        // } else {
+            let search = status.search.slice(-4)==='.eth' ? status.search : `${status.search}.eth`
+            navigate(`/domain/${search}`);
+        // }
     }
 
     return (
         <>
-            <header className='rt-site-header rt-fixed-top white-menu'>
+            <header className='rt-site-header rt-fixed-top white-menu' id="top">
 				<div className="top-header">
 				<div className="container">
 					<div className="row align-items-center">
@@ -287,27 +305,6 @@ const Header = () => {
 							</ul>
 						</div>
 						<div className="col-md-6 text-center text-md-right md-end sm-center" style={{gap: '0.5em'}}>
-							{/* {wallet.status == 'connected' && (
-								<div
-									className="switch_network"
-									onBlur={() =>
-										setTimeout(() => setSwitchFocus(false), 100)
-									}>
-									<button
-										className="rt-btn rt-gradient pill text-uppercase"
-                                        style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}}
-										onClick={() => setSwitchFocus(!switchFocus)}>
-										Switch Network
-									</button>
-									{switchFocus && (
-										<ul>
-											<li>Bitcoin evm</li>
-											<li>Spagetti testnet</li>
-											<li>Fantom</li>
-										</ul>
-									)}
-								</div>
-							)} */}
 							<button className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}} onClick={handleConnect}>
 								{wallet.status==='connecting' ? 'Connecting...' : (
 									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect Wallet'
@@ -327,8 +324,8 @@ const Header = () => {
 							<div className="ml-auto d-flex align-items-center">
 									<div className="main-menu">
 									<ul className={mobileMenu.main ? 'show' : ''}>
-										<li className={menu==='Buy Crypto Domains' ? 'current-menu-item' : ''}><Link to="/">Home</Link></li>
-										<li className={menu==='Listed Crypto Domains' ? 'current-menu-item' : ''}><Link to="/listed-domains">Buy Domain</Link></li>
+										<li className={menu==='Buy Crypto Domains' ? 'current-menu-item' : ''}><Link to="/" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Home</Link></li>
+										<li className={menu==='Listed Crypto Domains' ? 'current-menu-item' : ''}><Link to="/listed-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Buy Domain</Link></li>
 									
 										{/* <li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub1 ? 'block' : ''}`}}>
@@ -337,15 +334,15 @@ const Header = () => {
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li> */}
-                                        {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains">Sell Your Domain</Link></li>}
+                                        {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Sell your Domain</Link></li>}
 										<li className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`} onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
-												<li><Link to="/how-work">How It Works</Link></li>
-												<li><Link to="/faq">FAQ</Link></li>
-												<li><Link to="/partnership">Partnership</Link></li>
+												<li><Link to="/how-work" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>How It Works</Link></li>
+												<li><Link to="/faq" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>FAQ</Link></li>
+												<li><Link to="/partnership" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Partnership</Link></li>
 											</ul>
 										</li>
-										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="/cns-token">CNS Token</Link></li>
+										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="/cns-token" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>CNS Token</Link></li>
 									</ul>
 								</div>
 							<div className="rt-nav-tolls d-flex align-items-center">
@@ -372,7 +369,7 @@ const Header = () => {
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
 							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong" style={{lineBreak: `${location.pathname.indexOf('domain')===1 ? 'anywhere' : 'auto'}`}}>{menu}</h4>
                             {/* {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>} */}
-                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{state.auth.address?.slice(0, 8) + '...' + state.auth.address?.slice(-8)}</p>}
+                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{wallet.account?.slice(0, 8) + '...' + wallet.account?.slice(-8)}</p>}
 							{
 								(menu === 'Listed Crypto Domains' || menu === 'Buy Crypto Domains') && (
 									<div className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"
@@ -398,6 +395,11 @@ const Header = () => {
 					</div>
 				</div> */}
 			</div>
+            {scroll && (
+                <AnchorLink  id="scrollUp" href="#top" style={{position: 'fixed', zIndex: 100000}}>
+                    <i className="fa fa-angle-up"></i>
+                </AnchorLink >
+            )}
         </>
     );
 }

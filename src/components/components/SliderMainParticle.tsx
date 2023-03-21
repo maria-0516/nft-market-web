@@ -21,9 +21,6 @@ const inline = keyframes`
   100% {
     opacity: 1;
   }
-  .d-inline{
-    display: inline-block;
-   }
 `;
 
 const slidermainparticle = () => (

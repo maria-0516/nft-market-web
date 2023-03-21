@@ -7,6 +7,13 @@ import Action from '../../service';
 import { toBigNum } from '../../utils';
 import { toast } from 'react-toastify';
 import config from '../../config.json'
+import { useWallet } from '../../use-wallet/src';
+import { getEnsDomainByName, makeTokenId } from '../../thegraph';
+import { storefront, tokens } from '../../contracts';
+import { ethers } from 'ethers';
+import Loading from './Loading';
+
+const ZERO_ADDRESS = 0x0000000000000000000000000000000000000000
 
 const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
 
@@ -14,65 +21,108 @@ interface Props {
     name: string
 }
 
+interface DomainDetailType {
+	tokenId: string
+	owner: string
+	name: string
+	expires: number
+	created: number
+	cost: number
+	orderId: number
+	orderPrice: number
+	orderToken: string
+	orderExpires: number
+	bidder: string
+	bidPrice: number
+}
+
 export default function ColumnAuction({name}: Props) {
+    const wallet = useWallet()
     const navigate = useNavigate();
-    const [state, { onsaleNFT, onsaleLazyNFT, translateLang, approveNFT, checkNFTApprove }] =
-        useBlockchainContext() as any;
-    const [nft, setNft] = useState<NFTData>({
-        collection:	'',
-        tokenId:	'',
-        creator: 	'',
-        owner: 		'',
-        name: 		'',
-        // marketData: {}
-    });
+    const [state, { translateLang }] = useBlockchainContext() as any;
     const [price, setPrice] = useState('');
     const [date, setDate] = useState(new Date());
     const [loading, setLoading] = useState(false);
-    const [approveFlag, setApproveFlag] = useState(false);
-    const [currency, setCurrency] = useState(state.currencies[0].value);
-    const [order, setOrder] = useState<OrderData>({
-        id: 0,
-        label: '',
-        seller: '',
-        assetId: '',
-        collection: '',
-        token: '',
-        price: 0,
-        expires: 0,
-        timestamp: 0,
-        bidder: '',
-        bidPrice: 0,
-        dealPrice: 0,
-    })
+    const [domain, setDomain] = useState<DomainDetailType>({
+		tokenId: '',
+		owner: '',
+		name: '',
+		expires: 0,
+		created: 0,
+		cost: 0,
+		orderId: 0,
+		orderPrice: 0,
+		orderToken: '',
+		orderExpires: 0,
+		bidder: '',
+		bidPrice: 0
+	})
 
-    // useEffect(() => {
-    //     const initialDate = new Date();
-    //     initialDate.setDate(initialDate.getDate() + 10);
-    //     setDate(initialDate);
-    // }, []);
-
-    const readNfts = async () => {
-        const formData = new FormData();
-        formData.append('name', name || '');
-
-        const response = await Action.name_nft(formData);
-        if (response.success) {
-            if (!!response.data) {
-                setNft(response.data)
-                if (!!response.order) {
-                    setOrder(response.order)
-                }
-            }
-        } else {
-            console.log("readNftsError")
-        }
-        return
-    }
+    const readData = async () => {
+		setLoading(true)
+		try {
+			const row = await getEnsDomainByName(name || '')
+			let _domain = {} as DomainDetailType
+			if (!!row) {
+				_domain = {
+					tokenId:    row.tokenId,
+					owner:      row.owner,
+					name:       row.name,
+					expires:    row.expires,
+					created:    row.created,
+					cost:       row.cost,
+					orderId: 	0,
+					orderPrice: 0,
+					orderToken: '',
+					orderExpires: 0,
+					bidder: '',
+					bidPrice: 0
+				}
+			}
+			const tokenId = makeTokenId(name?.slice(0, name?.lastIndexOf('.')) || '')
+			const order = await storefront().getOrderByTokenId(tokenId)
+			const orderId = Number(order.id);
+			if (orderId!==0) {
+				const tokenId = order.assetId.toString()
+				if (domain.name==="") {
+					_domain = {
+						tokenId,
+						owner:      order.seller,
+						name:       `${order.label}.eth`,
+						expires:    0,
+						created:    0,
+						cost:       0,
+						orderId,
+						orderPrice: Number(ethers.utils.formatEther(order.price)),
+						orderToken: tokens[order.token],
+						orderExpires: parseInt(order.expires),
+						bidder: order.bidder,
+						bidPrice: Number(ethers.utils.formatEther(order.bidPrice))
+					}
+				} else {
+					_domain.owner = 	order.seller
+					_domain.orderId = 	orderId
+					_domain.orderPrice = 	Number(ethers.utils.formatEther(order.price))
+					_domain.orderToken = 	tokens[order.token]
+					_domain.orderExpires= parseInt(order.expires)
+					_domain.bidder= order.bidder
+					_domain.bidPrice= Number(ethers.utils.formatEther(order.bidPrice))
+				}
+			}
+			setDomain(_domain)
+            if (_domain.orderExpires!==0) setDate(new Date(_domain.orderExpires * 1000))
+            setPrice(String(_domain.orderPrice))
+		} catch (error) {
+			console.log("readData", error)
+		}
+		setLoading(false)
+		// setStatus({...state, loaded: true})
+	}
 
     useEffect(() => {
-        readNfts()
-    }, [])
+		readData()
+	}, [wallet.account])
+
 
     useEffect(() => {
         (async () => {
@@ -85,417 +135,217 @@ export default function ColumnAuction({name}: Props) {
             //     setApproveFlag(validation);
             // }
         })();
-    }, [nft]);
-
-    // useEffect(() => {
-    //     for (let i = 0; i < state.collectionNFT.length; i++) {
-    //         if (state.collectionNFT[i].address === nft.collection) {
-    //             var itemData = state.collectionNFT[i].items.find((item: NFTData) => item.tokenId === id);
-    //             if (!itemData) navigate('/auction');
-    //             else setNft(itemData);
-    //             break;
-    //         }
-    //     }
-    // }, [state.collectionNFT]);
+    }, [domain]);
 
     const handle = (newDate: any) => {
         setDate(newDate);
     };
 
     const handlelist = async () => {
-        if (price === '') return;
-        if (!moment(date).isValid()) return;
-
+        setLoading(true)
         try {
-            setLoading(true);
-            // if (!nft.isOffchain) {
-            let txOnSale = await onsaleNFT({
-                nftAddress: nft.collection,
-                assetId: nft.tokenId,
-                name: nft.name,
-                currency: currency,
-                price: price,
-                expiresAt: moment(date).valueOf()
-            });
-
-            if (txOnSale) {
-                // NotificationManager.success(translateLang('listing_success'));
-                toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
-                navigate('/explore');
-            } else {
-                // NotificationManager.error(translateLang('listingerror'));
-                toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
-            }
-            setLoading(false);
-            // } else {
-            //     const lazyAction = await Action.lazy_onsale({
-            //         nftAddress: nft.collection,
-            //         assetId: nft.tokenId,
-            //         currency: currency,
-            //         priceGwei: toBigNum(price, 18),
-            //         expiresAt: moment(date).valueOf()
-            //     });
-
-            //     if (!lazyAction.success) {
-            //         setLoading(false);
-            //         // NotificationManager.error(translateLang('listingerror'));
-            //         toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
-            //         return;
-            //     }
-
-            //     let txOnSale = await onsaleLazyNFT({
-            //         tokenId: nft.tokenId,
-            //         priceGwei: toBigNum(price, 18),
-            //         expiresAt: moment(date).valueOf(),
-            //         singature: lazyAction.result
-            //     });
-
-            //     if (txOnSale) {
-            //         // NotificationManager.success(translateLang('listing_success'));
-            //         toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
-            //         navigate('/explore');
-            //     } else {
-            //         // NotificationManager.error(translateLang('listingerror'));
-            //         toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
-            //     }
-            //     setLoading(false);
-            // }
-        } catch (err) {
-            console.log(err);
-            setLoading(false);
-            // NotificationManager.error(translateLang('operation_error'));
-            toast(translateLang('operation_error'), {position: "top-right", autoClose: 2000})
+            const label = domain.name.slice(0, domain.name.lastIndexOf('.'))
+            const time = Math.round(new Date(date).getTime() / 1000)
+            await storefront().createOrder(config.ens, label, '0x' + BigInt(domain.tokenId).toString(16), ZERO_ADDRESS, ethers.utils.parseEther(price), '0x' + time.toString(16))
+            toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
+            navigate(`/domain/${name}`)
+        } catch (error) {
+            console.log("handlelist", error)
+            toast(translateLang('listingerror'), {position: "top-right", autoClose: 2000})
         }
-    };
-
-    const handleApprove = async () => {
-        setLoading(true);
-        let txOnSale = await approveNFT({
-            nftAddress: nft.collection,
-            assetId: nft.tokenId
-        });
-
-        if (txOnSale) {
-            // NotificationManager.success('Successfully Approve');
-            toast('Successfully Approve', {position: "top-right", autoClose: 2000})
-            setApproveFlag(true);
-        } else {
-            // NotificationManager.error('Failed Approve');
-            toast('Failed Approve', {position: "top-right", autoClose: 2000})
-        }
-        setLoading(false);
+        setLoading(false)
     };
 
     const handleEdit = async () => {
+        setLoading(true)
         try {
-            if (price === '') return;
-            if (!moment(date).isValid()) return;
-            const formData = new FormData();
-            formData.append('collection', nft.collection || '');
-            formData.append('assetId', nft.tokenId || '');
-            formData.append('currency', currency || '');
-            formData.append('price', price || '');
-            formData.append('expiresAt', String(Math.round(moment(date).valueOf() / 1e3)) || '');
-    
-            const response = await Action.edit_order(formData);
-            // console.log(response)
-            if (!response.success) {
-                console.log("handleEditError")
-            }
-            navigate(`domain/${nft.name}`);
+            const time = Math.round(new Date(date).getTime() / 1000)
+            const tx = await storefront().updateOrder(domain.orderId, ethers.utils.parseEther(price), '0x' + time.toString(16))
+            await tx.wait()
+            navigate(`/domain/${name}`)
         } catch (error) {
             console.log("handleEdit", error)
         }
+        setLoading(false)
     }
 
     return (
         <>
-            <section className="container" style={{ paddingTop: '20px' }}>
-                {nft === null ? (
-                    'Loading...'
-                ) : (
-                    <>
-                        <div className="row">
-                            <div className="col-lg-7 offset-lg-1 mb-5" style={{margin: 0}}>
-                                <div id="form-create-item" className="form-border rt-box-style-2">
-                                    <div className="field-set">
-                                        <div className='rt-form'>
-                                            {/* <h5>{translateLang('method')}</h5>
-                                            <p
+            <section className="container" style={{ paddingTop: '2px' }}>
+                <div className="row">
+                    <div className="col-lg-7 offset-lg-1 mb-5" style={{margin: 0}}>
+                        <div id="form-create-item" className="form-border rt-box-style-2">
+                            <div className="field-set">
+                                <div className='rt-form'>
+                                    {/* <h5>{translateLang('method')}</h5>
+                                    <p
+                                        className="form-control"
+                                        style={{
+                                            boxShadow: '0 0 5 0 #d05e3c',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '10px'
+                                        }}>
+                                        <i
+                                            className="arrow_right-up"
+                                            style={{
+                                                fontWeight: 'bolder'
+                                            }}
+                                        />
+                                        <span>{translateLang('sellnote')}</span>
+                                    </p> */}
+                                    {/* <div className="spacer-single"></div> */}
+                                    <h5>{translateLang('sellprice')}</h5>
+                                    {/* <input type="text" className="form-control rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
+                                    <div className="price mt">
+                                        <div
+                                            style={{
+                                                flex: '1 1 0'
+                                            }}>
+                                            <select className='form-control' style={{height: '100%'}}>
+                                                <option value="ETH">ETH</option>
+                                            </select>
+                                            {/* <select
                                                 className="form-control"
-                                                style={{
-                                                    boxShadow: '0 0 5 0 #d05e3c',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '10px'
+                                                style={{height: '100%'}}
+                                                onChange={(e) => {
+                                                    setCurrency(e.target.value);
                                                 }}>
-                                                <i
-                                                    className="arrow_right-up"
-                                                    style={{
-                                                        fontWeight: 'bolder'
-                                                    }}
-                                                />
-                                                <span>{translateLang('sellnote')}</span>
-                                            </p> */}
-                                            {/* <div className="spacer-single"></div> */}
-                                            <h5>{translateLang('sellprice')}</h5>
-                                            {/* <input type="text" className="form-control rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
-                                            <div className="price mt">
-                                                <div
-                                                    style={{
-                                                        flex: '1 1 0'
-                                                    }}>
-                                                    <select
-                                                        className="form-control"
-                                                        style={{height: '100%'}}
-                                                        onChange={(e) => {
-                                                            setCurrency(e.target.value);
-                                                        }}>
-                                                        {state.currencies.map((currency: any, index: number) => (
-                                                            <option value={currency.value} key={index}>
-                                                                {currency.label}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <input
-                                                    type="number"
-                                                    name="item_price"
-                                                    id="item_price"
-                                                    className="form-control"
-                                                    style={{
-                                                        flex: '4 4 0'
-                                                    }}
-                                                    placeholder={translateLang('amount')}
-                                                    value={price}
-                                                    onChange={(e) => setPrice(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="spacer-30"></div>
-                                            <h5>{translateLang('expiredate')}</h5>
-                                            <DateTimeField
-                                                dateTime={date}
-                                                onChange={handle}
-                                                mode={'datetime'}
-                                                format={'MM/DD/YYYY hh:mm A'}
-                                                inputFormat={'DD/MM/YYYY hh:mm A'}
-                                                minDate={new Date()}
-                                                showToday={true}
-                                                startOfWeek={'week'}
-                                                readonly
-                                            />
+                                                {state.currencies.map((currency: any, index: number) => (
+                                                    <option value={currency.value} key={index}>
+                                                        {currency.label}
+                                                    </option>
+                                                ))}
+                                            </select> */}
                                         </div>
+                                        <input
+                                            type="number"
+                                            name="item_price"
+                                            id="item_price"
+                                            className="form-control"
+                                            style={{
+                                                flex: '4 4 0'
+                                            }}
+                                            placeholder={translateLang('amount')}
+                                            value={price}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="spacer-30"></div>
+                                    <h5>{translateLang('expiredate')}</h5>
+                                    <DateTimeField
+                                        dateTime={date}
+                                        onChange={handle}
+                                        mode={'datetime'}
+                                        format={'MM/DD/YYYY hh:mm A'}
+                                        inputFormat={'DD/MM/YYYY hh:mm A'}
+                                        minDate={new Date()}
+                                        showToday={true}
+                                        startOfWeek={'week'}
+                                        readonly
+                                    />
+                                </div>
 
-                                        <div className="spacer-20"></div>
-                                        <h5>{translateLang('fees')}</h5>
-                                        <div className="fee">
-                                            <p>{translateLang('servicefee')}</p>
-                                            <p>{config.fee}%</p>
-                                        </div>
+                                <div className="spacer-20"></div>
+                                <h5>{translateLang('fees')}</h5>
+                                <div className="fee">
+                                    <p>{translateLang('servicefee')}</p>
+                                    <p>{config.fee}%</p>
+                                </div>
 
-                                        <div className="spacer-40"></div>
-                                        {!!order ? (
-                                            <>
-                                            {loading ? (
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">
-                                                        <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
-                                                    </button>
-                                                ) : (
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleEdit}>
-                                                        Edit
-                                                    </button>
-                                                )}
-                                            </>
+                                <div className="spacer-40"></div>
+                                {domain.orderId!==0 ? (
+                                    <>
+                                    {false ? (
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">
+                                                <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
+                                            </button>
                                         ) : (
-                                            <>
-                                                {loading ? (
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">
-                                                        <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
-                                                    </button>
-                                                ) : approveFlag/*  || nft.isOffchain */ ? (
-                                                    <button
-                                                        className="rt-btn rt-gradient pill d-block rt-mb-15"
-                                                        disabled={
-                                                            price === '' || !moment(date).isValid()
-                                                                ? true
-                                                                : false
-                                                        }
-                                                        onClick={handlelist}>
-                                                        {translateLang('btn_completelisting')}
-                                                    </button>
-                                                ) : (
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleApprove}>
-                                                        {'Approve'}
-                                                    </button>
-                                                )}
-                                            </>
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleEdit}>
+                                                Edit
+                                            </button>
                                         )}
-                                    </div>
-                                </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {false ? (
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">
+                                                <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="rt-btn rt-gradient pill d-block rt-mb-15"
+                                                disabled={
+                                                    price === '' || !moment(date).isValid()
+                                                        ? true
+                                                        : false
+                                                }
+                                                onClick={handlelist}>
+                                                List Domain
+                                            </button>
+                                        ) 
+                                        // : (
+                                        //     <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleApprove}>
+                                        //         {'Approve'}
+                                        //     </button>
+                                        // )
+                                    }
+                                    </>
+                                )}
                             </div>
+                        </div>
+                    </div>
 
-                            <div className="col-lg-5">
-                                <div className='rt-box-style-2'>
-                                    <h5>{translateLang('previewitem')}</h5>
-                                    <div className="nft_item m-0">
-                                        <div className="author_list_pp"></div>
-                                        {/* <div className="nft__item_wrap">
-                                            <span>
-                                                <img
-                                                    src={
-                                                        nft.metadata.image ||
-                                                        '../../img/collections/coll-item-3.jpg'
-                                                    }
-                                                    id="get_file_2"
-                                                    className="lazy nft__item_preview"
-                                                    alt=""
-                                                />
-                                            </span>
-                                        </div> */}
-                                        <div className="nft__item_info">
-                                            <div className="sell_preview">
-                                                <div>
-                                                    <p style={{fontWeight: '600'}}>
-                                                        {nft.name.length > 15
-                                                            ? nft.name.slice(
-                                                                0,
-                                                                15
-                                                            ) + '...'
-                                                            : nft.name}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <p style={{fontWeight: '500'}}>
-                                                        {price === ''
-                                                            ? `0 ${currency===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}`
-                                                            : price?.length > 15
-                                                            ? price.slice(0, 15) + '...' + ` ${currency===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}`
-                                                            : price + ` ${currency===state.currencies[0].value ? state.currencies[0].label : state.currencies[1].label}`}
-                                                    </p>
-                                                </div>
-                                            </div>
+                    <div className="col-lg-5">
+                        <div className='rt-box-style-2'>
+                            <h5>{translateLang('previewitem')}</h5>
+                            <div className="nft_item m-0">
+                                <div className="author_list_pp"></div>
+                                {/* <div className="nft__item_wrap">
+                                    <span>
+                                        <img
+                                            src={
+                                                nft.metadata.image ||
+                                                '../../img/collections/coll-item-3.jpg'
+                                            }
+                                            id="get_file_2"
+                                            className="lazy nft__item_preview"
+                                            alt=""
+                                        />
+                                    </span>
+                                </div> */}
+                                <div className="nft__item_info">
+                                    <div className="sell_preview">
+                                        <div>
+                                            <p style={{fontWeight: '600'}}>
+                                                {name.length > 15
+                                                    ? name.slice(
+                                                        0,
+                                                        15
+                                                    ) + '...'
+                                                    : name}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p style={{fontWeight: '500'}}>
+                                                {price === ''
+                                                    ? `0 ETH`
+                                                    : price?.length > 15
+                                                    ? price.slice(0, 15) + '...' + ` ETH`
+                                                    : price + ` ETH`}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {/* <section className="page-content-area">
-                            <div className="container">
-                            <div className="row">
-                                <div className="col-xl-12 col-lg-8 mx-auto text-center wow fade-in-bottom" data-wow-duration="1s">
-                                    <h2 className="rt-section-title">
-                                        List domain for sale
-                                    </h2>
-                                    <p className="rt-mb-0 rt-light3 line-height-34 section-paragraph">
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="rt-spacer-60"></div>
-                            <div className="row">
-                                <div className="col-lg-7">
-                                        <div className="imil-box rt-mb-30">
-                                            <div className="rt-box-style-2">
-                                                <h4 className="f-size-36 f-size-xs-30 rt-semiblod text-422">{nft.name}</h4>   
-                                                <h5 className="f-size-18 rt-light3">is for sale</h5>
-                                            
-                                            Network: Ethereum
-                                                <div className="row rt-mt-50">
-                                                    <div className="domain-border col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod"></span>
-                                                        <span className="d-block f-size-16 rt-light3">Age</span>
-                                                    </div>
-                                                    <div className="domain-border col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod">ENS Service</span>
-                                                        <span className="d-block f-size-16 rt-light3">Provider</span>
-                                                    </div>
-                                                    <div className="col-lg-4">
-                                                        <span className="d-block f-size-24 rt-semiblod">{new Date((nft.attributes?.expiryDate || 0) * 1000).toLocaleDateString()}</span>
-                                                        <span className="d-block f-size-16 rt-light3">Expires</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                    
-                                        </div>
-                                        <div className="rt-box-style-2 rt-mb-30 rt-dorder-off">
-                                            <span className="f-size-18"><span className="rt-strong">Ads: </span>Do you want to post your advertisement here? Contact us!</span>
-                                        </div>
-                                        <div className="rt-box-style-2 rt-mb-30">
-                                            <div className="f-size-18 rt-light3 line-height-34" style={{display: 'flex', gap: '1em'}}>
-                                                <div>Seller:</div>
-                                                <div style={{display: 'flex', gap: '0.5em', cursor: 'pointer'}} onClick={() => navigate(`/${nft.owner}`)}>
-                                                    {state.usersInfo[nft.owner]?.image ? (
-                                                        <img
-                                                            className="lazy"
-                                                            src={state.usersInfo[nft.owner].image}
-                                                            alt=""
-                                                            style={{width: 32, height: 32, borderRadius: '50%'}}
-                                                        />
-                                                    ) : (
-                                                        <Jazzicon
-                                                            diameter={32}
-                                                            seed={Math.round(
-                                                                (Number(nft.owner) /
-                                                                    Number(
-                                                                        '0xffffffffffffffffffffffffffffffffffffffffff'
-                                                                    )) *
-                                                                    10000000
-                                                            )}
-                                                        />
-                                                    )}
-                                                    <div className="author_list_info">
-                                                        <span>{styledAddress(nft.owner)}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    
-                                </div>
-                                <div className="col-lg-5">
-                                        <div className="rt-box-style-3">
-                                            <div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
-                                                This domain is in auction (or Fixed Price)
-                                            </div>
-                                            <div className="rt-p-30">
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                
-                                                    <span className="f-size-20 rt-light3">Current price:</span>
-                                                    <span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">1.5</span></span><span className="f-size-24"> ETH</span></span>
-                                                
-                                                </div>
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                <span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
-                                                    <span className="f-size-20 rt-light3 ">0.075 ETH (5%)</span>
-                                                </div>
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                
-                                                <span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
-                                                    <span className="f-size-20 rt-light3 ">1.575 ETH</span>
-                                                
-                                                </div>
-                                                <div className="d-flex justify-content-between rt-mb-20">
-                                                
-                                                    <span className="f-size-20 rt-light3 text-338">Remaining time:</span>
-                                                    <span className="f-size-20 rt-light3 text-eb7">1 day,10 hours</span>
-                                                
-                                                </div>
-                                                <form action="#" className="rt-form ">
-                                                    <input type="text" className="form-control pill rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" />
-
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Connect Wallet</button>
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Edit/Cancel Your Listing</button>
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Place Bid (in auction mode)</button>
-                                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15">Buy it now for 1.575 ETH (in fixed mode)</button>
-                                                    <button className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Send offer (in fixed mode)</button></form>
-                                            </div>
-                                        </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div>
-                        </div>
-                        </section> */}
-                    </>
-                )}
+                    </div>
+                </div>
+            {loading && (
+                <div className='layout'>
+                    <Loading />
+                </div>
+            )}
             </section>
         </>
     );

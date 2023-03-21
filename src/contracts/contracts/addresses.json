@@ -1,6 +1,6 @@
 {
-    "storefront": "0x25ecc1821cfE10f1f4Aa9259A3bc1bA9eE4bAa65",
-    "nft": "0xc4097Eef727a1eBcD03C914A2366FE45Fff47553",
+    "storefront": "0xBDD7AC52a994f1Ec6917970650Ab8b0484B0FF7b",
+    "nft": "0x93E3Ddc0B88EDdE2a52225A2449725422Fe8E559",
     "tokenIds": [
         {
             "label": "bittrex",
@@ -13,6 +13,10 @@
         {
             "label": "locations",
             "tokenId": "217186629421343442058574315717344430350387817465866244494234513886299410962"
+        },
+        {
+            "label": "generalatomics",
+            "tokenId": "44029076422232490676113501201379737341056420713462570111460414651147741889"
         }
     ]
 }

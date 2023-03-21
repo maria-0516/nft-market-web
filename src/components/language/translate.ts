@@ -3,7 +3,7 @@ export const translations = {
         // home
         home_txt1: "Where people come together to create and collect what's next",
         home_txt2:
-            'Cryptonames is the open marketplace for Bitcoin NFTs, powered by Stacks. Start building your collection today.',
+            'Cryptonames is the open marketplace for Bitcoin Domains, powered by Stacks. Start building your collection today.',
         notablecollection: 'Notable Collections',
         createandsell: 'Create and sell',
         feature_title1: 'Set up your wallet',
@@ -12,12 +12,12 @@ export const translations = {
         feature_title2: 'Create your collection',
         feature_txt2:
             'Click My Collections and set up your collection. Add social links, a description, profile & banner images, and set a secondary sales fee.',
-        feature_title3: 'Add your NFTs',
+        feature_title3: 'Add your Domains',
         feature_txt3:
-            'Upload your NFTs (image, video, audio, or 3D art), add a title and description.',
+            'Upload your Domains (image, video, audio, or 3D art), add a title and description.',
         feature_title4: 'List them for sale',
         feature_txt4:
-            'Choose between auctions, fixed-price listings, and declining-price listings. You choose how you want to sell your NFTs, and we help you sell them!',
+            'Choose between auctions, fixed-price listings, and declining-price listings. You choose how you want to sell your Domains, and we help you sell them!',
 
         // sign in adn sign up
         signin_title: 'Sign In',
@@ -52,15 +52,15 @@ export const translations = {
         hour: 'Hour',
         minute: 'Minute',
         second: 'Second',
-        buyingnft_title: 'Buying NFT',
+        buyingnft_title: 'Buying Domain',
         youneed: 'You need',
         gasfee: 'gas fees',
         checkout: 'Checkout',
         offerexpiration: 'Offer Expiration',
         bidnote: 'To be recommended, it must be higher than the previous bid price.',
 
-        // Create NFT, Collection and lazy nft
-        createnft_title: 'Create New NFT Item',
+        // Create Domain, Collection and lazy nft
+        createnft_title: 'Create New Domain Item',
         uploadmedia: 'Upload Media',
         name: 'Name',
         externallink: 'External link',
@@ -77,7 +77,7 @@ export const translations = {
         browse: 'Browse',
         btn_createitem: 'Create Item',
 
-        // All NFTs and collection
+        // All Domains and collection
         allnft_title: 'Marketplace',
         allcollection_title: 'Top Collections',
         onsaled: 'on Sale',
@@ -90,11 +90,11 @@ export const translations = {
 
         // Header
         explore: 'Explore',
-        allnfts: 'All NFTs',
+        allnfts: 'All Domains',
         collection: 'Collection',
         profile: 'Profile',
         create: 'Create',
-        createnft: 'Create NFT',
+        createnft: 'Create Domain',
         createcollection: 'Submit Collection',
         lazymint: 'Lazy Mint',
         btn_login: 'Login',
@@ -113,7 +113,7 @@ export const translations = {
         powered: 'powered by',
 
         // Profile
-        mynft: 'My NFTs',
+        mynft: 'My Domains',
         // profile: 'Profile',
         mybalance: 'My balance',
         walletaddress: 'Wallet Address',
@@ -129,8 +129,8 @@ export const translations = {
         /** Success */
         addresscopy_success: 'Address copied',
         privatekeycopy_success: 'Privatekey copied',
-        bid_success: 'Successfully Bid NFT',
-        buynft_success: 'Successfully Buy NFT',
+        bid_success: 'Successfully Bid Domain',
+        buynft_success: 'Successfully Buy Domain',
         listing_success: 'Successfully listing',
         update_success: 'Update success',
         sigin_success: 'Signed In successfully',
@@ -145,8 +145,8 @@ export const translations = {
 
         /** Error */
         operation_error: 'Operation failed',
-        buynft_error: 'Buy NFT Failed',
-        bid_error: 'Failed Bid NFT',
+        buynft_error: 'Buy Domain Failed',
+        bid_error: 'Failed Bid Domain',
         listingerror: 'Listing failed',
         imageloading_error: 'Image loading error',
         nofoundaccount_error: 'Not find Account',
@@ -168,9 +168,9 @@ export const translations = {
     },
     jp: {
         // home
-        home_txt1: '特別なNFTを発見、収集、販売する',
+        home_txt1: '特別なDomainを発見、収集、販売する',
         home_txt2:
-            'NFTマーケットプレイスは、CLOUD9ブロックチェーン全体にリンクされ、ユーザーがNFTを超高速で無敵の価格で取引できるようになり、他のすべてのブロックチェーンが恥ずかしい思いをします。 マーケットプレイスはブロックチェーンエコシステム内にあるため、別のウォレットやアプリなどに接続する必要はありません。',
+            'Domainマーケットプレイスは、CLOUD9ブロックチェーン全体にリンクされ、ユーザーがDomainを超高速で無敵の価格で取引できるようになり、他のすべてのブロックチェーンが恥ずかしい思いをします。 マーケットプレイスはブロックチェーンエコシステム内にあるため、別のウォレットやアプリなどに接続する必要はありません。',
         notablecollection: '注目すべきコレクション',
         createandsell: '作成して販売する',
         feature_title1: 'ウォレットをセットアップする',
@@ -179,12 +179,12 @@ export const translations = {
         feature_title2: 'コレクションを作成する',
         feature_txt2:
             '[マイコレクション]をクリックして、コレクションを設定します。 ソーシャルリンク、説明、プロフィール、バナー画像を追加し、二次販売手数料を設定します。',
-        feature_title3: 'NFTを追加する',
+        feature_title3: 'Domainを追加する',
         feature_txt3:
-            'NFT（画像、ビデオ、オーディオ、または3Dアート）をアップロードし、タイトルと説明を追加します。',
+            'Domain（画像、ビデオ、オーディオ、または3Dアート）をアップロードし、タイトルと説明を追加します。',
         feature_title4: 'それらを売りに出す',
         feature_txt4:
-            'オークション、固定価格リスト、および下落価格リストから選択します。 NFTの販売方法を選択すると、NFTの販売に役立ちます。',
+            'オークション、固定価格リスト、および下落価格リストから選択します。 Domainの販売方法を選択すると、Domainの販売に役立ちます。',
 
         // sign in adn sign up
         signin_title: 'ログイン',
@@ -219,14 +219,14 @@ export const translations = {
         hour: 'アワー',
         minute: '分',
         second: 'セカンド',
-        buyingnft_title: 'NFTの購入',
+        buyingnft_title: 'Domainの購入',
         youneed: 'あなたが必要',
         gasfee: 'ガス代',
         checkout: 'チェックアウト',
         offerexpiration: 'オファーの有効期限',
         bidnote: '推奨されるには、以前の入札価格よりも高くなければなりません。',
 
-        // Create NFT, Collection and lazy nft
+        // Create Domain, Collection and lazy nft
         createnft_title: '新しいアイテムを作成します',
         uploadmedia: 'メディアをアップロードします',
         name: '名前',
@@ -244,7 +244,7 @@ export const translations = {
         browse: 'ブラウズ',
         btn_createitem: 'アイテムを作成します',
 
-        // All NFTs and collection
+        // All Domains and collection
         allnft_title: '探る アイテム',
         allcollection_title: '探る コレクション',
         onsaled: '発売中',

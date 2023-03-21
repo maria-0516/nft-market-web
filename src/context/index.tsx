@@ -252,7 +252,7 @@ export default function Provider({ children }: {children: any}) {
             type: 'loading',
             payload: loading ? {loading} : null
         })
-        // localStorage.setItem('loading', loading);
+        localStorage.setItem('loading', loading);
     }
 
     const translateLang = (txt: any) => {
@@ -494,7 +494,7 @@ export default function Provider({ children }: {children: any}) {
                         // buyNFT,
                         // bidNFT,
                         // bidApprove,
-                        updateAuth,
+                        // updateAuth,
                         setLanguage,
                         translateLang,
                         setSearch,
@@ -514,7 +514,7 @@ export default function Provider({ children }: {children: any}) {
                     // buyNFT,
                     // bidNFT,
                     // bidApprove,
-                    updateAuth,
+                    // updateAuth,
                     setLanguage,
                     translateLang,
                     // approveNFT,

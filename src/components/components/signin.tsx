@@ -7,7 +7,7 @@ const SignIn = (props: any) => {
     const { auth } = props;
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
-    const [state, { dispatch, translateLang, updateAuth }] = useBlockchainContext() as any;
+    const [state, { dispatch, translateLang }] = useBlockchainContext() as any;
 
     const userName = (val: any) => {
         setName(val);

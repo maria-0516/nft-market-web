@@ -1,6 +1,5 @@
 import React from 'react';
 import { useWallet } from '../../use-wallet/src';
-import Footer from '../menu/footer';
 
 export default function Wallet() {
     const wallet = useWallet();

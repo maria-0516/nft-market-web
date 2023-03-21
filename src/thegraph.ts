@@ -5,11 +5,15 @@ const apiUrl = 'https://api.thegraph.com/subgraphs/name/ensdomains/ens'
 export const makeTokenId = (label: string) => BigInt('0x' + keccak_256(label)).toString();
 
 export const getEnsCount = async () => {
+	const now = Math.round(new Date().getTime() / 1000)
 	const response = await axios.post(apiUrl, 
 		{query: `{
 			domains (
 				where: {
-					name: "eth"
+					name: "eth",
+					registration_: {
+						expiryDate_gt: ${now}
+					}
 				}
 			) {
 				subdomainCount
@@ -26,6 +30,7 @@ export const getEnsCount = async () => {
 }
 
 export const getEnsDomains = async (skip: number, limit: number) => {
+	const now = Math.round(new Date().getTime() / 1000)
 	if (skip>5000) skip = 5000;
 	const response = await axios.post(apiUrl, 
 		{query: `{
@@ -37,6 +42,9 @@ export const getEnsDomains = async (skip: number, limit: number) => {
 				where: {
 					labelName_not: null
 					name_ends_with: ".eth"
+					registration_: {
+					expiryDate_gt: ${now}
+					}
 				}
 			) {
 				name
@@ -66,7 +74,6 @@ export const getEnsDomains = async (skip: number, limit: number) => {
 		}
 	);
 	const json = [] as any[]
-	const now = Math.round(new Date().getTime() / 1000)
 	if (!!response?.data?.data?.domains) {
 		for (let i of response.data.data.domains) {
 			if (!!i.registration?.registrant?.id && !!i.owner?.id && !!i.registration?.expiryDate && i.registration?.expiryDate > now) {
@@ -93,11 +100,11 @@ export const getEnsDomains = async (skip: number, limit: number) => {
 }
 export const getEnsDomainsByAddress = async (address: string, skip: number, limit: number) => {
 	if (skip>5000) skip = 5000;
+	// first: ${limit}
+	// skip: ${skip}
 	const response = await axios.post(apiUrl, 
 		{query: `{
 			domains (
-			
-				first: 20
 				where: {
 					owner: "${address}"
 				}

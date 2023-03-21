@@ -21,7 +21,7 @@ const SocialItemTab = styled.div`
 `;
 
 export default function Profile() {
-    const [state, { updateAuth, setLanguage, translateLang }] = useBlockchainContext() as any;
+    const [state, { setLanguage, translateLang }] = useBlockchainContext() as any;
     const [newName, setNewName] = useState('');
     const [newBio, setNewBio] = useState('');
     const [newEmail, setNewEmail] = useState('');
@@ -73,7 +73,7 @@ export default function Profile() {
             formData.append('signature', signMessage);
 
             var res = await axios.post('/api/user-update', formData);
-            updateAuth(res.data.data);
+            // updateAuth(res.data.data);
 
             // NotificationManager.success(translateLang('update_success'));
             toast(translateLang('update_success'), {position: "top-right", autoClose: 2000})

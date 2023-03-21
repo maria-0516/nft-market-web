@@ -3,10 +3,7 @@ import ReactDOM from "react-dom/client";
 import { UseWalletProvider } from './use-wallet/src'
 import Provider from './context';
 import '@1stquad/react-bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css';
-import 'react-notifications/lib/notifications.css';
 import 'font-awesome/css/font-awesome.min.css';
-import 'elegant-icons/style.css';
-import 'et-line/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import './assets/animated.css';
