@@ -98,7 +98,7 @@ export default function ListedDomains() {
                             </div>
                         </div>
                         <div className="rt-spacer-60"></div>
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col-12 mx-auto rt-mb-30 wow fade-in-bottom">
                                 <div className="rt-price-1">
                                     <div className="price-body rt-pt-10">
@@ -106,13 +106,48 @@ export default function ListedDomains() {
                                             {orders.map((i: OrderData, k: number) => (
                                                 <li className="clearfix" key={k} onClick={()=>navigate(`/domain/${i.label}.eth`)}>
                                                     <Link to={`/domain/${i.label}.eth`} style={{cursor: 'pointer'}}>
-                                                        {i.label.length > 25 ? i.label.slice(0,22) + '...' : i.label}.eth
-                                                        <span className="float-right">{i.price} {tokens[i.assetId]}</span>
+                                                        <span className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.label.length > 25 ? i.label.slice(0,22) + '...' : i.label}.eth</span>
+                                                        <span className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.expires || 0) * 1000).toDateString()}</span>
+                                                        <span className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.seller.slice(0, 8) + '...' + i.seller.slice(-5)}</code></span>
+                                                        <span className="float-right">{i.price} ETH</span>
                                                     </Link>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
+                                </div>
+                            </div>
+                        </div> */}
+                        <div className="row align-items-center justify-content-center">
+                            <div className="col-10">
+                                <div className="tab-content" id="myTabContent">
+                                    <div className="tab-pane fade-in-bottom show active" id="rt-tab-1" role="tabpanel" aria-labelledby="rt-tab-1-tab">
+                                        <div className="table-responsive">
+                                            <table className="table domain-table">
+                                                <thead>
+                                                    <tr className="rt-light-gray">
+                                                        <th className="text-323639 rt-strong f-size-18">Domain</th>
+                                                        <th className="text-323639 rt-strong f-size-18">Owner Address</th>
+                                                        <th className="text-323639 rt-strong f-size-18">Price</th>
+                                                        <th className="text-323639 rt-strong f-size-18 text-right">Expire Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {
+                                                        orders.map((i: OrderData, index: number) => (
+                                                            <tr key={index} onClick={()=>navigate(`/domain/${i.label}.eth`)} style={{cursor: 'pointer'}}>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.label.length > 18 ? i.label.slice(0, 12) + '...' : i.label}.eth</th>
+                                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.seller.slice(0, 8) + '...' + i.seller.slice(-5)}</code></td>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{i.price} ETH</th>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.expires || 0) * 1000).toDateString()}</th>
+                                                            </tr>
+                                                        ))
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>

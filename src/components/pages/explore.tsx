@@ -38,12 +38,9 @@ export default function Explore() {
                         owner: i.owner,
                         creator: i.creator,
                         name: 	i.name,
-                        attributes:     {
-                            expiryDate: i.expires || 0,
-                            created:    i.created || 0,
-                            cost:       i.cost || 0,
-                            texts:      []
-                        }
+                        expires: i.expires,
+                        created: i.created,
+                        cost: i.cost
                     }
                 }
             }

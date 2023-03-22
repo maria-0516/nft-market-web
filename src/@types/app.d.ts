@@ -39,12 +39,12 @@ declare interface NFTData {
 	owner: 			string // owner address
 	creator: 		string // creator address
 	name: 			string
-	attributes?:     {
-		expiryDate: number
-		created:    number,
-		cost:       number,
-		texts:      string[]
-	}
+	// attributes?:     {
+	// 	expiryDate: number
+	// 	created:    number,
+	// 	cost:       number,
+	// 	texts:      string[]
+	// }
 	likes?: 		string[]
 	expires?:           number
 	created?:          number
