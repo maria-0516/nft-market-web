@@ -96,15 +96,15 @@ export const getEnsDomains = async (skip: number, limit: number) => {
 	} else {
 		console.log("no result")
 	}
-	return json as Array<NFTData>
+	return [json, response.data.data.domains.length===limit] as [Array<NFTData>, boolean]
 }
 export const getEnsDomainsByAddress = async (address: string, skip: number, limit: number) => {
 	if (skip>5000) skip = 5000;
-	// first: ${limit}
-	// skip: ${skip}
 	const response = await axios.post(apiUrl, 
 		{query: `{
 			domains (
+				first: ${limit}
+				skip: ${skip}
 				where: {
 					owner: "${address}"
 				}
@@ -156,7 +156,7 @@ export const getEnsDomainsByAddress = async (address: string, skip: number, limi
 	} else {
 		console.log("no result")
 	}
-	return json as Array<NFTData>
+	return [json, response.data.data.domains.length===limit] as [Array<NFTData>, boolean]
 }
 
 export const getEnsDomainByName = async (name: string) => {

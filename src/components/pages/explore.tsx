@@ -15,7 +15,8 @@ export default function Explore() {
         limit: 10,
 		page: 0,
         total: 500,
-        initialize: false
+        initialize: false,
+        loadMore: true
     })
     const navigate = useNavigate();
 
@@ -26,8 +27,28 @@ export default function Explore() {
     const readNfts = async () => {
         setLoading(true)
         try {
-            const rows = await getEnsDomains(status.page * status.limit, status.limit)
-            setNfts(rows)
+            const [rows, loadMore] = await getEnsDomains(status.page * status.limit, status.limit)
+            setStatus({...state, loadMore})
+            let _domains = Object.fromEntries(nfts.map(i=>[i.tokenId, i]))
+            for (let i of rows) {
+                if (_domains[i.tokenId]===undefined) {
+                    _domains[i.tokenId] = {
+                        collection: i.collection || '',
+                        tokenId: i.tokenId,
+                        owner: i.owner,
+                        creator: i.creator,
+                        name: 	i.name,
+                        attributes:     {
+                            expiryDate: i.expires || 0,
+                            created:    i.created || 0,
+                            cost:       i.cost || 0,
+                            texts:      []
+                        }
+                    }
+                }
+            }
+            setStatus({...status, loadMore})
+            setNfts(Object.values(_domains))
         } catch (error) {
             console.log("readNfts", error)
         }
@@ -41,12 +62,6 @@ export default function Explore() {
     return (
         <div>
             <section className="page-content-area" style={{ paddingTop: '2px' }}>
-                {loading ? (
-                    <div className='layout'>
-                        <Loading />
-                    </div>
-                ) : (
-                    <>
                     {nfts.length > 0 ? (
                     <div className="container">
                         <div className="row">
@@ -125,28 +140,37 @@ export default function Explore() {
                             </div>
                         </div>
                         <div className="rt-spacer-60 rt-spacer-xs-40"></div>
-                        <div className="row">
-                            <div className="col-12" style={{display: 'flex', justifyContent: 'center'}}>
-                                    {/* <a href="#" className="rt-btn rt-outline-gray text-uppercase pill">
+                        {status.loadMore && (																
+                            <div className="row" style={{marginTop: '1.5em'}}>
+                                <div className="col-12" style={{display: 'flex', justifyContent: 'center'}}>
+                                    <button className="rt-btn rt-outline-gray text-uppercase pill" onClick={()=>setStatus({...status, page: status.page + 1})}>
                                         <i className="icofont-refresh rt-mr-5"></i> Load More
-                                    </a> */}
-                                <Pager page={status.page} total={status.total} onChange={page=>onPage(page)} />
+                                    </button>
+                                    {/* <Pager page={status.page} total={status.total} onChange={page=>onPage(page)} /> */}
+                                </div>
                             </div>
-                        </div>
+                        )}	
                     </div>
                     ) : (
-                        <div className="row">
-                            <div className="col-xl-12 col-lg-8 mx-auto text-center wow fade-in-bottom" data-wow-duration="1s">
-                                <h2 className="rt-section-title">
-                                    No domains
-                                </h2>
-                                <p className="rt-mb-0 rt-light3 line-height-34 section-paragraph">
-                                </p>
-                            </div>
+                        <>
+                            {!loading && (
+                                <div className="row">
+                                    <div className="col-xl-12 col-lg-8 mx-auto text-center wow fade-in-bottom" data-wow-duration="1s">
+                                        <h2 className="rt-section-title">
+                                            No domains
+                                        </h2>
+                                        <p className="rt-mb-0 rt-light3 line-height-34 section-paragraph">
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+                    {loading && (
+                        <div className='layout'>
+                            <Loading />
                         </div>
                     )}
-                    </>
-                )}
             </section>
         </div>
     );
