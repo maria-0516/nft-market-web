@@ -44,8 +44,9 @@ const App = () => {
                 <GlobalStyles />
                 <Header />
                 <Routes>
-                    <Route path="/" element={<Explore />} />
-                    <Route path="/listed-domains" element={<ListedDomains />} />
+                    {/* <Route path="/" element={<Explore />} /> */}
+                    {/* <Route path="/listed-domains" element={<ListedDomains />} /> */}
+                    <Route path="/" element={<ListedDomains />} />
                     <Route path="/my-domains" element={<Author />} />
                     <Route path="/how-work" element={<HowWork />} />
                     <Route path="/faq" element={<Faq />} />

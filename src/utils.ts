@@ -151,6 +151,9 @@ const changeNetwork = async (ethereum: any, chainId: number): Promise<boolean> =
 }
 export const currentTime = () => Math.round((new Date().getTime()) / 1000);
 
-
+export const toUSDate = (time: number) => {
+    const date = new Date(time * 1000)
+    return [date.toLocaleDateString("en-US", { day: 'numeric' }),date.toLocaleDateString("en-US", { month: 'short' }), date.toLocaleDateString("en-US", { year: 'numeric' })].join(' ')
+}
 
 export { delay, toBigNum, fromBigNum, styledAddress, copyToClipboard, changeNetwork, styledText };

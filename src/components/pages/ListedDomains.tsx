@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { storefront, tokens } from '../../contracts';
 import Pager from '../components/Pager';
 import Loading from '../components/Loading';
+import { toUSDate } from '../../utils';
 
 export default function ListedDomains() {
     const navigate = useNavigate();
@@ -88,7 +89,7 @@ export default function ListedDomains() {
                         </div>
                     </div>
                     <div className="container">
-                        <div className="row">
+                        {/* <div className="row">
                             <div className="col-xl-12 col-lg-8 mx-auto text-center wow fade-in-bottom" data-wow-duration="1s">
                                 <h2 className="rt-section-title">
                                     Listed Crypto Domains
@@ -96,7 +97,7 @@ export default function ListedDomains() {
                                 <p className="rt-mb-0 rt-light3 line-height-34 section-paragraph">
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
                         <div className="rt-spacer-60"></div>
                         {/* <div className="row">
                             <div className="col-12 mx-auto rt-mb-30 wow fade-in-bottom">
@@ -127,7 +128,7 @@ export default function ListedDomains() {
                                                 <thead>
                                                     <tr className="rt-light-gray">
                                                         <th className="text-323639 rt-strong f-size-18">Domain</th>
-                                                        <th className="text-323639 rt-strong f-size-18">Owner Address</th>
+                                                        <th className="text-323639 rt-strong f-size-18">Network</th>
                                                         <th className="text-323639 rt-strong f-size-18">Price</th>
                                                         <th className="text-323639 rt-strong f-size-18 text-right" style={{minWidth: '7em'}}>Expire Date</th>
                                                     </tr>
@@ -137,9 +138,9 @@ export default function ListedDomains() {
                                                         orders.map((i: OrderData, index: number) => (
                                                             <tr key={index} onClick={()=>navigate(`/domain/${i.label}.eth`)} style={{cursor: 'pointer'}}>
                                                                 <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.label.length > 18 ? i.label.slice(0, 12) + '...' : i.label}.eth</th>
-                                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.seller.slice(0, 8) + '...' + i.seller.slice(-5)}</code></td>
+                                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>Ethereum (ENS Service)</code></td>
                                                                 <th className="f-size-24 f-size-md-18 rt-semiblod text-338">{i.price} ETH</th>
-                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.expires || 0) * 1000).toDateString()}</th>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{toUSDate(i.expires)}</th>
                                                             </tr>
                                                         ))
                                                     }

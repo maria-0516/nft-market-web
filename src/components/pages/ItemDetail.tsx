@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
-import { changeNetwork, styledAddress } from '../../utils';
+import { changeNetwork, styledAddress, toUSDate } from '../../utils';
 import { useWallet } from '../../use-wallet/src';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
@@ -279,18 +279,18 @@ export default function ItemDetail() {
 														</div>  */}
 														{/* <h5 className="f-size-18 rt-light3">is for sale</h5> */}
 													
-														<div>Network: Ethereum</div>
-														<div className="row rt-mt-50">
+														{/* <div>Network: Ethereum</div> */}
+														<div className="row rt-mt-50" style={{marginTop: '1em'}}>
 															<div className="domain-border col-lg-4">
-																<span className="d-block f-size-24 rt-semiblod">{Math.round((new Date().getTime() / 1000 - domain.created) / (86400 * 30))} months {Math.round(((new Date().getTime() / 1000 - domain.created) % (86400 * 30)) / 86400)} days</span>
-																<span className="d-block f-size-16 rt-light3">Age</span>
+																<span className="d-block f-size-24 rt-semiblod">Ethereum</span>
+																<span className="d-block f-size-16 rt-light3">Network</span>
 															</div>
 															<div className="domain-border col-lg-4">
 																<span className="d-block f-size-24 rt-semiblod">ENS Service</span>
 																<span className="d-block f-size-16 rt-light3">Provider</span>
 															</div>
 															<div className="col-lg-4">
-																<span className="d-block f-size-24 rt-semiblod">{new Date((domain.expires) * 1000).toLocaleDateString()}</span>
+																<span className="d-block f-size-24 rt-semiblod">{toUSDate(domain.expires)}</span>
 																<span className="d-block f-size-16 rt-light3">Expires</span>
 															</div>
 														</div>
@@ -343,17 +343,17 @@ export default function ItemDetail() {
 																<span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{Math.round(Number(domain.orderPrice) * (1 - config.fee / 100) * 1e6) / 1e6}</span></span><span className="f-size-24"> ETH</span></span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
-															<span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
+															<span className="f-size-20 rt-light3">CNS fee:</span>
 																<span className="f-size-20 rt-light3 ">{Math.round(Number(domain.orderPrice) * config.fee * 1e4) / 1e6} ETH ({config.fee}%)</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
-															<span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
+															<span className="f-size-20 rt-light3">Total payment:</span>
 																<span className="f-size-20 rt-light3 ">{Math.round(domain.orderPrice * 1e4) / 1e4} ETH</span>
 															</div>
-															<div className="d-flex justify-content-between rt-mb-20">
+															{/* <div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3 text-338">Remaining time:</span>
 																<span className="f-size-20 rt-light3 text-eb7">{remainTime}</span>
-															</div>
+															</div> */}
 														</>
 													)}
 													<div className="rt-form ">

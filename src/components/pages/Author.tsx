@@ -6,6 +6,7 @@ import { storefront, tokens } from '../../contracts';
 import { ethers } from 'ethers';
 import { useWallet } from '../../use-wallet/src';
 import Loading from '../components/Loading';
+import { toUSDate } from '../../utils';
 
 
 interface DomainType {
@@ -137,8 +138,8 @@ export default function Author() {
 														<tr key={k} onClick={()=>navigate(`/domain/${i.name}`)} style={{cursor: 'pointer'}}>
 															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
 															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.orderId!==0 ? `${i.orderPrice} ETH` : ''}</th>
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? new Date((i.created || 0) * 1000).toLocaleDateString() : '-'}</td>
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? new Date((i.expires || 0) * 1000).toLocaleDateString() : '-'}</td>
+															<td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? toUSDate(i.created) : '-'}</td>
+															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? toUSDate(i.expires) : '-'}</td>
 															{wallet.account?.toLowerCase()===account?.toLowerCase() && (
 																<td className="text-right">
 																	<Link to={`/domain/${i.name}`} className="rt-btn rt-gradient2 rt-sm4 pill">{i.orderId!==0 ? 'Listed' : 'List it now!'}</Link>

@@ -210,7 +210,7 @@ const Header = () => {
         if (_path==='/') {
             setMenu('Buy Crypto Domains')
         } else if (_path.indexOf('listed-domains')===1) {
-            setMenu('Listed Crypto Domains')
+            setMenu('Buy Crypto Domains')
         } else if (_path.indexOf('how-work')===1) {
             setMenu('How it works')
         } else if (_path.indexOf('partnership')===1) {
@@ -279,7 +279,7 @@ const Header = () => {
 						<div className="col-md-6 md-start sm-center">
 							
 							<ul className="text-center text-md-left top-social">
-								<li><span><a href="#" className="f-size-14 text-white"><img src="/assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</a></span></li>
+								<li><span><Link to='https://t.me/CryptoNamesStore' target='_blank' className="f-size-14 text-white"><img src="/assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</Link></span></li>
 								<li style={{position: 'relative', cursor: 'pointer'}} onClick={()=>setLangMenu(!langMenu)}>
 									<span className="select2 select2-container select2-container--default" dir="ltr" data-select2-id="2" style={{width: '100%'}}>
 										<span className="selection">
@@ -299,8 +299,8 @@ const Header = () => {
 										<li>EN</li>
 									</ul>
 								</li>
-								<li><a href=""><i className="icofont-telegram"></i></a></li>
-								<li><a href=""><i className="icofont-twitter"></i></a></li>
+								<li><Link to='https://t.me/CryptoNamesStore' target='_blank'><i className="icofont-telegram"></i></Link></li>
+								<li><Link to='https://twitter.com/CryptoNames_ERC' target='_blank'><i className="icofont-twitter"></i></Link></li>
 			
 							</ul>
 						</div>
@@ -324,8 +324,8 @@ const Header = () => {
 							<div className="ml-auto d-flex align-items-center">
 									<div className="main-menu">
 									<ul className={mobileMenu.main ? 'show' : ''}>
-										<li className={menu==='Buy Crypto Domains' ? 'current-menu-item' : ''}><Link to="/" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Home</Link></li>
-										<li className={menu==='Listed Crypto Domains' ? 'current-menu-item' : ''}><Link to="/listed-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Buy Domain</Link></li>
+										{/* <li className={menu==='Buy Crypto Domains' ? 'current-menu-item' : ''}><Link to="/" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Home</Link></li> */}
+										<li className={menu==='Buy Crypto Domains' ? 'current-menu-item' : ''}><Link to="/" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Buy Domain</Link></li>
 									
 										{/* <li className="menu-item-has-children" onClick={()=>setMobileMenu({...mobileMenu, sub1: !mobileMenu.sub1})}><Link to="#">Buy Domain</Link>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub1 ? 'block' : ''}`}}>
