@@ -51,9 +51,9 @@ export default function Author() {
 				const address = _path.replace('/address/', '')
 				if (/^0x[0-9A-Fa-f]{40}$/.test(address)) {
 					_account = address
-				} else {
-					_account = wallet.account || ''
 				}
+			} else {
+				_account = wallet.account || ''
 			}
 			if (_account) {
 				const _rows = await getEnsDomainsByAddress(_account.toLowerCase(), status.page * status.limit, status.limit)
