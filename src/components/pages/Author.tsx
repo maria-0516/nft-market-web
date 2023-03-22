@@ -24,32 +24,32 @@ interface DomainType {
 export default function Author() {
 	const wallet = useWallet()
 	const navigate = useNavigate();
-	const location = useLocation();
 	const {address} = useParams()
 	const [loading, setLoading] = useState(false)
 	const [domains, setDomains] = useState<DomainType[]>([]);
+
+	const account = address || wallet.account
 	const [status, setStatus] = useState({
+		address: account,
 		limit: 10,
 		page: 0,
 		loadMore: true
 	})
-	const account = address || wallet.account
-	const onPage = (page: number) => {
-		setStatus({...status, page})
-	}
-
+	
 	useEffect(() => {
 		if (!wallet.account && localStorage.getItem('isConnected')==="0") return navigate('/')
 	}, [wallet.account])
 
-	const readNfts = async () => {
+	const readNfts = async (initial?: boolean) => {
 		setLoading(true)
 		try {
 			if (account) {
 				const [rows, loadMore] = await getEnsDomainsByAddress(account.toLowerCase(), status.page * status.limit, status.limit)
 				setStatus({...status, loadMore})
-				const _domains = Object.fromEntries(domains.map(i=>[i.tokenId, i])); // as {[tokenId: string]: DomainType}
-
+				let _domains = {} as {[k: string]: DomainType}
+				if (!initial) {
+					_domains = Object.fromEntries(domains.map(i=>[i.tokenId, i])); // as {[tokenId: string]: DomainType}
+				}
 				for (let i of rows) {
 					_domains[i.tokenId] = {
 						tokenId:    i.tokenId,
@@ -64,7 +64,7 @@ export default function Author() {
 						orderExpires: 0
 					}
 				}
-				const orders = await storefront().getOrdersByAddress(account.toLowerCase(), 0, 100)
+				const orders = await storefront.getOrdersByAddress(account.toLowerCase(), 0, 100)
 				for (let i of orders) {
 					const orderId = Number(i.id);
 					if (orderId!==0) {
@@ -100,14 +100,10 @@ export default function Author() {
 	}
 
 	React.useEffect(() => {
-		if (location.pathname.indexOf('address')===1) {
-			const address = location.pathname.replace('/address/', '')
-			if (/^0x[0-9A-Fa-f]{40}$/.test(address)) {
-				if (address===wallet.account) return navigate('/my-domains')
-			}
-		}
-		readNfts()
-	}, [account, status.page, location.pathname])
+		if (address===wallet.account) return navigate('/my-domains')
+		readNfts(status.address!==account)
+		if (status.address!==account) setStatus({...status, address: account})
+	}, [account, status.page])
 
 	// const onLoadMore = () => {
 	// 	setStatus({...status, page: status.page + 1})
@@ -131,7 +127,7 @@ export default function Author() {
 													<tr className="rt-light-gray">
 														<th className="text-323639 rt-strong f-size-18">Domain</th>
 														<th className="text-323639 rt-strong f-size-18">Create Date</th>
-														<th className="text-323639 rt-strong f-size-18">Expire Date</th>
+														<th className="text-323639 rt-strong f-size-18" style={{minWidth: '7em'}}>Expire Date</th>
 														{wallet.account===account && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
 													</tr>
 												</thead>

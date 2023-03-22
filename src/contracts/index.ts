@@ -38,12 +38,12 @@ const supportChainId = config.chainId;
 // const marketplaceContract = new ethers.Contract(Addresses.Marketplace, Abis.Marketplace, signer);
 
 export const provider = new ethers.providers.JsonRpcProvider(config.rpc[0])
+export const storefront = new ethers.Contract(Addresses.storefront, storefrontAbi, provider);
 
-export const storefront = () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+export const storefrontWithSigner = (ethereum: any) => {
+    const provider = new ethers.providers.Web3Provider(ethereum)
     const signer = provider.getSigner();
-    const storefront = new ethers.Contract(Addresses.storefront, storefrontAbi, signer);
-    return storefront
+    return new ethers.Contract(Addresses.storefront, storefrontAbi, signer);
 }
 
 export const tokens = {

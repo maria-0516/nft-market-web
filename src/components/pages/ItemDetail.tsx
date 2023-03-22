@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import config from '../../config.json'
 import Dialog from '../components/Dialog';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
-import { storefront, tokens } from '../../contracts';
+import { storefront, storefrontWithSigner, tokens } from '../../contracts';
 import { ethers } from 'ethers';
 import Loading from '../components/Loading';
 
@@ -86,7 +86,7 @@ export default function ItemDetail() {
 				}
 			}
 			const tokenId = makeTokenId(name?.slice(0, name?.lastIndexOf('.')) || '')
-			const order = await storefront().getOrderByTokenId(tokenId)
+			const order = await storefront.getOrderByTokenId(tokenId)
 			const orderId = Number(order.id);
 			if (orderId!==0) {
 				const tokenId = order.assetId.toString()
@@ -151,7 +151,7 @@ export default function ItemDetail() {
 			if (domain.orderId===0) return
 			// console.log("ethers.utils.formatUnits(domain.orderPrice)", )
 			const value = ethers.utils.parseEther(String(domain.orderPrice))
-			const tx = await storefront().executeOrder(domain.orderId, value, {value})
+			const tx = await storefrontWithSigner(wallet.ethereum).executeOrder(domain.orderId, value, {value})
 			await tx.wait()
 			toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
 			await readData()
@@ -171,9 +171,9 @@ export default function ItemDetail() {
 
 			setLoading(true)
 			if (wallet.account) {
-				// const gasEstimated = await storefront().estimateGas.placeBid(domain.orderId, ethers.utils.parseEther(String(status.bidPrice)));
+				// const gasEstimated = await storefront.estimateGas.placeBid(domain.orderId, ethers.utils.parseEther(String(status.bidPrice)));
 				const value = ethers.utils.parseEther(String(bidPrice))
-				const tx = await storefront().placeBid(domain.orderId, value, {value})
+				const tx = await await storefrontWithSigner(wallet.ethereum).placeBid(domain.orderId, value, {value})
 				await tx.wait()
 			} else {
 				onConnectWallet()
@@ -219,7 +219,7 @@ export default function ItemDetail() {
 		setStatus({...status, showCancel: false})
 		try {
 			if (domain.orderId===0) return
-			const tx = await storefront().cancelOrder(domain.orderId)
+			const tx = await await storefrontWithSigner(wallet.ethereum).cancelOrder(domain.orderId)
 			await tx.wait()
 			toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
 			await readData()
@@ -234,7 +234,7 @@ export default function ItemDetail() {
 		setLoading(true)
 		try {
 			if (domain.orderId===0) return
-			const tx = await storefront().acceptBid(domain.orderId)
+			const tx = await await storefrontWithSigner(wallet.ethereum).acceptBid(domain.orderId)
 			await tx.wait()
 			toast("Accepting bid was successfully done", {position: "top-right", autoClose: 2000})
 			await readData()
@@ -248,8 +248,7 @@ export default function ItemDetail() {
 	const cancelBid = async () => {
 		setLoading(true)
 		try {
-			if (domain.bidder!==wallet.account) return
-			const tx = await storefront().cancelBid(domain.orderId)
+			const tx = await await storefrontWithSigner(wallet.ethereum).cancelBid(domain.orderId)
 			await tx.wait()
 			toast("Canceling bid was successfully done", {position: "top-right", autoClose: 2000})		
 			await readData()
@@ -334,14 +333,14 @@ export default function ItemDetail() {
 										<div className="col-lg-5">
 											<div className="rt-box-style-3">
 												<div className="rt-gradient-2 text-center text-white rt-light3 f-size-28 f-size-xs-24 rt-pt-25 rt-pb-25">
-													{(pageFlag===1 || pageFlag===2) ? 'This is your domain' : (domain.orderId!==0 ? 'This domain is in auction' : 'This domain is not listed')}
+													{(pageFlag===1 || pageFlag===2) ? 'This is your domain' : (domain.orderId!==0 ? 'This domain is for sale' : 'This domain is not listed')}
 												</div>
 												<div className="rt-p-30">
 													{domain.orderId!==0 && (
 														<>
 															<div className="d-flex justify-content-between rt-mb-20">
-																<span className="f-size-20 rt-light3">Current price:</span>
-																<span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{Math.round(domain.orderPrice * 1e4) / 1e4}</span></span><span className="f-size-24"> ETH</span></span>
+																<span className="f-size-20 rt-light3" style={{display: 'flex', alignItems: 'center'}}>Current price:</span>
+																<span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{Math.round(Number(domain.orderPrice) * (1 - config.fee / 100) * 1e6) / 1e6}</span></span><span className="f-size-24"> ETH</span></span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">CNS fee:(in fixed) </span>
@@ -349,7 +348,7 @@ export default function ItemDetail() {
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">Total payment:(in fixed) </span>
-																<span className="f-size-20 rt-light3 ">{Math.round(Number(domain.orderPrice) * (1 + config.fee / 100) * 1e6) / 1e6} ETH</span>
+																<span className="f-size-20 rt-light3 ">{Math.round(domain.orderPrice * 1e4) / 1e4} ETH</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3 text-338">Remaining time:</span>
@@ -404,32 +403,33 @@ export default function ItemDetail() {
 											<div className='rt-box-style-2 rt-mb-30' style={{marginTop: '20px', padding: '30px'}}>
 												<span className="f-size-30 f-size-xs-30 rt-semiblod text-422">Bid</span>
 												<div className='row'>
-													<div className="col-lg-4">
+													<div className="domain-border col-lg-4 d column between" style={{border: 0}}>
 														<span className="d-block f-size-24 rt-semiblod">Bidder Address</span>
 														<div className="f-size-16 rt-light3" style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
 															<Jazzicon diameter={32} seed={Math.round((Number(domain.owner) / Number('0xffffffffffffffffffffffffffffffffffffffffff')) * 10000000)} />
-															<div><Link to={`/address/${domain.bidder}`}>{styledAddress(domain.bidder)}</Link></div>
+															<div className="f-size-20"><Link to={`/address/${domain.bidder}`}>{styledAddress(domain.bidder)}</Link></div>
 														</div>
 													</div>
-													<div className="col-lg-4">
+													<div className="domain-border col-lg-4 d column between" style={{border: 0}}>
 														<span className="d-block f-size-24 rt-semiblod">Bid Price</span>
-														<span className="d-block f-size-16 rt-light3">{domain.bidPrice}</span>
+														<span className="rt-light3 amount"><span className="f-size-30 text-422"><span className="rt-semiblod">{domain.bidPrice}</span></span><span className="f-size-20"> ETH</span></span>
+														{/* <span className="d-block f-size-16 rt-light3">{domain.bidPrice}</span> */}
 													</div>
 													{domain.owner===wallet.account ? (
-														<div className="col-lg-4">
+														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
-															<span className="d-block f-size-16 rt-light3">
-																<button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={acceptBid}>Accept</button>
+															<span className="f-size-16 rt-light3 d column center">
+																<button className="rt-btn rt-gradient pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}} onClick={acceptBid}>Accept</button>
 															</span>
 														</div>
 													) : (
-														<div className="col-lg-4">
+														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
-															<span className="d-block f-size-16 rt-light3">
+															<span className="f-size-16 rt-light3 d column center" style={{height: '100%'}}>
 																{wallet.account===domain.bidder ? (
-																	<button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={cancelBid}>Cancel</button>
+																	<button className="rt-btn rt-gradient pill rt-mb-15" onClick={cancelBid} style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
 																) : (
-																	<button disabled className="rt-btn rt-outline-gradientL pill d-block rt-mb-15">Cancel</button>
+																	<button disabled className="rt-btn rt-outline-gradientL pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
 																)}
 															</span>
 														</div>

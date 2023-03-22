@@ -9,7 +9,7 @@ import { toast } from 'react-toastify';
 import config from '../../config.json'
 import { useWallet } from '../../use-wallet/src';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
-import { storefront, tokens } from '../../contracts';
+import { storefront, storefrontWithSigner, tokens } from '../../contracts';
 import { ethers } from 'ethers';
 import Loading from './Loading';
 
@@ -80,7 +80,7 @@ export default function ColumnAuction({name}: Props) {
 				}
 			}
 			const tokenId = makeTokenId(name?.slice(0, name?.lastIndexOf('.')) || '')
-			const order = await storefront().getOrderByTokenId(tokenId)
+			const order = await storefront.getOrderByTokenId(tokenId)
 			const orderId = Number(order.id);
 			if (orderId!==0) {
 				const tokenId = order.assetId.toString()
@@ -146,7 +146,7 @@ export default function ColumnAuction({name}: Props) {
         try {
             const label = domain.name.slice(0, domain.name.lastIndexOf('.'))
             const time = Math.round(new Date(date).getTime() / 1000)
-            await storefront().createOrder(config.ens, label, '0x' + BigInt(domain.tokenId).toString(16), ZERO_ADDRESS, ethers.utils.parseEther(price), '0x' + time.toString(16))
+            await storefrontWithSigner(wallet.ethereum).createOrder(config.ens, label, '0x' + BigInt(domain.tokenId).toString(16), ZERO_ADDRESS, ethers.utils.parseEther(price), '0x' + time.toString(16))
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
         } catch (error) {
@@ -160,7 +160,7 @@ export default function ColumnAuction({name}: Props) {
         setLoading(true)
         try {
             const time = Math.round(new Date(date).getTime() / 1000)
-            const tx = await storefront().updateOrder(domain.orderId, ethers.utils.parseEther(price), '0x' + time.toString(16))
+            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(price), '0x' + time.toString(16))
             await tx.wait()
             navigate(`/domain/${name}`)
         } catch (error) {

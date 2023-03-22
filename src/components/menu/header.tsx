@@ -258,7 +258,7 @@ const Header = () => {
         // if (location.pathname.indexOf('listed-domains')===1) {
         //     const label = status.search.slice(0, status.search.lastIndexOf('.'))
         //     const tokenId = makeTokenId(label)
-        //     const _order = await storefront().getOrderByTokenId(tokenId)
+        //     const _order = await storefront.getOrderByTokenId(tokenId)
         //     const id = Number(_order.id) || 0
         //     if (!!id) {
                 

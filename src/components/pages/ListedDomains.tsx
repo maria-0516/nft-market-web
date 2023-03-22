@@ -18,7 +18,7 @@ export default function ListedDomains() {
     const readOrders = async () => {
         setLoading(true)
         try {
-            const result = await storefront().getOrders(status.page, status.limit);
+            const result = await storefront.getOrders(status.page, status.limit);
             let _domains = Object.fromEntries(orders.map(i=>[i.assetId, i]))
             let _count = 0
             for (let i of result) {
@@ -129,7 +129,7 @@ export default function ListedDomains() {
                                                         <th className="text-323639 rt-strong f-size-18">Domain</th>
                                                         <th className="text-323639 rt-strong f-size-18">Owner Address</th>
                                                         <th className="text-323639 rt-strong f-size-18">Price</th>
-                                                        <th className="text-323639 rt-strong f-size-18 text-right">Expire Date</th>
+                                                        <th className="text-323639 rt-strong f-size-18 text-right" style={{minWidth: '7em'}}>Expire Date</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -138,7 +138,7 @@ export default function ListedDomains() {
                                                             <tr key={index} onClick={()=>navigate(`/domain/${i.label}.eth`)} style={{cursor: 'pointer'}}>
                                                                 <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.label.length > 18 ? i.label.slice(0, 12) + '...' : i.label}.eth</th>
                                                                 <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>{i.seller.slice(0, 8) + '...' + i.seller.slice(-5)}</code></td>
-                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{i.price} ETH</th>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338">{i.price} ETH</th>
                                                                 <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{new Date((i.expires || 0) * 1000).toDateString()}</th>
                                                             </tr>
                                                         ))

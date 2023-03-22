@@ -115,7 +115,7 @@ export default function Explore() {
                                                     <tr className="rt-light-gray">
                                                         <th className="text-323639 rt-strong f-size-18">Domain</th>
                                                         <th className="text-323639 rt-strong f-size-18">Owner Address</th>
-                                                        <th className="text-323639 rt-strong f-size-18 text-right">Expire Date</th>
+                                                        <th className="text-323639 rt-strong f-size-18 text-right" style={{minWidth: '7em'}}>Expire Date</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
