@@ -151,7 +151,7 @@ export default function ColumnAuction({name}: Props) {
             const collection = await collectionWithSigner(wallet.ethereum);
             const _spender = await collection.getApproved(tokenId)
             if (toLower(_spender)!==toLower(addresses.storefront)) {
-                const txApprove = collection.approve(addresses.storefront, tokenId)
+                const txApprove = await collection.approve(addresses.storefront, tokenId)
                 await txApprove.wait()
                 toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
             }
