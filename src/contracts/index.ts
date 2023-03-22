@@ -45,6 +45,13 @@ export const storefrontWithSigner = (ethereum: any) => {
     const signer = provider.getSigner();
     return new ethers.Contract(Addresses.storefront, storefrontAbi, signer);
 }
+export const collectionWithSigner = (ethereum: any) => {
+    const provider = new ethers.providers.Web3Provider(ethereum)
+    const signer = provider.getSigner();
+    return new ethers.Contract(Addresses.nft, ["function approve(address,uint256) external", "function getApproved(uint256) external view returns (address)"], signer);
+}
+
+export const toLower = (s: string) => String(s).toLowerCase() 
 
 export const tokens = {
     '0x0000000000000000000000000000000000000000': "ETH",

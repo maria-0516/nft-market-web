@@ -9,11 +9,12 @@ import { toast } from 'react-toastify';
 import config from '../../config.json'
 import { useWallet } from '../../use-wallet/src';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
-import { storefront, storefrontWithSigner, tokens } from '../../contracts';
+import { collectionWithSigner, storefront, storefrontWithSigner, tokens, toLower } from '../../contracts';
 import { ethers } from 'ethers';
 import Loading from './Loading';
+import addresses from '../../contracts/contracts/addresses.json'
 
-const ZERO_ADDRESS = 0x0000000000000000000000000000000000000000
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
 
@@ -41,7 +42,7 @@ export default function ColumnAuction({name}: Props) {
     const navigate = useNavigate();
     const [state, { translateLang }] = useBlockchainContext() as any;
     const [price, setPrice] = useState('');
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(new Date(new Date().getTime() + 2592000000));
     const [loading, setLoading] = useState(false);
     const [domain, setDomain] = useState<DomainDetailType>({
 		tokenId: '',
@@ -146,7 +147,16 @@ export default function ColumnAuction({name}: Props) {
         try {
             const label = domain.name.slice(0, domain.name.lastIndexOf('.'))
             const time = Math.round(new Date(date).getTime() / 1000)
-            await storefrontWithSigner(wallet.ethereum).createOrder(config.ens, label, '0x' + BigInt(domain.tokenId).toString(16), ZERO_ADDRESS, ethers.utils.parseEther(price), '0x' + time.toString(16))
+            const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
+            const collection = await collectionWithSigner(wallet.ethereum);
+            const _spender = await collection.getApproved(tokenId)
+            if (toLower(_spender)!==toLower(addresses.storefront)) {
+                const txApprove = collection.approve(addresses.storefront, tokenId)
+                await txApprove.wait()
+                toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
+            }
+            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(price), time)
+            await tx.wait();
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
         } catch (error) {
@@ -283,12 +293,7 @@ export default function ColumnAuction({name}: Props) {
                                                 onClick={handlelist}>
                                                 List Domain
                                             </button>
-                                        ) 
-                                        // : (
-                                        //     <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleApprove}>
-                                        //         {'Approve'}
-                                        //     </button>
-                                        // )
+                                        )
                                     }
                                     </>
                                 )}
@@ -301,38 +306,16 @@ export default function ColumnAuction({name}: Props) {
                             <h5>{translateLang('previewitem')}</h5>
                             <div className="nft_item m-0">
                                 <div className="author_list_pp"></div>
-                                {/* <div className="nft__item_wrap">
-                                    <span>
-                                        <img
-                                            src={
-                                                nft.metadata.image ||
-                                                '../../img/collections/coll-item-3.jpg'
-                                            }
-                                            id="get_file_2"
-                                            className="lazy nft__item_preview"
-                                            alt=""
-                                        />
-                                    </span>
-                                </div> */}
                                 <div className="nft__item_info">
                                     <div className="sell_preview">
                                         <div>
                                             <p style={{fontWeight: '600'}}>
-                                                {name.length > 15
-                                                    ? name.slice(
-                                                        0,
-                                                        15
-                                                    ) + '...'
-                                                    : name}
+                                                {name.length > 20 ? name.slice(0, 15) + '...eth': name}
                                             </p>
                                         </div>
                                         <div>
                                             <p style={{fontWeight: '500'}}>
-                                                {price === ''
-                                                    ? `0 ETH`
-                                                    : price?.length > 15
-                                                    ? price.slice(0, 15) + '...' + ` ETH`
-                                                    : price + ` ETH`}
+                                                {price === '' ? `0 ETH` : price?.length > 15 ? price.slice(0, 15) + '...' + ` ETH`: price + ` ETH`}
                                             </p>
                                         </div>
                                     </div>

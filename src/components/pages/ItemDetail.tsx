@@ -57,9 +57,9 @@ export default function ItemDetail() {
 	const setFlag = (_domain: DomainDetailType) => {
 		let flag = 0
 		if (_domain.orderId!==0) {
-			flag = _domain.owner===wallet.account ? 2 : 4
+			flag = _domain.owner?.toLowerCase()===wallet.account?.toLowerCase() ? 2 : 4
 		} else {
-			flag = _domain.owner===wallet.account ? 1 : 3
+			flag = _domain.owner?.toLowerCase()===wallet.account?.toLowerCase() ? 1 : 3
 		}
 		setPageFlag(flag)
 	}
@@ -297,9 +297,9 @@ export default function ItemDetail() {
 													</div>
 											
 												</div>
-												<div className="rt-box-style-2 rt-mb-30 rt-dorder-off">
+												{/* <div className="rt-box-style-2 rt-mb-30 rt-dorder-off">
 													<span className="f-size-18"><span className="rt-strong">Ads: </span>Do you want to post your advertisement here? Contact us!</span>
-												</div>
+												</div> */}
 												<div className="rt-box-style-2 rt-mb-30">
 													<div className="f-size-18 rt-light3 line-height-34" style={{display: 'flex', gap: '1em'}}>
 														<div>Owner:</div>
@@ -415,7 +415,7 @@ export default function ItemDetail() {
 														<span className="rt-light3 amount"><span className="f-size-30 text-422"><span className="rt-semiblod">{domain.bidPrice}</span></span><span className="f-size-20"> ETH</span></span>
 														{/* <span className="d-block f-size-16 rt-light3">{domain.bidPrice}</span> */}
 													</div>
-													{domain.owner===wallet.account ? (
+													{domain.owner?.toLowerCase()===wallet.account?.toLowerCase() ? (
 														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
 															<span className="f-size-16 rt-light3 d column center">
@@ -426,7 +426,7 @@ export default function ItemDetail() {
 														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
 															<span className="f-size-16 rt-light3 d column center" style={{height: '100%'}}>
-																{wallet.account===domain.bidder ? (
+																{wallet.account?.toLowerCase()===domain.bidder?.toLowerCase() ? (
 																	<button className="rt-btn rt-gradient pill rt-mb-15" onClick={cancelBid} style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
 																) : (
 																	<button disabled className="rt-btn rt-outline-gradientL pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}}>Cancel</button>

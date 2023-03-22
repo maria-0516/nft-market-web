@@ -131,6 +131,7 @@ export const translations = {
         privatekeycopy_success: 'Privatekey copied',
         bid_success: 'Successfully Bid Domain',
         buynft_success: 'Successfully Buy Domain',
+        listing_approve: 'Successfully approved',
         listing_success: 'Successfully listing',
         update_success: 'Update success',
         sigin_success: 'Signed In successfully',

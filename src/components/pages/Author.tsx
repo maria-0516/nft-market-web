@@ -100,9 +100,9 @@ export default function Author() {
 	}
 
 	React.useEffect(() => {
-		if (address===wallet.account) return navigate('/my-domains')
-		readNfts(status.address!==account)
-		if (status.address!==account) setStatus({...status, address: account})
+		if (address?.toLowerCase()===wallet.account?.toLowerCase()) return navigate('/my-domains')
+		readNfts(status.address?.toLowerCase()!==account?.toLowerCase())
+		if (status.address?.toLowerCase()!==account?.toLowerCase()) setStatus({...status, address: account})
 	}, [account, status.page])
 
 	// const onLoadMore = () => {
@@ -126,18 +126,20 @@ export default function Author() {
 												<thead>
 													<tr className="rt-light-gray">
 														<th className="text-323639 rt-strong f-size-18">Domain</th>
+														<th className="text-323639 rt-strong f-size-18">Price</th>
 														<th className="text-323639 rt-strong f-size-18">Create Date</th>
 														<th className="text-323639 rt-strong f-size-18" style={{minWidth: '7em'}}>Expire Date</th>
-														{wallet.account===account && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
+														{wallet.account?.toLowerCase()===account?.toLowerCase() && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
 													</tr>
 												</thead>
 												<tbody>
 													{domains.map((i, k) => (
-														<tr key={k} onClick={()=>navigate(`/domain/${i.name}`)}>
+														<tr key={k} onClick={()=>navigate(`/domain/${i.name}`)} style={{cursor: 'pointer'}}>
 															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
+															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.orderId!==0 ? `${i.orderPrice} ETH` : ''}</th>
 															<td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? new Date((i.created || 0) * 1000).toLocaleDateString() : '-'}</td>
 															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? new Date((i.expires || 0) * 1000).toLocaleDateString() : '-'}</td>
-															{wallet.account===account && (
+															{wallet.account?.toLowerCase()===account?.toLowerCase() && (
 																<td className="text-right">
 																	<Link to={`/domain/${i.name}`} className="rt-btn rt-gradient2 rt-sm4 pill">{i.orderId!==0 ? 'Listed' : 'List it now!'}</Link>
 																</td>
