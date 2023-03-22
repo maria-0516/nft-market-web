@@ -92,8 +92,8 @@ export default function Provider({ children }: {children: any}) {
                     payload: provider
                 });
 
-                const result = await Action.user_login(wallet.account);
-                updateAuth(result);
+                // const result = await Action.user_login(wallet.account);
+                // updateAuth(result);
             } else if (wallet.status === 'error') {
                 dispatch({
                     type: 'signer',
