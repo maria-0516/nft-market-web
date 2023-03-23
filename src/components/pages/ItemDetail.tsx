@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import Helmet from 'react-helmet'
 
 import { useBlockchainContext } from '../../context';
-import { changeNetwork, styledAddress, toUSDate } from '../../utils';
+import { changeNetwork, styledAddress, toUSDate, validNumberChar } from '../../utils';
 import { useWallet } from '../../use-wallet/src';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
@@ -53,7 +53,7 @@ export default function ItemDetail() {
 	const [status, setStatus] = useState({
 		showCancel: false,
 	})
-	const [bidPrice, setBidPrice] = useState(0)
+	const [bidPrice, setBidPrice] = useState('')
 	const [remainTime, setRemainTime] = useState('')
 
 	const setFlag = (_domain: DomainDetailType) => {
@@ -65,6 +65,8 @@ export default function ItemDetail() {
 		}
 		setPageFlag(flag)
 	}
+
+	
 
 	const readData = async () => {
 		setLoading(true)
@@ -167,14 +169,14 @@ export default function ItemDetail() {
 	const handleBid = async () => {
 		try {
 			if (domain.orderId===0) return
-			if (bidPrice <= domain.bidPrice) {
+			if (Number(bidPrice) <= domain.bidPrice) {
 				return toast('Bid price only can higher than before', {position: "top-right", autoClose: 2000})
 			}
 
 			setLoading(true)
 			if (wallet.account) {
 				// const gasEstimated = await storefront.estimateGas.createOffer(domain.orderId, ethers.utils.parseEther(String(status.bidPrice)));
-				const value = ethers.utils.parseEther(String(bidPrice))
+				const value = ethers.utils.parseEther(bidPrice)
 				const tx = await await storefrontWithSigner(wallet.ethereum).createOffer(domain.orderId, value, {value})
 				await tx.wait()
 			} else {
@@ -389,7 +391,7 @@ export default function ItemDetail() {
 																		<button className="rt-btn rt-gradient pill d-block rt-mb-30" onClick={handleBuy}>Buy it now for {Math.round(domain.orderPrice * 1e4) / 1e4} ETH</button>
 																		{domain.bidder!==wallet.account && (
 																			<>
-																				<input type="text" minLength={1} maxLength={10} className="form-control pill rt-mb-15" placeholder="Enter bid amount" value={String(bidPrice)} onChange={e=>setBidPrice(Number(e.target.value))} />
+																				<input type="text" minLength={1} maxLength={10} className="form-control pill rt-mb-15" placeholder="Please enter your offer amount" onKeyDown={e=>!validNumberChar(e.key) && e.preventDefault()} value={String(bidPrice)} onChange={e=>setBidPrice(e.target.value)} />
 																				<button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleBid}>Create offer</button>
 																			</>
 																		)}
