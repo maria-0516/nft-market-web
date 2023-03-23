@@ -89,7 +89,7 @@ export default function ColumnAuction({name}: Props) {
 						created:    0,
 						cost:       0,
 						orderId,
-						orderPrice: Number(ethers.utils.formatEther(order.price)),
+						orderPrice: Number((Number(ethers.utils.formatEther(order.price)) / (1 + config.buyerFee / 100)).toFixed(6)),
 						orderToken: tokens[order.token],
 						orderExpires: parseInt(order.expires),
 						bidder: order.bidder,
