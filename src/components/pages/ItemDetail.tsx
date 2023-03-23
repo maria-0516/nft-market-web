@@ -389,7 +389,7 @@ export default function ItemDetail() {
 																		<button className="rt-btn rt-gradient pill d-block rt-mb-30" onClick={handleBuy}>Buy it now for {Math.round(domain.orderPrice * 1e4) / 1e4} ETH</button>
 																		{domain.bidder!==wallet.account && (
 																			<>
-																				<input type="number" className="form-control pill rt-mb-15" placeholder="Enter bid amount" value={bidPrice} onChange={e=>setBidPrice(Number(e.target.value))} />
+																				<input type="text" minLength={1} maxLength={10} className="form-control pill rt-mb-15" placeholder="Enter bid amount" value={String(bidPrice)} onChange={e=>setBidPrice(Number(e.target.value))} />
 																				<button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleBid}>Create offer</button>
 																			</>
 																		)}

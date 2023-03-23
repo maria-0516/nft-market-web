@@ -217,7 +217,7 @@ export default function ColumnAuction({name}: Props) {
                                                     <option value="ETH">ETH</option>
                                                 </select>
                                             </div>
-                                            <input type="number" min={0.0001} name="item_price" id="item_price" className="form-control" style={{flex: '4 4 0'}} placeholder={translateLang('amount')} value={price} onChange={(e) => setPrice(Number(e.target.value) || 0)} />
+                                            <input type="text" minLength={1} maxLength={10} name="item_price" id="item_price" className="form-control" style={{flex: '4 4 0'}} placeholder={translateLang('amount')} value={String(price)} onChange={(e) => setPrice(Number(e.target.value) || 0)} />
                                         </div>
                                         {/* <div className="spacer-30"></div>
                                         <h5>{translateLang('expiredate')}</h5>
