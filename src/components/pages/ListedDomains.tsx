@@ -6,6 +6,7 @@ import Pager from '../components/Pager';
 import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
 import { Helmet } from 'react-helmet';
+import { getEnsDomainExpireByName } from '../../thegraph';
 
 export default function ListedDomains() {
     const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function ListedDomains() {
             const result = await storefront.getOrders(status.page, status.limit);
             let _domains = Object.fromEntries(orders.map(i=>[i.assetId, i]))
             let _count = 0
+            const _names = {} as {[name: string]: string}
             for (let i of result) {
                 const assetId = i.assetId.toString()
                 const id = Number(i.id)
@@ -33,7 +35,7 @@ export default function ListedDomains() {
                         id:             id,
                         collection:     '',
                         label:          i.label,
-                        assetId: 		i.assetId.toString(),
+                        assetId: 		assetId,
                         price: 			Number(ethers.utils.formatEther(i.price)),
                         token: 	        tokens[i.acceptedToken],
                         seller: 	    i.seller,
@@ -43,6 +45,14 @@ export default function ListedDomains() {
                         bidPrice:       0,
                         dealPrice:      0
                     }
+                    _names[`${i.label}.eth`] = assetId
+                }
+            }
+            const __names = Object.keys(_names);
+            if (__names.length!==0) {
+                const _expires = await getEnsDomainExpireByName(__names)
+                for (let k in _expires) {
+                    _domains[_names[k]].expires = _expires[k]
                 }
             }
             if (_count!==status.limit) setStatus({...status, loadMore: false})
