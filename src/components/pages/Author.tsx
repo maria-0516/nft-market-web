@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link, useParams } from 'react-router-dom';
 import Pager from '../components/Pager';
-import { getEnsDomainsByAddress } from '../../thegraph';
+import { getEnsDomainExpireByName, getEnsDomainsByAddress } from '../../thegraph';
 import { storefront, tokens } from '../../contracts';
 import { ethers } from 'ethers';
 import { useWallet } from '../../use-wallet/src';
@@ -51,6 +51,7 @@ export default function Author() {
 				if (!initial) {
 					_domains = Object.fromEntries(domains.map(i=>[i.tokenId, i])); // as {[tokenId: string]: DomainType}
 				}
+				console.log("page", status.page, "rows", rows, account)
 				for (let i of rows) {
 					_domains[i.tokenId] = {
 						tokenId:    i.tokenId,
@@ -66,6 +67,7 @@ export default function Author() {
 					}
 				}
 				const orders = await storefront.getOrdersByAddress(account.toLowerCase(), 0, 100)
+				const _names = {} as {[name: string]: string}
 				for (let i of orders) {
 					const orderId = Number(i.id);
 					if (orderId!==0) {
@@ -83,6 +85,7 @@ export default function Author() {
 								orderToken: tokens[i.token],
 								orderExpires: Number(i.expires),
 							}
+							_names[`${i.label}.eth`] = tokenId
 						} else {
 							_domains[tokenId].orderId = 	orderId
 							_domains[tokenId].orderPrice = 	Number(ethers.utils.formatEther(i.price))
@@ -91,6 +94,13 @@ export default function Author() {
 						}
 					}
 					
+				}
+				const __names = Object.keys(_names);
+				if (__names.length!==0) {
+					const _expires = await getEnsDomainExpireByName(__names)
+					for (let k in _expires) {
+						_domains[_names[k]].expires = _expires[k]
+					}
 				}
 				setDomains(Object.values(_domains))
 			}
@@ -128,9 +138,9 @@ export default function Author() {
 													<tr className="rt-light-gray">
 														<th className="text-323639 rt-strong f-size-18">Domain</th>
 														<th className="text-323639 rt-strong f-size-18">Network</th>
-														<th className="text-323639 rt-strong f-size-18">Price</th>
-														<th className="text-323639 rt-strong f-size-18">Domain Register</th>
+														{/* <th className="text-323639 rt-strong f-size-18">Domain Register</th> */}
 														<th className="text-323639 rt-strong f-size-18" style={{minWidth: '7em'}}>Domain Expire</th>
+														<th className="text-323639 rt-strong f-size-18">Price</th>
 														{wallet.account?.toLowerCase()===account?.toLowerCase() && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
 													</tr>
 												</thead>
@@ -139,9 +149,9 @@ export default function Author() {
 														<tr key={k} onClick={()=>navigate(`/domain/${i.name}`)} style={{cursor: 'pointer'}}>
 															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
 															<th><code className="f-size-18 f-size-md-18">Ethereum (ENS Service)</code></th>
-															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.orderId!==0 ? `${i.orderPrice} ETH` : ''}</th>
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? new Date(i.created * 1000).toLocaleDateString() : '-'}</td>
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? new Date(i.expires * 1000).toLocaleDateString() : '-'}</td>
+															{/* <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? new Date(i.created * 1000).toLocaleDateString() : '-'}</td> */}
+															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? toUSDate(i.expires) : '-'}</td>
+															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.orderId!==0 ? `${Number(i.orderPrice.toFixed(6))} ETH` : ''}</th>
 															{wallet.account?.toLowerCase()===account?.toLowerCase() && (
 																<td className="text-right">
 																	<Link to={`/domain/${i.name}`} className="rt-btn rt-gradient2 rt-sm4 pill">{i.orderId!==0 ? 'Listed' : 'List it now!'}</Link>

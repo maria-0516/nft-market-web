@@ -13,8 +13,6 @@ import addresses from '../../contracts/contracts/addresses.json'
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-const DateTimeField = require('@1stquad/react-bootstrap-datetimepicker')
-
 interface Props {
     name: string
 }
@@ -40,6 +38,7 @@ export default function ColumnAuction({name}: Props) {
     const [state, { translateLang }] = useBlockchainContext() as any;
     const [price, setPrice] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [approved, setApproved] = useState(false)
     const [domain, setDomain] = useState<DomainDetailType>({
 		tokenId: '',
 		owner: '',
@@ -99,7 +98,7 @@ export default function ColumnAuction({name}: Props) {
 				} else {
 					_domain.owner = 	order.seller
 					_domain.orderId = 	orderId
-					_domain.orderPrice = 	Number(ethers.utils.formatEther(order.price))
+					_domain.orderPrice = 	Number((Number(ethers.utils.formatEther(order.price)) / (1 + config.buyerFee / 100)).toFixed(6))
 					_domain.orderToken = 	tokens[order.token]
 					_domain.orderExpires= parseInt(order.expires)
 					_domain.bidder= order.bidder
@@ -108,7 +107,7 @@ export default function ColumnAuction({name}: Props) {
 			}
 			setDomain(_domain)
             // if (_domain.orderExpires!==0) setDate(new Date(_domain.orderExpires * 1000))
-            setPrice(_domain.orderPrice)
+            if (_domain.orderPrice!==0) setPrice(_domain.orderPrice)
 		} catch (error) {
 			console.log("readData", error)
 		}
@@ -122,37 +121,56 @@ export default function ColumnAuction({name}: Props) {
 
 
     useEffect(() => {
-        (async () => {
-            // setApproveFlag(nft.isOffchain || true);
-            // if (nft !== null && !nft.isOffchain) {
-            //     const validation = await checkNFTApprove({
-            //         assetId: nft.tokenId,
-            //         nftAddress: nft.collection
-            //     });
-            //     setApproveFlag(validation);
-            // }
-        })();
+       checkApprove()
     }, [domain]);
 
     // const handle = (newDate: any) => {
     //     setDate(newDate);
     // };
 
+    const checkApprove = async () => {
+        const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
+        const collection = await collectionWithSigner(wallet.ethereum);
+        const _spender = await collection.getApproved(tokenId)
+        const isApproved = toLower(_spender)===toLower(addresses.storefront)
+        setApproved(isApproved)
+        return isApproved
+    }
+
+    const handleApprove = async () => {
+        setLoading(true)
+        try {
+            const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
+            const collection = await collectionWithSigner(wallet.ethereum);
+            // const isApproved = await checkApprove()
+            if (!approved) {
+                const txApprove = await collection.approve(addresses.storefront, tokenId)
+                await txApprove.wait()
+                toast("Approving domain was successfully done", {position: "top-right", autoClose: 2000})
+                setApproved(true)
+            }
+        } catch (error) {
+            console.log("handleApprove", error)
+            toast("Approving domain was failed", {position: "top-right", autoClose: 2000})
+        }
+        setLoading(false)
+    }
+
     const handlelist = async () => {
         setLoading(true)
         try {
             const label = domain.name.slice(0, domain.name.lastIndexOf('.'))
             const now = Math.round(new Date().getTime() / 1000)
-            const time = now + 180 * 86400
+            const time = now + 179 * 86400
             const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
-            const collection = await collectionWithSigner(wallet.ethereum);
-            const _spender = await collection.getApproved(tokenId)
-            if (toLower(_spender)!==toLower(addresses.storefront)) {
-                const txApprove = await collection.approve(addresses.storefront, tokenId)
-                await txApprove.wait()
-                toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
-            }
-            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(price)), time)
+            // const collection = await collectionWithSigner(wallet.ethereum);
+            // const _spender = await collection.getApproved(tokenId)
+            // if (toLower(_spender)!==toLower(addresses.storefront)) {
+            //     const txApprove = await collection.approve(addresses.storefront, tokenId)
+            //     await txApprove.wait()
+            //     toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
+            // }
+            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(price * (1 + config.buyerFee / 100))), time)
             await tx.wait();
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
@@ -167,7 +185,7 @@ export default function ColumnAuction({name}: Props) {
         setLoading(true)
         try {
             // const time = Math.round(new Date(date).getTime() / 1000)
-            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(String(price)), '0x' + domain.orderExpires.toString(16))
+            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(String(price * (1 + config.buyerFee / 100))), '0x' + domain.orderExpires.toString(16))
             await tx.wait()
             navigate(`/domain/${name}`)
         } catch (error) {
@@ -216,11 +234,11 @@ export default function ColumnAuction({name}: Props) {
                                         /> */}
                                     </div>
                                     <div className="spacer-20"></div>
-                                    <h5>{translateLang('fees')}</h5>
+                                    {/* <h5>{translateLang('fees')}</h5>
                                     <div className="fee">
                                         <p style={{fontWeight: 500}}>{translateLang('servicefee')}</p>
                                         <p>{config.serviceFee}%</p>
-                                    </div>
+                                    </div> */}
                                 </TabPanel>
                                 <TabPanel>
 
@@ -231,7 +249,13 @@ export default function ColumnAuction({name}: Props) {
                                 {domain.orderId!==0 ? (
                                     <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleEdit}>Edit</button>
                                 ) : (
-                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={price === 0} onClick={handlelist}>List Domain</button>
+                                    <>
+                                        {!approved ? (
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={price === 0} onClick={handleApprove}>Step1: Approve</button>
+                                        ) : (
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={price === 0} onClick={handlelist}>Step2: Listing in Store</button>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -239,17 +263,28 @@ export default function ColumnAuction({name}: Props) {
 
                     <div className="col-lg-5">
                         <div className='rt-box-style-2'>
-                            <h5>{translateLang('previewitem')}</h5>
+                            {/* <h5>{translateLang('previewitem')}</h5> */}
                             <div className="nft_item m-0">
                                 <div className="author_list_pp"></div>
                                 <div className="nft__item_info">
                                     <div className="sell_preview">
                                         <div>
-                                            <h4 className="f-size-25 f-size-xs-30 rt-semiblod text-422" style={{lineBreak: 'anywhere'}}>{domain.name}</h4>  
+                                            <h4 className="f-size-25 f-size-xs-30 rt-semiblod text-422" style={{lineBreak: 'anywhere',marginBottom: '20px'}}>{domain.name}</h4>  
                                         </div>
                                         <div>
-                                            <p style={{fontWeight: '500'}}>
-                                                <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Final Price: </span><span className="rt-light3 amount"><span className="f-size-35 text-422"><span className="rt-semiblod">{Number((price * (1 + config.buyerFee / 100)).toFixed(6))}</span></span><span className="f-size-24"> ETH</span></span> (included buyer fee 5%)
+                                            <p style={{fontWeight: '500'}} className="d column gap">
+                                                <div>
+                                                    <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Listing Price: </span>
+                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number(price.toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
+                                                </div>
+                                                <div>
+                                                    <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Service Fee: </span>
+                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number((price * config.serviceFee / 100).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span> ({config.serviceFee}%)
+                                                </div>
+                                                <div>
+                                                    <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Final Earning: </span>
+                                                    <span className="rt-light3 amount"><span className="f-size-25"><span style={{fontWeight: 600}}>{Number((price * (1 - config.serviceFee / 100)).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
+                                                </div>
                                             </p>
                                         </div>
                                     </div>

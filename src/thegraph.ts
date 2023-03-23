@@ -210,3 +210,38 @@ export const getEnsDomainByName = async (name: string) => {
 	}
 	return null
 }
+
+export const getEnsDomainExpireByName = async (names: string[]) => {
+	const response = await axios.post(apiUrl, 
+		{query: `{
+			domains (
+				first: 1000
+				skip: 0
+				where: {
+				  	name_in: ${JSON.stringify(names)}
+				}
+				) {
+					name
+					registration {
+					expiryDate
+					}
+			  }
+		  }`},
+		{
+			"headers": {
+				"accept": "application/json, multipart/mixed",
+				"content-type": "application/json"
+			}
+		}
+	);
+	if (!!response?.data?.data?.domains && response.data.data.domains[0]) {
+		const result = {} as {[key: string]: number}
+		for (let i of response.data.data.domains) {
+			result[i.name] = Number(i.registration?.expiryDate || 0)
+		}
+		return result;
+	} else {
+		console.log("no result")
+	}
+	return null
+}

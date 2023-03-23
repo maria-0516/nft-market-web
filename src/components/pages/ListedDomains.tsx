@@ -5,6 +5,7 @@ import { storefront, tokens } from '../../contracts';
 import Pager from '../components/Pager';
 import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
+import { Helmet } from 'react-helmet';
 
 export default function ListedDomains() {
     const navigate = useNavigate();
@@ -130,7 +131,7 @@ export default function ListedDomains() {
                                                         <th className="text-323639 rt-strong f-size-18">Domain</th>
                                                         <th className="text-323639 rt-strong f-size-18">Network</th>
                                                         <th className="text-323639 rt-strong f-size-18">Price</th>
-                                                        <th className="text-323639 rt-strong f-size-18 text-right" style={{minWidth: '7em'}}>Expire Date</th>
+                                                        <th className="text-323639 rt-strong f-size-18 text-right" style={{minWidth: '7em'}}>Domain Expire</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -139,7 +140,7 @@ export default function ListedDomains() {
                                                             <tr key={index} onClick={()=>navigate(`/domain/${i.label}.eth`)} style={{cursor: 'pointer'}}>
                                                                 <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.label.length > 18 ? i.label.slice(0, 12) + '...' : i.label}.eth</th>
                                                                 <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>Ethereum (ENS Service)</code></td>
-                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338">{i.price} ETH</th>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338">{Number(i.price.toFixed(6))} ETH</th>
                                                                 <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{toUSDate(i.expires)}</th>
                                                             </tr>
                                                         ))

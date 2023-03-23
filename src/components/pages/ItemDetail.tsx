@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import Helmet from 'react-helmet'
+
 import { useBlockchainContext } from '../../context';
 import { changeNetwork, styledAddress, toUSDate } from '../../utils';
 import { useWallet } from '../../use-wallet/src';
@@ -261,6 +263,9 @@ export default function ItemDetail() {
 
 	return (
 		<div>
+			<Helmet>
+				<title>{name} - Cryptonames Store</title>
+			</Helmet>
 			<section className="container domain-detail">
 				<div className="page-content-area" style={{paddingTop: '2px'}}>
 					<div>
@@ -340,15 +345,15 @@ export default function ItemDetail() {
 														<>
 															<div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3" style={{display: 'flex', alignItems: 'center'}}>Current price:</span>
-																<span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{(domain.orderPrice / (1 + config.buyerFee / 100)).toFixed(6)}</span></span><span className="f-size-24"> ETH</span></span>
+																<span className="f-size-20 rt-light3">{Number((domain.orderPrice / (1 + config.buyerFee / 100)).toFixed(6))} ETH</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">CNS fee:</span>
-																<span className="f-size-20 rt-light3 ">{} ETH ({config.buyerFee}%)</span>
+																<span className="f-size-20 rt-light3">{Number((domain.orderPrice * config.buyerFee / 100).toFixed(6))} ETH ({config.buyerFee}%)</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">Total payment:</span>
-																<span className="f-size-20 rt-light3 ">{domain.orderPrice} ETH</span>
+																<span className="f-size-20 rt-light3 rt-semiblod" style={{fontWeight: 600}}>{Number(domain.orderPrice.toFixed(6))} ETH</span>
 															</div>
 															{/* <div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3 text-338">Remaining time:</span>

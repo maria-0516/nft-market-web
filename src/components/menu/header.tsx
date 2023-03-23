@@ -327,14 +327,14 @@ const Header = () => {
 											</ul>
 										</li> */}
                                         {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Sell your Domain</Link></li>}
-										<li className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`} onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><Link to="#">Information</Link>
+										<li style={{cursor: 'pointer'}} className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`}><a onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><span>Information</span></a>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
 												<li><Link to="/how-work" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>How It Works</Link></li>
 												<li><Link to="/faq" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>FAQ</Link></li>
 												<li><Link to="/partnership" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Partnership</Link></li>
 											</ul>
 										</li>
-										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="/cns-token" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>CNS Token</Link></li>
+										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="https://l.cryptonames.store/cns.html" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>CNS Token</Link></li>
 									</ul>
 								</div>
 							<div className="rt-nav-tolls d-flex align-items-center">
