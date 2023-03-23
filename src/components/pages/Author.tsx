@@ -127,9 +127,10 @@ export default function Author() {
 												<thead>
 													<tr className="rt-light-gray">
 														<th className="text-323639 rt-strong f-size-18">Domain</th>
+														<th className="text-323639 rt-strong f-size-18">Network</th>
 														<th className="text-323639 rt-strong f-size-18">Price</th>
-														<th className="text-323639 rt-strong f-size-18">Create Date</th>
-														<th className="text-323639 rt-strong f-size-18" style={{minWidth: '7em'}}>Expire Date</th>
+														<th className="text-323639 rt-strong f-size-18">Domain Register</th>
+														<th className="text-323639 rt-strong f-size-18" style={{minWidth: '7em'}}>Domain Expire</th>
 														{wallet.account?.toLowerCase()===account?.toLowerCase() && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
 													</tr>
 												</thead>
@@ -137,9 +138,10 @@ export default function Author() {
 													{domains.map((i, k) => (
 														<tr key={k} onClick={()=>navigate(`/domain/${i.name}`)} style={{cursor: 'pointer'}}>
 															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
+															<th><code className="f-size-18 f-size-md-18">Ethereum (ENS Service)</code></th>
 															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.orderId!==0 ? `${i.orderPrice} ETH` : ''}</th>
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? toUSDate(i.created) : '-'}</td>
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? toUSDate(i.expires) : '-'}</td>
+															<td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? new Date(i.created * 1000).toLocaleDateString() : '-'}</td>
+															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? new Date(i.expires * 1000).toLocaleDateString() : '-'}</td>
 															{wallet.account?.toLowerCase()===account?.toLowerCase() && (
 																<td className="text-right">
 																	<Link to={`/domain/${i.name}`} className="rt-btn rt-gradient2 rt-sm4 pill">{i.orderId!==0 ? 'Listed' : 'List it now!'}</Link>

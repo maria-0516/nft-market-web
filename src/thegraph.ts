@@ -79,8 +79,8 @@ export const getEnsDomains = async (skip: number, limit: number) => {
 			if (!!i.registration?.registrant?.id && !!i.owner?.id && !!i.registration?.expiryDate && i.registration?.expiryDate > now) {
 				json.push({
 					tokenId: makeTokenId(i.name.slice(0, -4)),
-					owner: i.owner.id,
-					creator: i.registration.registrant.id,
+					owner: i.registration.registrant.id,
+					creator: i.owner.id,
 					// attributeKeys: i.resolver?.texts || [],
 					// subdomainCount: i.subdomainCount,
 					name: i.name,
@@ -106,7 +106,9 @@ export const getEnsDomainsByAddress = async (address: string, skip: number, limi
 				first: ${limit}
 				skip: ${skip}
 				where: {
-					owner: "${address}"
+					registration_ : {
+						registrant: "${address}"
+					}
 				}
 				
 		  	) {
@@ -139,8 +141,8 @@ export const getEnsDomainsByAddress = async (address: string, skip: number, limi
 			if (!!i.registration?.registrant?.id && !!i.owner?.id && !!i.registration?.expiryDate && i.registration?.expiryDate > now) {
 				json.push({
 					tokenId: makeTokenId(i.name.slice(0, -4)),
-					owner: i.owner.id,
-					creator: i.registration.registrant.id,
+					owner: i.registration.registrant.id,
+					creator: i.owner.id,
 					// attributeKeys: i.resolver?.texts || [],
 					// subdomainCount: i.subdomainCount,
 					name: i.name,
@@ -194,8 +196,8 @@ export const getEnsDomainByName = async (name: string) => {
 		const i = response.data.data.domains[0]
 		return {
 			tokenId: makeTokenId(i.name.slice(0, -4)),
-			owner: i.owner.id,
-			creator: i.registration.registrant.id,
+			owner: i.registration.registrant.id,
+			creator: i.owner.id,
 			// attributeKeys: i.resolver?.texts || [],
 			// subdomainCount: i.subdomainCount,
 			name: i.name,

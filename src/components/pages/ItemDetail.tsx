@@ -340,15 +340,15 @@ export default function ItemDetail() {
 														<>
 															<div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3" style={{display: 'flex', alignItems: 'center'}}>Current price:</span>
-																<span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{Math.round(Number(domain.orderPrice) * (1 - config.fee / 100) * 1e6) / 1e6}</span></span><span className="f-size-24"> ETH</span></span>
+																<span className="rt-light3 amount"><span className="f-size-40 text-422"><span className="rt-semiblod">{(domain.orderPrice / (1 + config.buyerFee / 100)).toFixed(6)}</span></span><span className="f-size-24"> ETH</span></span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">CNS fee:</span>
-																<span className="f-size-20 rt-light3 ">{Math.round(Number(domain.orderPrice) * config.fee * 1e4) / 1e6} ETH ({config.fee}%)</span>
+																<span className="f-size-20 rt-light3 ">{} ETH ({config.buyerFee}%)</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">Total payment:</span>
-																<span className="f-size-20 rt-light3 ">{Math.round(domain.orderPrice * 1e4) / 1e4} ETH</span>
+																<span className="f-size-20 rt-light3 ">{domain.orderPrice} ETH</span>
 															</div>
 															{/* <div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3 text-338">Remaining time:</span>

@@ -9,6 +9,7 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import './assets/animated.css';
 import './assets/style.scss';
 import 'react-toastify/dist/ReactToastify.css'
+import 'react-tabs/style/react-tabs.css';
 
 import App from './components/app';
 import { ToastContainer } from 'react-toastify';

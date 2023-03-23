@@ -49,7 +49,7 @@ const Header = () => {
     })
     const [walletInited, setWalletInited] = useState(false)
 
-    const account = address || wallet.account
+    // const account = address || wallet.account
 
     useEffect(() => {
         if (searchKey.trim() !== '' && focused) {
@@ -61,76 +61,75 @@ const Header = () => {
         }
     }, [searchKey, focused]);
 
-    const collectionFilter = useCallback(
-        (item: any) => {
-            const searchParams = ['address', 'name', 'description'];
-            return searchParams.some((newItem) => {
-                try {
-                    return (
-                        item['metadata'][newItem]
-                            ?.toString()
-                            .toLowerCase()
-                            .indexOf(searchKey.toLowerCase()) > -1
-                    );
-                } catch (err) {
-                    return false;
-                }
-            });
-        },
-        [searchKey]
-    );
+    // const collectionFilter = useCallback(
+    //     (item: any) => {
+    //         const searchParams = ['address', 'name', 'description'];
+    //         return searchParams.some((newItem) => {
+    //             try {
+    //                 return (
+    //                     item['metadata'][newItem]
+    //                         ?.toString()
+    //                         .toLowerCase()
+    //                         .indexOf(searchKey.toLowerCase()) > -1
+    //                 );
+    //             } catch (err) {
+    //                 return false;
+    //             }
+    //         });
+    //     },
+    //     [searchKey]
+    // );
 
-    const nftFilter = useCallback(
-        (item: any) => {
-            const searchParams = ['owner', 'name', 'description', 'collectionAddress'];
-            return searchParams.some((newItem) => {
-                try {
-                    return (
-                        item[newItem]?.toString().toLowerCase().indexOf(searchKey.toLowerCase()) >
-                            -1 ||
-                        item['metadata'][newItem]
-                            ?.toString()
-                            .toLowerCase()
-                            .indexOf(searchKey.toLowerCase()) > -1
-                    );
-                } catch (err) {
-                    return false;
-                }
-            });
-        },
-        [searchKey]
-    );
+    // const nftFilter = useCallback(
+    //     (item: any) => {
+    //         const searchParams = ['owner', 'name', 'description', 'collectionAddress'];
+    //         return searchParams.some((newItem) => {
+    //             try {
+    //                 return (
+    //                     item[newItem]?.toString().toLowerCase().indexOf(searchKey.toLowerCase()) >
+    //                         -1 ||
+    //                     item['metadata'][newItem]
+    //                         ?.toString()
+    //                         .toLowerCase()
+    //                         .indexOf(searchKey.toLowerCase()) > -1
+    //                 );
+    //             } catch (err) {
+    //                 return false;
+    //             }
+    //         });
+    //     },
+    //     [searchKey]
+    // );
 
-    const collectionDatas = useMemo(() => {
-        try {
-            return state.collectionNFT.filter(collectionFilter).splice(0, 20);
-        } catch (err) {
-            return [];
-        }
-    }, [state.collectionNFT, collectionFilter]);
+    // const collectionDatas = useMemo(() => {
+    //     try {
+    //         return state.collectionNFT.filter(collectionFilter).splice(0, 20);
+    //     } catch (err) {
+    //         return [];
+    //     }
+    // }, [state.collectionNFT, collectionFilter]);
 
-    const nftDatas = useMemo(() => {
-        try {
-            return state.allNFT.filter(nftFilter).splice(0, 20);
-        } catch (err) {
-            return [];
-        }
-    }, [state.allNFT, nftFilter]);
+    // const nftDatas = useMemo(() => {
+    //     try {
+    //         return state.allNFT.filter(nftFilter).splice(0, 20);
+    //     } catch (err) {
+    //         return [];
+    //     }
+    // }, [state.allNFT, nftFilter]);
+
     const checkNetwork = async () => {
         console.log("checkNetwork")
         try {
             const {ethereum} = wallet
             //if metamask is connected and wallet is not connected ( chain error))
             if (ethereum) {
-                const chainId = await ethereum.request({
-                    method: 'eth_chainId'
-                });
+                const chainId = await ethereum.request({method: 'eth_chainId'});
                 console.log('chainId', chainId)
                 if (Number(chainId)!==config.chainId) {
                     await changeNetwork(ethereum, config.chainId);
                 }
             }
-            localStorage.setItem('isConnected', "1");
+            // window.sessionStorage.setItem('isConnected', "1");
         } catch (err) {
             console.log((err as any).message);
         }
@@ -150,7 +149,7 @@ const Header = () => {
                     bannerImage: null
                 }
             });
-            localStorage.setItem('isConnected', "0");
+            window.sessionStorage.setItem('isConnected', "0");
         } else {
             wallet.connect()
         }
@@ -160,26 +159,20 @@ const Header = () => {
         setOpenMenu1(false);
     };
     const onConnectWallet = async () => {
-        console.log("wallet-status", wallet.status)
         try {
+            const storage = window.sessionStorage
+            const isConnected = storage.getItem('isConnected')==="1";
             if (wallet.ethereum) {
-                const chainId = await wallet.ethereum.request({
-                    method: 'eth_chainId'
-                });
-                if (Number(chainId)!==config.chainId) {
-                    console.log('NowchainId', chainId)
-                    await changeNetwork(wallet.ethereum, config.chainId);
-                    return
-                } else if (wallet.status==='disconnected' && localStorage.getItem('isConnected')==="1") {
+                if (wallet.status==='disconnected' && isConnected) {
                     if (!walletInited) {
                         setWalletInited(true)
                         wallet.connect()
                     }
-                } else if ((wallet.status==='connected' || wallet.status==='error') && localStorage.getItem('isConnected')==="0") {
-                    localStorage.setItem('isConnected', "1")
+                } else if ((wallet.status==='connected' || wallet.status==='error') && !isConnected) {
+                    storage.setItem('isConnected', "1")
                     checkNetwork()
                 }
-            } else if (!walletInited && localStorage.getItem('isConnected')==="1") {
+            } else if (!walletInited && isConnected) {
                 setWalletInited(true)
                 wallet.connect()
             }
@@ -194,7 +187,6 @@ const Header = () => {
 
 
     useEffect(() => {
-        // console.log("onConnectWallet")
         onConnectWallet()
     }, [wallet.status, wallet.account]);
 
@@ -319,8 +311,8 @@ const Header = () => {
 				<div id="myHeader" className={headerClass}>
 					<nav className="navbar">
 						<div className="container">
-							<Link to="/" className="brand-logo"><img src="/assets/images/logo/logo.png" alt="" /></Link>
-							<Link to="/" className="sticky-logo"><img src="/assets/images/logo/logo.png" alt="" /></Link>
+							<Link to="/" className="brand-logo"><img src="/assets/images/logo/logo.png" alt="" style={{width: '250px', height: 'auto'}} /></Link>
+							<Link to="/" className="sticky-logo"><img src="/assets/images/logo/logo.png" alt="" style={{width: '250px', height: 'auto'}} /></Link>
 							<div className="ml-auto d-flex align-items-center">
 									<div className="main-menu">
 									<ul className={mobileMenu.main ? 'show' : ''}>

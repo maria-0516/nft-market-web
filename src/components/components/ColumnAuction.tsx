@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
-
-import moment from 'moment';
 import { useBlockchainContext } from '../../context';
 import { useNavigate } from 'react-router-dom';
-import Action from '../../service';
-import { toBigNum } from '../../utils';
 import { toast } from 'react-toastify';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import config from '../../config.json'
 import { useWallet } from '../../use-wallet/src';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
@@ -41,8 +38,7 @@ export default function ColumnAuction({name}: Props) {
     const wallet = useWallet()
     const navigate = useNavigate();
     const [state, { translateLang }] = useBlockchainContext() as any;
-    const [price, setPrice] = useState('');
-    const [date, setDate] = useState(new Date(new Date().getTime() + 2592000000));
+    const [price, setPrice] = useState(0);
     const [loading, setLoading] = useState(false);
     const [domain, setDomain] = useState<DomainDetailType>({
 		tokenId: '',
@@ -111,8 +107,8 @@ export default function ColumnAuction({name}: Props) {
 				}
 			}
 			setDomain(_domain)
-            if (_domain.orderExpires!==0) setDate(new Date(_domain.orderExpires * 1000))
-            setPrice(String(_domain.orderPrice))
+            // if (_domain.orderExpires!==0) setDate(new Date(_domain.orderExpires * 1000))
+            setPrice(_domain.orderPrice)
 		} catch (error) {
 			console.log("readData", error)
 		}
@@ -138,15 +134,16 @@ export default function ColumnAuction({name}: Props) {
         })();
     }, [domain]);
 
-    const handle = (newDate: any) => {
-        setDate(newDate);
-    };
+    // const handle = (newDate: any) => {
+    //     setDate(newDate);
+    // };
 
     const handlelist = async () => {
         setLoading(true)
         try {
             const label = domain.name.slice(0, domain.name.lastIndexOf('.'))
-            const time = Math.round(new Date(date).getTime() / 1000)
+            const now = Math.round(new Date().getTime() / 1000)
+            const time = now + 180 * 86400
             const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
             const collection = await collectionWithSigner(wallet.ethereum);
             const _spender = await collection.getApproved(tokenId)
@@ -155,7 +152,7 @@ export default function ColumnAuction({name}: Props) {
                 await txApprove.wait()
                 toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
             }
-            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(price), time)
+            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(price)), time)
             await tx.wait();
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
@@ -169,8 +166,8 @@ export default function ColumnAuction({name}: Props) {
     const handleEdit = async () => {
         setLoading(true)
         try {
-            const time = Math.round(new Date(date).getTime() / 1000)
-            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(price), '0x' + time.toString(16))
+            // const time = Math.round(new Date(date).getTime() / 1000)
+            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(String(price)), '0x' + domain.orderExpires.toString(16))
             await tx.wait()
             navigate(`/domain/${name}`)
         } catch (error) {
@@ -186,116 +183,55 @@ export default function ColumnAuction({name}: Props) {
                     <div className="col-lg-7 offset-lg-1 mb-5" style={{margin: 0}}>
                         <div id="form-create-item" className="form-border rt-box-style-2">
                             <div className="field-set">
-                                <div className='rt-form'>
-                                    {/* <h5>{translateLang('method')}</h5>
-                                    <p
-                                        className="form-control"
-                                        style={{
-                                            boxShadow: '0 0 5 0 #d05e3c',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '10px'
-                                        }}>
-                                        <i
-                                            className="arrow_right-up"
-                                            style={{
-                                                fontWeight: 'bolder'
-                                            }}
-                                        />
-                                        <span>{translateLang('sellnote')}</span>
-                                    </p> */}
-                                    {/* <div className="spacer-single"></div> */}
-                                    <h5>{translateLang('sellprice')}</h5>
-                                    {/* <input type="text" className="form-control rt-mb-15" placeholder="$ Enter bid amount (or Send Offer in fixed mode)" /> */}
-                                    <div className="price mt">
-                                        <div
-                                            style={{
-                                                flex: '1 1 0'
-                                            }}>
-                                            <select className='form-control' style={{height: '100%'}}>
-                                                <option value="ETH">ETH</option>
-                                            </select>
-                                            {/* <select
-                                                className="form-control"
-                                                style={{height: '100%'}}
-                                                onChange={(e) => {
-                                                    setCurrency(e.target.value);
-                                                }}>
-                                                {state.currencies.map((currency: any, index: number) => (
-                                                    <option value={currency.value} key={index}>
-                                                        {currency.label}
-                                                    </option>
-                                                ))}
-                                            </select> */}
+                            <Tabs>
+                                <TabList>
+                                    <Tab>Fixed</Tab>
+                                    <Tab disabled>Auction (Soon)</Tab>
+                                </TabList>
+
+                                <TabPanel>
+                                    <div className='rt-form'>
+                                        <div className="spacer-single"></div>
+                                        <h5>{translateLang('sellprice')}</h5>
+                                        <div className="price mt">
+                                            <div style={{flex: '1 1 0'}}>
+                                                <select className='form-control' style={{height: '100%'}}>
+                                                    <option value="ETH">ETH</option>
+                                                </select>
+                                            </div>
+                                            <input type="number" min={0.0001} name="item_price" id="item_price" className="form-control" style={{flex: '4 4 0'}} placeholder={translateLang('amount')} value={price} onChange={(e) => setPrice(Number(e.target.value) || 0)} />
                                         </div>
-                                        <input
-                                            type="number"
-                                            name="item_price"
-                                            id="item_price"
-                                            className="form-control"
-                                            style={{
-                                                flex: '4 4 0'
-                                            }}
-                                            placeholder={translateLang('amount')}
-                                            value={price}
-                                            onChange={(e) => setPrice(e.target.value)}
-                                        />
+                                        {/* <div className="spacer-30"></div>
+                                        <h5>{translateLang('expiredate')}</h5>
+                                        <DateTimeField
+                                            dateTime={date}
+                                            onChange={handle}
+                                            mode={'datetime'}
+                                            format={'MM/DD/YYYY hh:mm A'}
+                                            inputFormat={'DD/MM/YYYY hh:mm A'}
+                                            minDate={new Date()}
+                                            showToday={true}
+                                            startOfWeek={'week'}
+                                            readonly
+                                        /> */}
                                     </div>
-                                    <div className="spacer-30"></div>
-                                    <h5>{translateLang('expiredate')}</h5>
-                                    <DateTimeField
-                                        dateTime={date}
-                                        onChange={handle}
-                                        mode={'datetime'}
-                                        format={'MM/DD/YYYY hh:mm A'}
-                                        inputFormat={'DD/MM/YYYY hh:mm A'}
-                                        minDate={new Date()}
-                                        showToday={true}
-                                        startOfWeek={'week'}
-                                        readonly
-                                    />
-                                </div>
+                                    <div className="spacer-20"></div>
+                                    <h5>{translateLang('fees')}</h5>
+                                    <div className="fee">
+                                        <p style={{fontWeight: 500}}>{translateLang('servicefee')}</p>
+                                        <p>{config.serviceFee}%</p>
+                                    </div>
+                                </TabPanel>
+                                <TabPanel>
 
-                                <div className="spacer-20"></div>
-                                <h5>{translateLang('fees')}</h5>
-                                <div className="fee">
-                                    <p>{translateLang('servicefee')}</p>
-                                    <p>{config.fee}%</p>
-                                </div>
-
+                                </TabPanel>
+                            </Tabs>
+                               
                                 <div className="spacer-40"></div>
                                 {domain.orderId!==0 ? (
-                                    <>
-                                    {false ? (
-                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">
-                                                <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
-                                            </button>
-                                        ) : (
-                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleEdit}>
-                                                Edit
-                                            </button>
-                                        )}
-                                    </>
+                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleEdit}>Edit</button>
                                 ) : (
-                                    <>
-                                        {false ? (
-                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15">
-                                                <span className="spinner-border spinner-border-sm" aria-hidden="true" style={{backgroundColor: 'transparent'}}></span>
-                                            </button>
-                                        ) : (
-                                            <button
-                                                className="rt-btn rt-gradient pill d-block rt-mb-15"
-                                                disabled={
-                                                    price === '' || !moment(date).isValid()
-                                                        ? true
-                                                        : false
-                                                }
-                                                onClick={handlelist}>
-                                                List Domain
-                                            </button>
-                                        )
-                                    }
-                                    </>
+                                    <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={price === 0} onClick={handlelist}>List Domain</button>
                                 )}
                             </div>
                         </div>
@@ -309,13 +245,11 @@ export default function ColumnAuction({name}: Props) {
                                 <div className="nft__item_info">
                                     <div className="sell_preview">
                                         <div>
-                                            <p style={{fontWeight: '600'}}>
-                                                {name.length > 20 ? name.slice(0, 15) + '...eth': name}
-                                            </p>
+                                            <h4 className="f-size-25 f-size-xs-30 rt-semiblod text-422" style={{lineBreak: 'anywhere'}}>{domain.name}</h4>  
                                         </div>
                                         <div>
                                             <p style={{fontWeight: '500'}}>
-                                                {price === '' ? `0 ETH` : price?.length > 15 ? price.slice(0, 15) + '...' + ` ETH`: price + ` ETH`}
+                                                <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Final Price: </span><span className="rt-light3 amount"><span className="f-size-35 text-422"><span className="rt-semiblod">{Number((price * (1 + config.buyerFee / 100)).toFixed(6))}</span></span><span className="f-size-24"> ETH</span></span> (included buyer fee 5%)
                                             </p>
                                         </div>
                                     </div>
