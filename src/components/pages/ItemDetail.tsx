@@ -401,17 +401,17 @@ export default function ItemDetail() {
 										<div className='col-lg-12'>
 										{domain.bidPrice!==0 && (
 											<div className='rt-box-style-2 rt-mb-30' style={{marginTop: '20px', padding: '30px'}}>
-												<span className="f-size-30 f-size-xs-30 rt-semiblod text-422">Bid</span>
+												<span className="f-size-30 f-size-xs-30 rt-semiblod text-422">Offer</span>
 												<div className='row'>
 													<div className="domain-border col-lg-4 d column between" style={{border: 0}}>
-														<span className="d-block f-size-24 rt-semiblod">Bidder Address</span>
+														<span className="d-block f-size-24 rt-semiblod">Proposer</span>
 														<div className="f-size-16 rt-light3" style={{display: 'flex', alignItems: 'center', gap: '0.5em'}}>
 															<Jazzicon diameter={32} seed={Math.round((Number(domain.owner) / Number('0xffffffffffffffffffffffffffffffffffffffffff')) * 10000000)} />
 															<div className="f-size-20"><Link to={`/address/${domain.bidder}`}>{styledAddress(domain.bidder)}</Link></div>
 														</div>
 													</div>
 													<div className="domain-border col-lg-4 d column between" style={{border: 0}}>
-														<span className="d-block f-size-24 rt-semiblod">Bid Price</span>
+														<span className="d-block f-size-24 rt-semiblod">Price</span>
 														<span className="rt-light3 amount"><span className="f-size-30 text-422"><span className="rt-semiblod">{domain.bidPrice}</span></span><span className="f-size-20"> ETH</span></span>
 														{/* <span className="d-block f-size-16 rt-light3">{domain.bidPrice}</span> */}
 													</div>
