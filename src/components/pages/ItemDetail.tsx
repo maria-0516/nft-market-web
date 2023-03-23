@@ -171,9 +171,9 @@ export default function ItemDetail() {
 
 			setLoading(true)
 			if (wallet.account) {
-				// const gasEstimated = await storefront.estimateGas.placeBid(domain.orderId, ethers.utils.parseEther(String(status.bidPrice)));
+				// const gasEstimated = await storefront.estimateGas.createOffer(domain.orderId, ethers.utils.parseEther(String(status.bidPrice)));
 				const value = ethers.utils.parseEther(String(bidPrice))
-				const tx = await await storefrontWithSigner(wallet.ethereum).placeBid(domain.orderId, value, {value})
+				const tx = await await storefrontWithSigner(wallet.ethereum).createOffer(domain.orderId, value, {value})
 				await tx.wait()
 			} else {
 				onConnectWallet()
@@ -230,30 +230,30 @@ export default function ItemDetail() {
 		setLoading(false)
 	};
 
-	const acceptBid = async () => {
+	const acceptOffer = async () => {
 		setLoading(true)
 		try {
 			if (domain.orderId===0) return
-			const tx = await await storefrontWithSigner(wallet.ethereum).acceptBid(domain.orderId)
+			const tx = await await storefrontWithSigner(wallet.ethereum).acceptOffer(domain.orderId)
 			await tx.wait()
 			toast("Accepting bid was successfully done", {position: "top-right", autoClose: 2000})
 			await readData()
 		} catch (error) {
-			console.log("acceptBid", error)
+			console.log("acceptOffer", error)
 			toast("Accepting bid was failed", {position: "top-right", autoClose: 2000})
 		}
 		setLoading(false)
 	}
 
-	const cancelBid = async () => {
+	const cancelOffer = async () => {
 		setLoading(true)
 		try {
-			const tx = await await storefrontWithSigner(wallet.ethereum).cancelBid(domain.orderId)
+			const tx = await await storefrontWithSigner(wallet.ethereum).cancelOffer(domain.orderId)
 			await tx.wait()
 			toast("Canceling bid was successfully done", {position: "top-right", autoClose: 2000})		
 			await readData()
 		} catch (error) {
-			console.log("cancelBid", error)
+			console.log("cancelOffer", error)
 			toast('Canceling bid was failed', {position: "top-right", autoClose: 2000})
 		}
 		setLoading(false)
@@ -419,7 +419,7 @@ export default function ItemDetail() {
 														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
 															<span className="f-size-16 rt-light3 d column center">
-																<button className="rt-btn rt-gradient pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}} onClick={acceptBid}>Accept</button>
+																<button className="rt-btn rt-gradient pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}} onClick={acceptOffer}>Accept</button>
 															</span>
 														</div>
 													) : (
@@ -427,7 +427,7 @@ export default function ItemDetail() {
 															<span className="d-block f-size-24 rt-semiblod"></span>
 															<span className="f-size-16 rt-light3 d column center" style={{height: '100%'}}>
 																{wallet.account?.toLowerCase()===domain.bidder?.toLowerCase() ? (
-																	<button className="rt-btn rt-gradient pill rt-mb-15" onClick={cancelBid} style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
+																	<button className="rt-btn rt-gradient pill rt-mb-15" onClick={cancelOffer} style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
 																) : (
 																	<button disabled className="rt-btn rt-outline-gradientL pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
 																)}

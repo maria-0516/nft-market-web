@@ -442,7 +442,7 @@ export default function Provider({ children }: {children: any}) {
     //     const signedMarketplaceContract = marketplaceContract.connect(state.signer);
     //     if (acceptedToken.toLowerCase() === state.currencies[0].value.toLowerCase()) {
     //         //native coin
-    //         const tx = await signedMarketplaceContract.PlaceBid(
+    //         const tx = await signedMarketplaceContract.createOffer(
     //             nftAddress,
     //             assetId,
     //             toBigNum(price, 18),
@@ -460,7 +460,7 @@ export default function Provider({ children }: {children: any}) {
     //         );
     //         await tx1.wait();
 
-    //         const tx = await signedMarketplaceContract.PlaceBid(
+    //         const tx = await signedMarketplaceContract.createOffer(
     //             nftAddress,
     //             assetId,
     //             toBigNum(price, 18),
@@ -474,7 +474,7 @@ export default function Provider({ children }: {children: any}) {
     //     const { address, id, price } = props;
 
     //     const signedMarketplaceContract = marketplaceContract.connect(state.signer);
-    //     const tx = await signedMarketplaceContract.acceptBid(address, id, toBigNum(price, 18));
+    //     const tx = await signedMarketplaceContract.acceptOffer(address, id, toBigNum(price, 18));
     //     await tx.wait();
 
     //     return true;
