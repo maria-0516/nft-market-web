@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "type": "commonjs",
-    "homepage": "./",
+    "homepage": "/",
     "dependencies": {
         "@1stquad/react-bootstrap-datetimepicker": "^1.0.25",
         "@aragon/provided-connector": "^6.0.8",
