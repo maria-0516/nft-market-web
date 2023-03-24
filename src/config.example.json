@@ -1,0 +1,33 @@
+{
+    "api": "http://localhost:15010",
+    "graphql": "http://localhost:15010/graphql",
+    "chainId": 1,
+    "chainId1": 11155111,
+    "chainName": "Ethereum",
+    "tokenName": "ETH",
+    "symbol": "ETH",
+    "scanUrl": "https://etherscan.io",
+    "iconUrl": "",
+    "mainnet": 1,
+    "rpc1": [
+        "https://rpc.sepolia.org",
+        "https://ethereum-sepolia.blockpi.network/v1/rpc/public",
+        "https://rpc2.sepolia.org"
+    ],
+    "rpc": [
+        "https://cloudflare-eth.com",
+        "https://eth.llamarpc.com",
+        "https://singapore.rpc.blxrbdn.com",
+        "https://virginia.rpc.blxrbdn.com",
+        "https://uk.rpc.blxrbdn.com",
+        "https://ethereum.blockpi.network/v1/rpc/public",
+        "https://eth-rpc.gateway.pokt.network",
+        "https://eth-mainnet.public.blastapi.io",
+        "https://ethereum.publicnode.com",
+        "https://api.securerpc.com/v1"
+    ],
+    "rootDomain": "eth",
+    "buyerFee": 5,
+    "serviceFee": 15,
+    "ens": "0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85"
+}

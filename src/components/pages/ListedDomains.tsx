@@ -62,9 +62,9 @@ export default function ListedDomains() {
         setLoading(false)
     }
 
-    const onPage = (page: number) => {
-		setStatus({...status, page})
-	}
+    // const onPage = (page: number) => {
+	// 	setStatus({...status, page})
+	// }
 
     useEffect(() => {
         readOrders()

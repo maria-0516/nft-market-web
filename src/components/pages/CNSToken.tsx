@@ -1,6 +1,6 @@
 import React from "react";
-const OwlCarousel = require('react-owl-carousel2')
 import CountUp from 'react-countup';
+const OwlCarousel = require('react-owl-carousel2')
 
 const CNSToken = () => {
 
