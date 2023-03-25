@@ -147,10 +147,10 @@ export default function ListedDomains() {
                                                     {
                                                         orders.map((i: OrderData, index: number) => (
                                                             <tr key={index} onClick={()=>navigate(`/domain/${i.label}.eth`)} style={{cursor: 'pointer'}}>
-                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-234">{i.label.length > 18 ? i.label.slice(0, 12) + '...' : i.label}.eth</th>
-                                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><code>Ethereum (ENS Service)</code></td>
-                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338">{Number(i.price.toFixed(6))} ETH</th>
-                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right">{toUSDate(i.expires)}</th>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-234"><label>Domain</label> {i.label.length > 18 ? i.label.slice(0, 12) + '...' : i.label}.eth</th>
+                                                                <td className="f-size-24 f-size-md-18 rt-semiblod text-338"><label>Network</label> <code>Ethereum (ENS Service)</code></td>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338"><label>Price</label> {Number(i.price.toFixed(6))} ETH</th>
+                                                                <th className="f-size-24 f-size-md-18 rt-semiblod text-338 text-right"><label>Domain Expire</label> {toUSDate(i.expires)}</th>
                                                             </tr>
                                                         ))
                                                     }

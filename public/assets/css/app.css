@@ -45893,6 +45893,33 @@ span.menu-title
     -ms-filter: 'progid:DXImageTransform.Microsoft.Alpha(Opacity=100)';
         filter: alpha(opacity=100);
 }
+.domain-table label {
+    display: none;
+    color: gray;
+}
+@media (max-width: 768px) {
+    .domain-table thead {
+        display: none;
+    }    
+    .domain-table tr {
+        display: flex;
+        flex-direction: column;
+    }
+    .domain-table label {
+        display: block;
+    }
+    .domain-table .text-right {
+        text-align: left !important;
+    }
+    .domain-table tbody th, .domain-table tbody td {
+        padding: 10px 0;
+    }
+    .domain-table td, .domain-table th {
+        border-bottom-width: 0 !important;
+        border-top-width: 0 !important;
+    }
+}
+
 
 /*5.0 Blog Css*/
 .single-blg-post
