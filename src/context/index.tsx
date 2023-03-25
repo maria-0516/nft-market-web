@@ -72,56 +72,56 @@ const INIT_STATE = {
 export default function Provider({ children }: {children: any}) {
     // const location = useLocation();
     const [state, dispatch] = useReducer(reducer, INIT_STATE);
-    const wallet = {} as any
+    // const { data: signer } = useSigner();
+    // const { address, isConnected } = useAccount();
+    // useEffect(() => {
+    //     (async () => {
+    //         if (wallet.status === 'connected') {
+    //             const provider = new ethers.providers.Web3Provider(wallet.ethereum);
+    //             const signer = provider.getSigner();
+    //             dispatch({
+    //                 type: 'signer',
+    //                 payload: signer
+    //             });
+    //             dispatch({
+    //                 type: 'address',
+    //                 payload: wallet.account
+    //             });
+    //             dispatch({
+    //                 type: 'provider',
+    //                 payload: provider
+    //             });
 
-    useEffect(() => {
-        (async () => {
-            if (wallet.status === 'connected') {
-                const provider = new ethers.providers.Web3Provider(wallet.ethereum);
-                const signer = provider.getSigner();
-                dispatch({
-                    type: 'signer',
-                    payload: signer
-                });
-                dispatch({
-                    type: 'address',
-                    payload: wallet.account
-                });
-                dispatch({
-                    type: 'provider',
-                    payload: provider
-                });
+    //             // const result = await Action.user_login(wallet.account);
+    //             // updateAuth(result);
+    //         } else if (wallet.status === 'error') {
+    //             dispatch({
+    //                 type: 'signer',
+    //                 payload: null
+    //             });
+    //         } else {
+    //             dispatch({
+    //                 type: 'auth',
+    //                 payload: {
+    //                     isAuth: false,
+    //                     name: '',
+    //                     email: '',
+    //                     bio: '',
+    //                     address: '',
+    //                     image: '',
+    //                     bannerImage: '',
+    //                     link1: '',
+    //                     link2: ''
+    //                 }
+    //             });
 
-                // const result = await Action.user_login(wallet.account);
-                // updateAuth(result);
-            } else if (wallet.status === 'error') {
-                dispatch({
-                    type: 'signer',
-                    payload: null
-                });
-            } else {
-                dispatch({
-                    type: 'auth',
-                    payload: {
-                        isAuth: false,
-                        name: '',
-                        email: '',
-                        bio: '',
-                        address: '',
-                        image: '',
-                        bannerImage: '',
-                        link1: '',
-                        link2: ''
-                    }
-                });
-
-                dispatch({
-                    type: 'signer',
-                    payload: null
-                });
-            }
-        })();
-    }, [wallet.status]);
+    //             dispatch({
+    //                 type: 'signer',
+    //                 payload: null
+    //             });
+    //         }
+    //     })();
+    // }, [wallet.status]);
 
     /** Begin GraphQL Query */
     // const {
@@ -260,25 +260,25 @@ export default function Provider({ children }: {children: any}) {
     };
 
     // auth
-    const updateAuth = (data: any) => {
-        dispatch({
-            type: 'auth',
-            payload: {
-                isAuth: true,
-                name: data.name,
-                email: data.email,
-                bio: data.bio,
-                address: wallet.account,
-                image: data.image,
-                bannerImage: data.bannerImage,
-                link1: data.link1,
-                link2: data.link2
-            }
-        });
+    // const updateAuth = (data: any) => {
+    //     dispatch({
+    //         type: 'auth',
+    //         payload: {
+    //             isAuth: true,
+    //             name: data.name,
+    //             email: data.email,
+    //             bio: data.bio,
+    //             // address: wallet.account,
+    //             image: data.image,
+    //             bannerImage: data.bannerImage,
+    //             link1: data.link1,
+    //             link2: data.link2
+    //         }
+    //     });
 
-        // const origin = location.state?.from?.pathname || '/';
-        // navigate(origin);
-    };
+    //     // const origin = location.state?.from?.pathname || '/';
+    //     // navigate(origin);
+    // };
 
     // show method
     // const getCurrency = (tokenaddress = '') => {

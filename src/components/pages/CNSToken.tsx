@@ -61,7 +61,7 @@ const CNSToken = () => {
                                 <div className="rt-banner-content text-white">
                                     <h1>
                                         <span className="d-block f-size-36 f-size-xs-18 rt-light1 rt-mb-10" data-duration="1s" data-dealy="0.3s" data-animation="wow fadeInUp" style={{animationDuration: '1s', lineHeight: 1.3}}>Crypto Names Store</span>
-                                        <span className="f-size-40 f-size-xs-24 rt-strong rt-mb-13 d-block " data-duration="1s" data-dealy="0.3s" data-animation="wow fadeInDown" style={{animationDuration: '1s', lineHeight: 1.3}}>Crypto Domains Markertplace</span>
+                                        <span className="f-size-40 f-size-xs-24 rt-strong rt-mb-13 d-block " data-duration="1s" data-dealy="0.3s" data-animation="wow fadeInDown" style={{animationDuration: '1s', lineHeight: 1.3}}>Crypto Domains Marketplace</span>
                                     </h1>
                                     <h4 className="f-size-20 f-size-xs-16 rt-light1" data-duration="1.5s" data-dealy="0.6s" data-animation="wow fade-in-left" style={{animationDuration: '1.5s'}}></h4>
                                     <a href="https://cryptonames.store/resources/litepaper.pdf" className="rt-btn rt-gradient pill text-uppercase rt-Bshadow-1 long rt-mt-15" data-duration="1.8s" data-dealy="0.9s" data-animation="wow fadeInUp" style={{animationDuration: '1.8s', marginLeft: 5}}>Whitepaper

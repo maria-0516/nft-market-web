@@ -8,6 +8,7 @@ import { ethers } from 'ethers';
 import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
 import config from '../../config.json'
+import { useAccount } from 'wagmi';
 
 
 interface DomainType {
@@ -24,13 +25,14 @@ interface DomainType {
 }
 
 export default function Author() {
-	const wallet = {} as any
+	const wallet = useAccount();
 	const navigate = useNavigate();
 	const {address} = useParams()
+	
 	const [loading, setLoading] = useState(false)
 	const [domains, setDomains] = useState<DomainType[]>([]);
 
-	const account = address || wallet.account
+	const account = address || wallet.address
 	const [status, setStatus] = useState({
 		address: account,
 		limit: 10,
@@ -39,8 +41,8 @@ export default function Author() {
 	})
 	
 	useEffect(() => {
-		if (!wallet.account && localStorage.getItem('isConnected')==="0") return navigate('/')
-	}, [wallet.account])
+		if (!wallet.address && localStorage.getItem('isConnected')==="0") return navigate('/')
+	}, [wallet.address])
 
 	const readNfts = async (initial?: boolean) => {
 		setLoading(true)
@@ -112,7 +114,7 @@ export default function Author() {
 	}
 
 	React.useEffect(() => {
-		if (address?.toLowerCase()===wallet.account?.toLowerCase()) return navigate('/my-domains')
+		if (address?.toLowerCase()===wallet.address?.toLowerCase()) return navigate('/my-domains')
 		readNfts(status.address?.toLowerCase()!==account?.toLowerCase())
 		if (status.address?.toLowerCase()!==account?.toLowerCase()) setStatus({...status, address: account})
 	}, [account, status.page])
@@ -142,18 +144,18 @@ export default function Author() {
 														{/* <th className="text-323639 rt-strong f-size-18">Domain Register</th> */}
 														<th className="text-323639 rt-strong f-size-18" style={{minWidth: '7em'}}>Domain Expire</th>
 														<th className="text-323639 rt-strong f-size-18">Price</th>
-														{wallet.account?.toLowerCase()===account?.toLowerCase() && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
+														{wallet.address?.toLowerCase()===account?.toLowerCase() && (<th className="text-323639 rt-strong f-size-18 text-right"></th>)}
 													</tr>
 												</thead>
 												<tbody>
 													{domains.map((i, k) => (
 														<tr key={k} onClick={()=>navigate(`/domain/${i.name}`)} style={{cursor: 'pointer'}}>
-															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.name}</th>
-															<th><code className="f-size-18 f-size-md-18">Ethereum (ENS Service)</code></th>
+															<th className="f-size-18 f-size-md-18 rt-semiblod text-234"><label>Domain</label>{i.name}</th>
+															<th><code className="f-size-18 f-size-md-18"><label>Network</label>Ethereum (ENS Service)</code></th>
 															{/* <td className="f-size-18 f-size-md-18 rt-semiblod text-605">{i.created ? new Date(i.created * 1000).toLocaleDateString() : '-'}</td> */}
-															<td className="f-size-18 f-size-md-18 rt-semiblod text-338">{i.expires ? toUSDate(i.expires) : '-'}</td>
-															<th className="f-size-18 f-size-md-18 rt-semiblod text-234">{i.orderId!==0 ? `${Number(i.orderPrice.toFixed(6))} ETH` : ''}</th>
-															{wallet.account?.toLowerCase()===account?.toLowerCase() && (
+															<td className="f-size-18 f-size-md-18 rt-semiblod text-338"><label>Domain Expire</label>{i.expires ? toUSDate(i.expires) : '-'}</td>
+															<th className="f-size-18 f-size-md-18 rt-semiblod text-234"><label>Price</label>{i.orderId!==0 ? `${Number(i.orderPrice.toFixed(6))} ETH` : '-'}</th>
+															{wallet.address?.toLowerCase()===account?.toLowerCase() && (
 																<td className="text-right">
 																	<Link to={`/domain/${i.name}`} className="rt-btn rt-gradient2 rt-sm4 pill">{i.orderId!==0 ? 'Listed' : 'List it now!'}</Link>
 																</td>

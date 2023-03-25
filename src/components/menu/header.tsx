@@ -15,8 +15,6 @@ const Header = () => {
     const navigate = useNavigate();
     // const { address } = useParams();
     const {address, isConnected} = useAccount();
-
-    const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
     const [searchModal, setSearchModal] = useState(false);
     const [searchKey, setSearchKey] = useState('');
@@ -343,7 +341,7 @@ const Header = () => {
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
 							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong" style={{lineBreak: `${location.pathname.indexOf('domain')===1 ? 'anywhere' : 'auto'}`}}>{menu}</h4>
                             {/* {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>} */}
-                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{"wallet.account"?.slice(0, 8) + '...' + "wallet.account"?.slice(-8)}</p>}
+                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{address?.slice(0, 8) + '...' + address?.slice(-8)}</p>}
 							{
 								(menu === 'Listed Crypto Domains' || menu === 'Buy Crypto Domains') && (
 									<div className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"

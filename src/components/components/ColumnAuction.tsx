@@ -11,6 +11,7 @@ import { ethers } from 'ethers';
 import Loading from './Loading';
 import addresses from '../../contracts/contracts/addresses.json'
 import { validNumberChar } from '../../utils';
+import { useAccount, useProvider, useSigner } from 'wagmi';
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -34,7 +35,9 @@ interface DomainDetailType {
 }
 
 export default function ColumnAuction({name}: Props) {
-    const wallet = {} as any
+    // const provider = useProvider();
+	const { data: signer } = useSigner();
+	const { address} = useAccount();
     const navigate = useNavigate();
     const [state, { translateLang }] = useBlockchainContext() as any;
     const [price, setPrice] = useState('');
@@ -118,7 +121,7 @@ export default function ColumnAuction({name}: Props) {
 
     useEffect(() => {
 		readData()
-	}, [wallet.account])
+	}, [address])
 
 
     useEffect(() => {
@@ -131,7 +134,7 @@ export default function ColumnAuction({name}: Props) {
 
     const checkApprove = async () => {
         const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
-        const collection = await collectionWithSigner(wallet.ethereum);
+        const collection = await collectionWithSigner(signer);
         const _spender = await collection.getApproved(tokenId)
         const isApproved = toLower(_spender)===toLower(addresses.storefront)
         setApproved(isApproved)
@@ -142,7 +145,7 @@ export default function ColumnAuction({name}: Props) {
         setLoading(true)
         try {
             const tokenId = '0x' + BigInt(domain.tokenId).toString(16)
-            const collection = await collectionWithSigner(wallet.ethereum);
+            const collection = await collectionWithSigner(signer);
             // const isApproved = await checkApprove()
             if (!approved) {
                 const txApprove = await collection.approve(addresses.storefront, tokenId)
@@ -171,7 +174,7 @@ export default function ColumnAuction({name}: Props) {
             //     await txApprove.wait()
             //     toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
             // }
-            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(Number(price) * (1 + config.buyerFee / 100))), time)
+            const tx = await storefrontWithSigner(signer).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(Number(price) * (1 + config.buyerFee / 100))), time)
             await tx.wait();
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
@@ -186,7 +189,7 @@ export default function ColumnAuction({name}: Props) {
         setLoading(true)
         try {
             // const time = Math.round(new Date(date).getTime() / 1000)
-            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(String(Number(price) * (1 + config.buyerFee / 100))), '0x' + domain.orderExpires.toString(16))
+            const tx = await await storefrontWithSigner(signer).updateOrder(domain.orderId, ethers.utils.parseEther(String(Number(price) * (1 + config.buyerFee / 100))), '0x' + domain.orderExpires.toString(16))
             await tx.wait()
             navigate(`/domain/${name}`)
         } catch (error) {

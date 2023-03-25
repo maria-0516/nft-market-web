@@ -1,24 +1,20 @@
 import React from 'react';
 
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 
 import ScrollToTopBtn from './menu/ScrollToTop';
 import Header from './menu/header';
-import Explore from './pages/explore';
 import ItemDetail from './pages/ItemDetail';
 import Author from './pages/Author';
 import ListedDomains from './pages/ListedDomains';
 
-import { toast } from 'react-toastify';
 import Footer from './menu/footer';
 import HowWork from './pages/HowWork';
 import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
-import CNSToken from './pages/CNSToken';
-// import { useWallet } from '../use-wallet/src';
+import CNSToken from './pages/CNSToken'
 import Auction from './pages/Auction';
-import config from '../config.json'
 
 const App = () => {
     return (

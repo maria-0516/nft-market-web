@@ -6358,3 +6358,25 @@ header {
         display: none;
     }
 }
+@media (max-width: 768px) {
+    table thead {
+        display: none;
+    }    
+    table tr {
+        display: flex;
+        flex-direction: column;
+    }
+    table label {
+        display: block;
+    }
+    table .text-right {
+        text-align: left !important;
+    }
+    table tbody th, table tbody td {
+        padding: 10px 10px !important;
+    }
+    table td, table th {
+        border-bottom-width: 0 !important;
+        border-top-width: 0 !important;
+    }
+}

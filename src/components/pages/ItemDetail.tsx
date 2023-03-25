@@ -32,11 +32,8 @@ interface DomainDetailType {
 }
 
 export default function ItemDetail() {
-	const provider = useProvider();
 	const { data: signer } = useSigner();
 	const { address, isConnected } = useAccount();
-
-	const wallet = {} as any;
 	const { name } = useParams();
 	const navigate = useNavigate();
 	const [state, { translateLang }] = useBlockchainContext() as any;
@@ -65,9 +62,9 @@ export default function ItemDetail() {
 	const setFlag = (_domain: DomainDetailType) => {
 		let flag = 0
 		if (_domain.orderId!==0) {
-			flag = _domain.owner?.toLowerCase()===wallet.account?.toLowerCase() ? 2 : 4
+			flag = _domain.owner?.toLowerCase()===address?.toLowerCase() ? 2 : 4
 		} else {
-			flag = _domain.owner?.toLowerCase()===wallet.account?.toLowerCase() ? 1 : 3
+			flag = _domain.owner?.toLowerCase()===address?.toLowerCase() ? 1 : 3
 		}
 		setPageFlag(flag)
 	}
@@ -153,7 +150,7 @@ export default function ItemDetail() {
 
 	useEffect(() => {
 		readData()
-	}, [wallet.account])
+	}, [address])
 
 	const handleBuy = async () => {
 		setLoading(true)
@@ -368,7 +365,7 @@ export default function ItemDetail() {
 																{pageFlag===4 && (
 																	<>
 																		<button className="rt-btn rt-gradient pill d-block rt-mb-30" onClick={handleBuy}>Buy it now for {Math.round(domain.orderPrice * 1e4) / 1e4} ETH</button>
-																		{domain.bidder!==wallet.account && (
+																		{domain.bidder!==address && (
 																			<>
 																				<input type="text" minLength={1} maxLength={10} className="form-control pill rt-mb-15" placeholder="Please enter your offer amount" onKeyDown={e=>!validNumberChar(e.key) && e.preventDefault()} value={String(bidPrice)} onChange={e=>setBidPrice(e.target.value)} />
 																				<button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={handleBid}>Create offer</button>
@@ -401,7 +398,7 @@ export default function ItemDetail() {
 														<span className="rt-light3 amount"><span className="f-size-30 text-422"><span className="rt-semiblod">{domain.bidPrice}</span></span><span className="f-size-20"> ETH</span></span>
 														{/* <span className="d-block f-size-16 rt-light3">{domain.bidPrice}</span> */}
 													</div>
-													{domain.owner?.toLowerCase()===wallet.account?.toLowerCase() ? (
+													{domain.owner?.toLowerCase()===address?.toLowerCase() ? (
 														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
 															<span className="f-size-16 rt-light3 d column center">
@@ -412,7 +409,7 @@ export default function ItemDetail() {
 														<div className="col-lg-4 d column around">
 															<span className="d-block f-size-24 rt-semiblod"></span>
 															<span className="f-size-16 rt-light3 d column center" style={{height: '100%'}}>
-																{wallet.account?.toLowerCase()===domain.bidder?.toLowerCase() ? (
+																{address?.toLowerCase()===domain.bidder?.toLowerCase() ? (
 																	<button className="rt-btn rt-gradient pill rt-mb-15" onClick={cancelOffer} style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
 																) : (
 																	<button disabled className="rt-btn rt-outline-gradientL pill rt-mb-15" style={{margin: 0, padding: '16px 12px'}}>Cancel</button>
