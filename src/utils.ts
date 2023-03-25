@@ -156,4 +156,9 @@ export const toUSDate = (time: number) => {
     return [date.toLocaleDateString("en-US", { day: 'numeric' }),date.toLocaleDateString("en-US", { month: 'short' }), date.toLocaleDateString("en-US", { year: 'numeric' })].join(' ')
 }
 
+export const validNumberChar = (c: string) => {
+    // console.log('c', c)
+    return ['Backspace', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Delete', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'].indexOf(c)!==-1
+}
+
 export { delay, toBigNum, fromBigNum, styledAddress, copyToClipboard, changeNetwork, styledText };

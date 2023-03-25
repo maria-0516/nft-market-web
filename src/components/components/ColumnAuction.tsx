@@ -10,6 +10,7 @@ import { collectionWithSigner, storefront, storefrontWithSigner, tokens, toLower
 import { ethers } from 'ethers';
 import Loading from './Loading';
 import addresses from '../../contracts/contracts/addresses.json'
+import { validNumberChar } from '../../utils';
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -36,7 +37,7 @@ export default function ColumnAuction({name}: Props) {
     const wallet = useWallet()
     const navigate = useNavigate();
     const [state, { translateLang }] = useBlockchainContext() as any;
-    const [price, setPrice] = useState(0);
+    const [price, setPrice] = useState('');
     const [loading, setLoading] = useState(false);
     const [approved, setApproved] = useState(false)
     const [domain, setDomain] = useState<DomainDetailType>({
@@ -107,7 +108,7 @@ export default function ColumnAuction({name}: Props) {
 			}
 			setDomain(_domain)
             // if (_domain.orderExpires!==0) setDate(new Date(_domain.orderExpires * 1000))
-            if (_domain.orderPrice!==0) setPrice(_domain.orderPrice)
+            if (_domain.orderPrice!==0) setPrice(String(_domain.orderPrice))
 		} catch (error) {
 			console.log("readData", error)
 		}
@@ -170,7 +171,7 @@ export default function ColumnAuction({name}: Props) {
             //     await txApprove.wait()
             //     toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
             // }
-            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(price * (1 + config.buyerFee / 100))), time)
+            const tx = await storefrontWithSigner(wallet.ethereum).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(Number(price) * (1 + config.buyerFee / 100))), time)
             await tx.wait();
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
@@ -185,7 +186,7 @@ export default function ColumnAuction({name}: Props) {
         setLoading(true)
         try {
             // const time = Math.round(new Date(date).getTime() / 1000)
-            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(String(price * (1 + config.buyerFee / 100))), '0x' + domain.orderExpires.toString(16))
+            const tx = await await storefrontWithSigner(wallet.ethereum).updateOrder(domain.orderId, ethers.utils.parseEther(String(Number(price) * (1 + config.buyerFee / 100))), '0x' + domain.orderExpires.toString(16))
             await tx.wait()
             navigate(`/domain/${name}`)
         } catch (error) {
@@ -217,7 +218,7 @@ export default function ColumnAuction({name}: Props) {
                                                     <option value="ETH">ETH</option>
                                                 </select>
                                             </div>
-                                            <input type="text" minLength={1} maxLength={10} name="item_price" id="item_price" className="form-control" style={{flex: '4 4 0'}} placeholder={translateLang('amount')} value={String(price)} onChange={(e) => setPrice(Number(e.target.value) || 0)} />
+                                            <input type="text" minLength={1} maxLength={10} name="item_price" id="item_price" className="form-control" style={{flex: '4 4 0'}} placeholder={translateLang('amount')} value={price} onKeyDown={e=>!validNumberChar(e.key) && e.preventDefault()}  onChange={(e) => setPrice(e.target.value)} />
                                         </div>
                                         {/* <div className="spacer-30"></div>
                                         <h5>{translateLang('expiredate')}</h5>
@@ -251,9 +252,9 @@ export default function ColumnAuction({name}: Props) {
                                 ) : (
                                     <>
                                         {!approved ? (
-                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={price === 0} onClick={handleApprove}>Step1: Approve</button>
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={Number(price) === 0} onClick={handleApprove}>Step1: Approve</button>
                                         ) : (
-                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={price === 0} onClick={handlelist}>Step2: Listing in Store</button>
+                                            <button className="rt-btn rt-gradient pill d-block rt-mb-15" disabled={Number(price) === 0} onClick={handlelist}>Step2: Listing in Store</button>
                                         )}
                                     </>
                                 )}
@@ -275,15 +276,15 @@ export default function ColumnAuction({name}: Props) {
                                             <p style={{fontWeight: '500'}} className="d column gap">
                                                 <div>
                                                     <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Listing Price: </span>
-                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number(price.toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
+                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number(Number(price).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
                                                 </div>
                                                 <div>
                                                     <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Service Fee: </span>
-                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number((price * config.serviceFee / 100).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span> ({config.serviceFee}%)
+                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number((Number(price) * config.serviceFee / 100).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span> ({config.serviceFee}%)
                                                 </div>
                                                 <div>
                                                     <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Final Earning: </span>
-                                                    <span className="rt-light3 amount"><span className="f-size-25"><span style={{fontWeight: 600}}>{Number((price * (1 - config.serviceFee / 100)).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
+                                                    <span className="rt-light3 amount"><span className="f-size-25"><span style={{fontWeight: 600}}>{Number((Number(price) * (1 - config.serviceFee / 100)).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
                                                 </div>
                                             </p>
                                         </div>
