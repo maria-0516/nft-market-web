@@ -8,7 +8,6 @@ import { changeNetwork, styledAddress, toUSDate, validNumberChar } from '../../u
 // import { useWallet } from '../../use-wallet/src';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
-import config from '../../config.json'
 import Dialog from '../components/Dialog';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
 import { storefront, storefrontWithSigner, tokens } from '../../contracts';
@@ -325,11 +324,11 @@ export default function ItemDetail() {
 														<>
 															<div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3" style={{display: 'flex', alignItems: 'center'}}>Current price:</span>
-																<span className="f-size-20 rt-light3">{Number((domain.orderPrice / (1 + config.buyerFee / 100)).toFixed(6))} ETH</span>
+																<span className="f-size-20 rt-light3">{Number((domain.orderPrice / (1 + state.fee.buyer / 100)).toFixed(6))} ETH</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">CNS fee:</span>
-																<span className="f-size-20 rt-light3">{Number(((domain.orderPrice / (1 + config.buyerFee / 100)) * config.buyerFee / 100).toFixed(6))} ETH ({config.buyerFee}%)</span>
+																<span className="f-size-20 rt-light3">{Number(((domain.orderPrice / (1 + state.fee.buyer / 100)) * state.fee.buyer / 100).toFixed(6))} ETH ({state.fee.buyer}%)</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">Total payment:</span>

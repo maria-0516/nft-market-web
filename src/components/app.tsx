@@ -15,8 +15,37 @@ import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken'
 import Auction from './pages/Auction';
+import { storefront } from '../contracts';
+import { useBlockchainContext } from '../context';
+import config from '../config.json'
 
 const App = () => {
+    const [state, { setFee }] = useBlockchainContext() as any;
+    const [inited, setInited] = React.useState(false)
+    const getFee = async () => {
+        try {
+            const fee = Number(await storefront.cutPerMillion()) / 1e4
+            let seller = 0
+            let buyer = 0
+            if (fee > config.buyerFee) {
+                buyer = config.buyerFee
+                seller = fee - config.buyerFee
+            } else {
+                buyer = fee
+            }
+            setFee({buyer, seller})
+        } catch (error) {
+            console.log("getFee", error)
+        }
+    }
+
+    React.useEffect(() => {
+        if (!inited) {
+            getFee()
+            setInited(true)
+        }
+    }, [])
+
     return (
         <div className="wraper">
             <Router>

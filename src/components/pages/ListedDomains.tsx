@@ -6,9 +6,11 @@ import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
 import { getEnsDomainExpireByName } from '../../thegraph';
 import config from '../../config.json'
+import { useBlockchainContext } from '../../context';
 
 export default function ListedDomains() {
     const navigate = useNavigate();
+    const [state, { translateLang }] = useBlockchainContext() as any;
     const [orders, setOrders] = useState<OrderData[]>([])
     const [status, setStatus] = useState({
         page:   0,
@@ -35,7 +37,7 @@ export default function ListedDomains() {
                         collection:     '',
                         label:          i.label,
                         assetId: 		assetId,
-                        price: 			Number((Number(ethers.utils.formatEther(i.price)) / (1 + config.buyerFee / 100)).toFixed(6)),
+                        price: 			Number((Number(ethers.utils.formatEther(i.price)) / (1 + state.fee.buyer / 100)).toFixed(6)),
                         token: 	        tokens[i.acceptedToken],
                         seller: 	    i.seller,
                         expires:        Number(i.expires),
