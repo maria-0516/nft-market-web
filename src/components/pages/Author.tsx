@@ -7,6 +7,7 @@ import { ethers } from 'ethers';
 import { useWallet } from '../../use-wallet/src';
 import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
+import config from '../../config.json'
 
 
 interface DomainType {
@@ -81,14 +82,14 @@ export default function Author() {
 								created:    0,
 								cost:       0,
 								orderId,
-								orderPrice: Number(ethers.utils.formatEther(i.price)),
+								orderPrice: Number((Number(ethers.utils.formatEther(i.price)) / (1 + config.buyerFee / 100)).toFixed(6)),
 								orderToken: tokens[i.token],
 								orderExpires: Number(i.expires),
 							}
 							_names[`${i.label}.eth`] = tokenId
 						} else {
 							_domains[tokenId].orderId = 	orderId
-							_domains[tokenId].orderPrice = 	Number(ethers.utils.formatEther(i.price))
+							_domains[tokenId].orderPrice = 	Number((Number(ethers.utils.formatEther(i.price)) / (1 + config.buyerFee / 100)).toFixed(6))
 							_domains[tokenId].orderToken = 	tokens[i.token]
 							_domains[tokenId].orderExpires= Number(i.expires)
 						}

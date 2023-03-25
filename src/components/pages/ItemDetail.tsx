@@ -349,7 +349,7 @@ export default function ItemDetail() {
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">CNS fee:</span>
-																<span className="f-size-20 rt-light3">{Number((domain.orderPrice * config.buyerFee / 100).toFixed(6))} ETH ({config.buyerFee}%)</span>
+																<span className="f-size-20 rt-light3">{Number(((domain.orderPrice / (1 + config.buyerFee / 100)) * config.buyerFee / 100).toFixed(6))} ETH ({config.buyerFee}%)</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">Total payment:</span>

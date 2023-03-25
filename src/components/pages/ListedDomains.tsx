@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { storefront, tokens } from '../../contracts';
-import Pager from '../components/Pager';
 import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
-import { Helmet } from 'react-helmet';
 import { getEnsDomainExpireByName } from '../../thegraph';
+import config from '../../config.json'
 
 export default function ListedDomains() {
     const navigate = useNavigate();
@@ -36,7 +35,7 @@ export default function ListedDomains() {
                         collection:     '',
                         label:          i.label,
                         assetId: 		assetId,
-                        price: 			Number(ethers.utils.formatEther(i.price)),
+                        price: 			Number((Number(ethers.utils.formatEther(i.price)) / (1 + config.buyerFee / 100)).toFixed(6)),
                         token: 	        tokens[i.acceptedToken],
                         seller: 	    i.seller,
                         expires:        Number(i.expires),

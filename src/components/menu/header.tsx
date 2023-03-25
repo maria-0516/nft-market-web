@@ -269,7 +269,6 @@ const Header = () => {
 				<div className="container">
 					<div className="row align-items-center">
 						<div className="col-md-6 md-start sm-center">
-							
 							<ul className="text-center text-md-left top-social">
 								<li><span><Link to='https://t.me/CryptoNamesStore' target='_blank' className="f-size-14 text-white"><img src="/assets/images/all-img/top-1.png" alt="" draggable="false" /> Support</Link></span></li>
 								<li style={{position: 'relative', cursor: 'pointer'}} onClick={()=>setLangMenu(!langMenu)}>
@@ -334,7 +333,7 @@ const Header = () => {
 												<li><Link to="/partnership" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Partnership</Link></li>
 											</ul>
 										</li>
-										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="https://l.cryptonames.store/cns.html" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>CNS Token</Link></li>
+										<li className={menu==='CNS Token' ? 'current-menu-item' : ''}><Link to="/cns-token" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>CNS Token</Link></li>
 									</ul>
 								</div>
 							<div className="rt-nav-tolls d-flex align-items-center">
@@ -351,6 +350,7 @@ const Header = () => {
 					</nav>
 				</div>
 			</header>
+            {menu!=='CNS Token' && (
 			<div className="rt-breadcump rt-breadcump-height breaducump-style-2">
 				<div className="rt-page-bg rtbgprefix-full" style={{backgroundImage: 'url(/assets/images/banner/breadcump-img.png)'}}>
 				</div>
@@ -387,6 +387,7 @@ const Header = () => {
 					</div>
 				</div> */}
 			</div>
+            )}
             {scroll && (
                 <AnchorLink  id="scrollUp" href="#top" style={{position: 'fixed', zIndex: 100000}}>
                     <i className="fa fa-angle-up"></i>
