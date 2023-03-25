@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Helmet from 'react-helmet'
+import { useAccount, useProvider, useSigner } from "wagmi";
 
 import { useBlockchainContext } from '../../context';
 import { changeNetwork, styledAddress, toUSDate, validNumberChar } from '../../utils';
@@ -13,6 +14,7 @@ import { getEnsDomainByName, makeTokenId } from '../../thegraph';
 import { storefront, storefrontWithSigner, tokens } from '../../contracts';
 import { ethers } from 'ethers';
 import Loading from '../components/Loading';
+// import { Web3Button } from '@web3modal/react';
 
 interface DomainDetailType {
 	tokenId: string
@@ -30,6 +32,10 @@ interface DomainDetailType {
 }
 
 export default function ItemDetail() {
+	const provider = useProvider();
+	const { data: signer } = useSigner();
+	const { address, isConnected } = useAccount();
+
 	const wallet = {} as any;
 	const { name } = useParams();
 	const navigate = useNavigate();
@@ -155,7 +161,7 @@ export default function ItemDetail() {
 			if (domain.orderId===0) return
 			// console.log("ethers.utils.formatUnits(domain.orderPrice)", )
 			const value = ethers.utils.parseEther(String(domain.orderPrice))
-			const tx = await storefrontWithSigner(wallet.ethereum).executeOrder(domain.orderId, value, {value})
+			const tx = await storefrontWithSigner(signer).executeOrder(domain.orderId, value, {value})
 			await tx.wait()
 			toast(translateLang('buynft_success'), {position: "top-right", autoClose: 2000})
 			await readData()
@@ -174,45 +180,20 @@ export default function ItemDetail() {
 			}
 
 			setLoading(true)
-			if (wallet.account) {
+			if (isConnected) {
 				// const gasEstimated = await storefront.estimateGas.createOffer(domain.orderId, ethers.utils.parseEther(String(status.bidPrice)));
 				const value = ethers.utils.parseEther(bidPrice)
-				const tx = await await storefrontWithSigner(wallet.ethereum).createOffer(domain.orderId, value, {value})
+				const tx = await await storefrontWithSigner(signer).createOffer(domain.orderId, value, {value})
 				await tx.wait()
-			} else {
-				onConnectWallet()
+				toast('Bid successful', {position: "top-right", autoClose: 2000})
+				await readData()
 			}
-			toast('Bid successful', {position: "top-right", autoClose: 2000})
-			await readData()
 		} catch (error) {
 			console.log("handleBid", error)
 			toast('Bid failed', {position: "top-right", autoClose: 2000})
 		}
 		setLoading(false)
 	}
-
-	const onConnectWallet = async () => {
-        console.log("wallet-status", wallet.status)
-        try {
-            if (wallet.ethereum) {
-                const chainId = await wallet.ethereum.request({
-                    method: 'eth_chainId'
-                });
-                if (Number(chainId)!==config.chainId) {
-                    console.log('NowchainId', chainId)
-                    await changeNetwork(wallet.ethereum, config.chainId);
-                    return
-                } else {
-					wallet.connect()
-					localStorage.setItem('isConnected', "1")
-				}
-            } else {
-				wallet.connect()
-			}
-        } catch (error) {
-            console.log("connect-wallet", error)
-        }
-    }
 
 	const toAuction = () => {
 		navigate(`/auction/${domain.name}`);
@@ -223,7 +204,7 @@ export default function ItemDetail() {
 		setStatus({...status, showCancel: false})
 		try {
 			if (domain.orderId===0) return
-			const tx = await await storefrontWithSigner(wallet.ethereum).cancelOrder(domain.orderId)
+			const tx = await await storefrontWithSigner(signer).cancelOrder(domain.orderId)
 			await tx.wait()
 			toast(translateLang('cancelorder_success'), {position: "top-right", autoClose: 2000})
 			await readData()
@@ -238,7 +219,7 @@ export default function ItemDetail() {
 		setLoading(true)
 		try {
 			if (domain.orderId===0) return
-			const tx = await await storefrontWithSigner(wallet.ethereum).acceptOffer(domain.orderId)
+			const tx = await await storefrontWithSigner(signer).acceptOffer(domain.orderId)
 			await tx.wait()
 			toast("Accepting bid was successfully done", {position: "top-right", autoClose: 2000})
 			await readData()
@@ -252,7 +233,7 @@ export default function ItemDetail() {
 	const cancelOffer = async () => {
 		setLoading(true)
 		try {
-			const tx = await await storefrontWithSigner(wallet.ethereum).cancelOffer(domain.orderId)
+			const tx = await await storefrontWithSigner(signer).cancelOffer(domain.orderId)
 			await tx.wait()
 			toast("Canceling bid was successfully done", {position: "top-right", autoClose: 2000})		
 			await readData()
@@ -364,9 +345,7 @@ export default function ItemDetail() {
 														</>
 													)}
 													<div className="rt-form ">
-														{!wallet.account ? (
-															<button className="rt-btn rt-gradient pill d-block rt-mb-15" onClick={onConnectWallet}>Connect Wallet</button>
-														) : (
+														{isConnected && (
 															<>
 																{pageFlag===1 && (
 																	<>

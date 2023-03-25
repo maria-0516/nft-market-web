@@ -4,20 +4,18 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
 import { changeNetwork } from '../../utils';
 import config from '../../config.json'
-// import { useWallet } from '../../use-wallet/src';
-import AnchorLink from 'react-anchor-link-smooth-scroll'
 import { Web3Button } from '@web3modal/react'
-import { useWeb3Modal } from "@web3modal/react";
-import { Web3NetworkSwitch, Web3Modal } from '@web3modal/react'
+import { useAccount } from "wagmi";
+
+import AnchorLink from 'react-anchor-link-smooth-scroll'
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 
 const Header = () => {
     const navigate = useNavigate();
-    const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
-    // const wallet = useWallet();
-    const { address } = useParams();
-    
+    // const { address } = useParams();
+    const {address, isConnected} = useAccount();
+
     const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
     const [openMenu1, setOpenMenu1] = useState(false);
     const [searchModal, setSearchModal] = useState(false);
@@ -282,18 +280,11 @@ const Header = () => {
 								</li>
 								<li><Link to='https://t.me/CryptoNamesStore' target='_blank'><i className="icofont-telegram"></i></Link></li>
 								<li><Link to='https://twitter.com/CryptoNames_ERC' target='_blank'><i className="icofont-twitter"></i></Link></li>
-                                <Web3Button />
-                                <Web3NetworkSwitch />
+                                
 							</ul>
 						</div>
 						<div className="col-md-6 text-center text-md-right md-end sm-center" style={{gap: '0.5em'}}>
-							<button className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}} onClick={handleConnect}>
-								{/* {wallet.status==='connecting' ? 'Connecting...' : (
-									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect Wallet'
-								)} */}
-							</button>
-							{/* <a href="#" className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', width: '75%', fontSize: '1.5rem', fontWeight: 'bold'}}>Connect Wallet
-							</a> */}
+                            <Web3Button />
 						</div>
 					</div>
 				</div>
@@ -316,7 +307,7 @@ const Header = () => {
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li> */}
-                                        {!!"wallet.account" && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Sell your Domain</Link></li>}
+                                        {!!isConnected && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Sell your Domain</Link></li>}
 										<li style={{cursor: 'pointer'}} className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`}><a onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><span>Information</span></a>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
 												<li><Link to="/how-work" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>How It Works</Link></li>
