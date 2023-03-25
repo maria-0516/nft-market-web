@@ -13,6 +13,7 @@ import { getEnsDomainByName, makeTokenId } from '../../thegraph';
 import { storefront, storefrontWithSigner, tokens } from '../../contracts';
 import { ethers } from 'ethers';
 import Loading from '../components/Loading';
+import config from '../../config.json'
 // import { Web3Button } from '@web3modal/react';
 
 interface DomainDetailType {
@@ -324,11 +325,11 @@ export default function ItemDetail() {
 														<>
 															<div className="d-flex justify-content-between rt-mb-20">
 																<span className="f-size-20 rt-light3" style={{display: 'flex', alignItems: 'center'}}>Current price:</span>
-																<span className="f-size-20 rt-light3">{Number((domain.orderPrice / (1 + state.fee.buyer / 100)).toFixed(6))} ETH</span>
+																<span className="f-size-20 rt-light3">{Number((domain.orderPrice / (1 + (state.fee.buyer || config.buyerFee) / 100)).toFixed(6))} ETH</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">CNS fee:</span>
-																<span className="f-size-20 rt-light3">{Number(((domain.orderPrice / (1 + state.fee.buyer / 100)) * state.fee.buyer / 100).toFixed(6))} ETH ({state.fee.buyer}%)</span>
+																<span className="f-size-20 rt-light3">{Number(((domain.orderPrice / (1 + (state.fee.buyer || config.buyerFee) / 100)) * (state.fee.buyer || config.buyerFee) / 100).toFixed(6))} ETH ({(state.fee.buyer || config.buyerFee)}%)</span>
 															</div>
 															<div className="d-flex justify-content-between rt-mb-20">
 															<span className="f-size-20 rt-light3">Total payment:</span>
