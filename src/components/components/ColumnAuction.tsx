@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import config from '../../config.json'
-import { useWallet } from '../../use-wallet/src';
+// import { useWallet } from '../../use-wallet/src';
 import { getEnsDomainByName, makeTokenId } from '../../thegraph';
 import { collectionWithSigner, storefront, storefrontWithSigner, tokens, toLower } from '../../contracts';
 import { ethers } from 'ethers';
@@ -34,7 +34,7 @@ interface DomainDetailType {
 }
 
 export default function ColumnAuction({name}: Props) {
-    const wallet = useWallet()
+    const wallet = {} as any
     const navigate = useNavigate();
     const [state, { translateLang }] = useBlockchainContext() as any;
     const [price, setPrice] = useState('');

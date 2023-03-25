@@ -16,26 +16,26 @@ import HowWork from './pages/HowWork';
 import Faq from './pages/Faq';
 import Partnership from './pages/Partnership';
 import CNSToken from './pages/CNSToken';
-import { useWallet } from '../use-wallet/src';
+// import { useWallet } from '../use-wallet/src';
 import Auction from './pages/Auction';
 
-const PrivateRoute = ({ children }: {children: any}) => {
-    const location = useLocation();
-    const wallet = useWallet();
-    const [state, {}] = useBlockchainContext() as any;
+// const PrivateRoute = ({ children }: {children: any}) => {
+//     const location = useLocation();
+//     const wallet = useWallet();
+//     const [state, {}] = useBlockchainContext() as any;
 
-    if (!state.auth.isAuth) {
-        if (wallet.status==='connected' && localStorage.getItem('isConnected')==="0") {
-            return children;
-            // checkNetwork()
-        }
-        // NotificationManager.warning('Please connect wallet');
-        toast('Please connect wallet', {position: "top-right", autoClose: 2000})
-        return <Navigate to="/" replace state={{ from: location }} />;
-    }
+//     if (!state.auth.isAuth) {
+//         if (wallet.status==='connected' && localStorage.getItem('isConnected')==="0") {
+//             return children;
+//             // checkNetwork()
+//         }
+//         // NotificationManager.warning('Please connect wallet');
+//         toast('Please connect wallet', {position: "top-right", autoClose: 2000})
+//         return <Navigate to="/" replace state={{ from: location }} />;
+//     }
 
-    return children;
-};
+//     return children;
+// };
 
 const App = () => {
     return (

@@ -21,7 +21,7 @@ import addresses from '../contracts/contracts/addresses.json';
 import Action from '../service';
 
 import { translations } from '../components/language/translate';
-import { useWallet } from '../use-wallet/src';
+// import { useWallet } from '../use-wallet/src';
 
 const BlockchainContext = createContext({});
 
@@ -72,7 +72,7 @@ const INIT_STATE = {
 export default function Provider({ children }: {children: any}) {
     // const location = useLocation();
     const [state, dispatch] = useReducer(reducer, INIT_STATE);
-    const wallet = useWallet();
+    const wallet = {} as any
 
     useEffect(() => {
         (async () => {

@@ -4,29 +4,18 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useBlockchainContext } from '../../context';
 import { changeNetwork } from '../../utils';
 import config from '../../config.json'
-import { useWallet } from '../../use-wallet/src';
+// import { useWallet } from '../../use-wallet/src';
 import AnchorLink from 'react-anchor-link-smooth-scroll'
+import { Web3Button } from '@web3modal/react'
+import { useWeb3Modal } from "@web3modal/react";
+import { Web3NetworkSwitch, Web3Modal } from '@web3modal/react'
 
 setDefaultBreakpoints([{ xs: 0 }, { l: 1199 }, { xl: 1200 }]);
 
-const NavLink = (props: any) => (
-    <Link
-        {...props}
-        getProps={({ isCurrent }: {isCurrent: any}) => {
-            // the object returned here is passed to the
-            // anchor element's props
-            return {
-                className: isCurrent ? 'active' : 'non-active'
-            };
-        }}
-    />
-);
-
-
-
 const Header = () => {
     const navigate = useNavigate();
-    const wallet = useWallet();
+    const { isOpen, open, close, setDefaultChain } = useWeb3Modal();
+    // const wallet = useWallet();
     const { address } = useParams();
     
     const [state, { dispatch, setSearch }] = useBlockchainContext() as any;
@@ -48,6 +37,7 @@ const Header = () => {
         search: ''
     })
     const [walletInited, setWalletInited] = useState(false)
+    const [walletModal, setWalletModal] = useState(false)
 
     // const account = address || wallet.account
 
@@ -120,39 +110,39 @@ const Header = () => {
     const checkNetwork = async () => {
         console.log("checkNetwork")
         try {
-            const {ethereum} = wallet
-            //if metamask is connected and wallet is not connected ( chain error))
-            if (ethereum) {
-                const chainId = await ethereum.request({method: 'eth_chainId'});
-                console.log('chainId', chainId)
-                if (Number(chainId)!==config.chainId) {
-                    await changeNetwork(ethereum, config.chainId);
-                }
-            }
+            // const {ethereum} = wallet
+            // //if metamask is connected and wallet is not connected ( chain error))
+            // if (ethereum) {
+            //     const chainId = await ethereum.request({method: 'eth_chainId'});
+            //     console.log('chainId', chainId)
+            //     if (Number(chainId)!==config.chainId) {
+            //         await changeNetwork(ethereum, config.chainId);
+            //     }
+            // }
             // window.sessionStorage.setItem('isConnected', "1");
         } catch (err) {
             console.log((err as any).message);
         }
     }
     const handleConnect = () => {
-        if (wallet.status == 'connected') {
-            wallet.reset();
-            dispatch({
-                type: 'auth',
-                payload: {
-                    isAuth: false,
-                    name: '',
-                    email: '',
-                    bio: '',
-                    address: '',
-                    image: null,
-                    bannerImage: null
-                }
-            });
-            window.sessionStorage.setItem('isConnected', "0");
-        } else {
-            wallet.connect()
-        }
+        // if (wallet.status == 'connected') {
+        //     wallet.reset();
+        //     dispatch({
+        //         type: 'auth',
+        //         payload: {
+        //             isAuth: false,
+        //             name: '',
+        //             email: '',
+        //             bio: '',
+        //             address: '',
+        //             image: null,
+        //             bannerImage: null
+        //         }
+        //     });
+        //     window.sessionStorage.setItem('isConnected', "0");
+        // } else {
+        //     wallet.connect()
+        // }
     };
 
     const closeMenu1 = () => {
@@ -160,35 +150,35 @@ const Header = () => {
     };
     const onConnectWallet = async () => {
         try {
-            const storage = window.sessionStorage
-            const isConnected = storage.getItem('isConnected')==="1";
-            if (wallet.ethereum) {
-                if (wallet.status==='disconnected' && isConnected) {
-                    if (!walletInited) {
-                        setWalletInited(true)
-                        wallet.connect()
-                    }
-                } else if ((wallet.status==='connected' || wallet.status==='error') && !isConnected) {
-                    storage.setItem('isConnected', "1")
-                    checkNetwork()
-                }
-            } else if (!walletInited && isConnected) {
-                setWalletInited(true)
-                wallet.connect()
-            }
+            // const storage = window.sessionStorage
+            // const isConnected = storage.getItem('isConnected')==="1";
+            // if (wallet.ethereum) {
+            //     if (wallet.status==='disconnected' && isConnected) {
+            //         if (!walletInited) {
+            //             setWalletInited(true)
+            //             wallet.connect()
+            //         }
+            //     } else if ((wallet.status==='connected' || wallet.status==='error') && !isConnected) {
+            //         storage.setItem('isConnected', "1")
+            //         checkNetwork()
+            //     }
+            // } else if (!walletInited && isConnected) {
+            //     setWalletInited(true)
+            //     wallet.connect()
+            // }
         } catch (error) {
             console.log("connect-wallet", error)
         }
     }
 
-	React.useEffect(()=>{
-		if (wallet.error) console.log('wallet error', wallet.error)
-	}, [wallet.error])
+	// React.useEffect(()=>{
+	// 	if (wallet.error) console.log('wallet error', wallet.error)
+	// }, [wallet.error])
 
 
-    useEffect(() => {
-        onConnectWallet()
-    }, [wallet.status, wallet.account]);
+    // useEffect(() => {
+    //     onConnectWallet()
+    // }, [wallet.status, wallet.account]);
 
     useEffect(() => {
         window.addEventListener('scroll', onScroll);
@@ -292,14 +282,15 @@ const Header = () => {
 								</li>
 								<li><Link to='https://t.me/CryptoNamesStore' target='_blank'><i className="icofont-telegram"></i></Link></li>
 								<li><Link to='https://twitter.com/CryptoNames_ERC' target='_blank'><i className="icofont-twitter"></i></Link></li>
-			
+                                <Web3Button />
+                                <Web3NetworkSwitch />
 							</ul>
 						</div>
 						<div className="col-md-6 text-center text-md-right md-end sm-center" style={{gap: '0.5em'}}>
 							<button className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', fontSize: '1.5rem', fontWeight: 'bold'}} onClick={handleConnect}>
-								{wallet.status==='connecting' ? 'Connecting...' : (
+								{/* {wallet.status==='connecting' ? 'Connecting...' : (
 									(wallet.status == 'connected' && wallet.account) ? `${wallet.account.slice(0, 4)}...${wallet.account.slice(-4)}` : 'Connect Wallet'
-								)}
+								)} */}
 							</button>
 							{/* <a href="#" className="rt-btn rt-gradient pill text-uppercase" style={{lineHeight: '10px', width: '75%', fontSize: '1.5rem', fontWeight: 'bold'}}>Connect Wallet
 							</a> */}
@@ -325,7 +316,7 @@ const Header = () => {
 												<li><Link to="/auctions">Auction List</Link></li>
 											</ul>
 										</li> */}
-                                        {!!wallet.account && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Sell your Domain</Link></li>}
+                                        {!!"wallet.account" && <li className={menu==='My Domains' ? 'current-menu-item' : ''}><Link to="/my-domains" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>Sell your Domain</Link></li>}
 										<li style={{cursor: 'pointer'}} className={`menu-item-has-children ${menu==='How it works' || menu==='Faq' || menu==='Partnership' ? 'current-menu-item' : ''}`}><a onClick={()=>setMobileMenu({...mobileMenu, sub2: !mobileMenu.sub2})}><span>Information</span></a>
 											<ul className="sub-menu" style={{display: `${mobileMenu.sub2 ? 'block' : ''}`}}>
 												<li><Link to="/how-work" onClick={()=>setMobileMenu({...mobileMenu, main: false})}>How It Works</Link></li>
@@ -361,7 +352,7 @@ const Header = () => {
 						<div className="col-lg-8 col-xl-7 mx-auto text-center text-white">
 							<h4 className="f-size-70 f-size-lg-50 f-size-md-40 f-size-xs-24 rt-strong" style={{lineBreak: `${location.pathname.indexOf('domain')===1 ? 'anywhere' : 'auto'}`}}>{menu}</h4>
                             {/* {location.pathname.indexOf('domain')===1 && <h4 className="f-size-36 f-size-lg-30 f-size-md-24 f-size-xs-16 rt-light3">is listed for sale!</h4>} */}
-                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{wallet.account?.slice(0, 8) + '...' + wallet.account?.slice(-8)}</p>}
+                            {menu==='My Domains' && <p style={{marginTop: '4rem', lineBreak: 'anywhere'}}>{"wallet.account"?.slice(0, 8) + '...' + "wallet.account"?.slice(-8)}</p>}
 							{
 								(menu === 'Listed Crypto Domains' || menu === 'Buy Crypto Domains') && (
 									<div className="rt-mt-30 domain-searh-form" data-duration="1.8s" data-dealy="0.9s"

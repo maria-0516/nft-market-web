@@ -1,16 +1,16 @@
 import React from 'react';
-import { useWallet } from '../../use-wallet/src';
+// import { useWallet } from '../../use-wallet/src';
 
 export default function Wallet() {
-    const wallet = useWallet();
+    // const wallet = useWallet();
 
-    const HandleConnect = () => {
-        wallet.connect();
-    };
+    // const HandleConnect = () => {
+    //     wallet.connect();
+    // };
 
     return (
         <div>
-            <section className="jumbotron breadcumb no-bg">
+            {/* <section className="jumbotron breadcumb no-bg">
                 <div className="mainbreadcumb">
                     <div className="container">
                         <h1 className="text-center">{'Wallet'}</h1>
@@ -32,7 +32,7 @@ export default function Wallet() {
                         </span>
                     </div>
                 </div>
-            </section>
+            </section> */}
         </div>
     );
 }

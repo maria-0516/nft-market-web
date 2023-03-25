@@ -4,7 +4,7 @@ import Pager from '../components/Pager';
 import { getEnsDomainExpireByName, getEnsDomainsByAddress } from '../../thegraph';
 import { storefront, tokens } from '../../contracts';
 import { ethers } from 'ethers';
-import { useWallet } from '../../use-wallet/src';
+// import { useWallet } from '../../use-wallet/src';
 import Loading from '../components/Loading';
 import { toUSDate } from '../../utils';
 import config from '../../config.json'
@@ -24,7 +24,7 @@ interface DomainType {
 }
 
 export default function Author() {
-	const wallet = useWallet()
+	const wallet = {} as any
 	const navigate = useNavigate();
 	const {address} = useParams()
 	const [loading, setLoading] = useState(false)

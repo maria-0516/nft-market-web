@@ -4,7 +4,7 @@ import Helmet from 'react-helmet'
 
 import { useBlockchainContext } from '../../context';
 import { changeNetwork, styledAddress, toUSDate, validNumberChar } from '../../utils';
-import { useWallet } from '../../use-wallet/src';
+// import { useWallet } from '../../use-wallet/src';
 import Jazzicon from 'react-jazzicon';
 import { toast } from 'react-toastify';
 import config from '../../config.json'
@@ -30,7 +30,7 @@ interface DomainDetailType {
 }
 
 export default function ItemDetail() {
-	const wallet = useWallet();
+	const wallet = {} as any;
 	const { name } = useParams();
 	const navigate = useNavigate();
 	const [state, { translateLang }] = useBlockchainContext() as any;
