@@ -93,7 +93,7 @@ export default function ColumnAuction({name}: Props) {
 						created:    0,
 						cost:       0,
 						orderId,
-						orderPrice: Number((Number(ethers.utils.formatEther(order.price)) / (1 + (state.fee.buyer || config.buyerFee) / 100)).toFixed(6)),
+						orderPrice: Number((Number(ethers.utils.formatEther(order.price)) / (1 + (state.fee.buyer) / 100)).toFixed(6)),
 						orderToken: tokens[order.token],
 						orderExpires: parseInt(order.expires),
 						bidder: order.bidder,
@@ -102,7 +102,7 @@ export default function ColumnAuction({name}: Props) {
 				} else {
 					_domain.owner = 	order.seller
 					_domain.orderId = 	orderId
-					_domain.orderPrice = 	Number((Number(ethers.utils.formatEther(order.price)) / (1 + (state.fee.buyer || config.buyerFee) / 100)).toFixed(6))
+					_domain.orderPrice = 	Number((Number(ethers.utils.formatEther(order.price)) / (1 + (state.fee.buyer) / 100)).toFixed(6))
 					_domain.orderToken = 	tokens[order.token]
 					_domain.orderExpires= parseInt(order.expires)
 					_domain.bidder= order.bidder
@@ -174,7 +174,7 @@ export default function ColumnAuction({name}: Props) {
             //     await txApprove.wait()
             //     toast(translateLang('listing_approve'), {position: "top-right", autoClose: 2000})
             // }
-            const tx = await storefrontWithSigner(signer).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(Number(price) * (1 + (state.fee.buyer || config.buyerFee) / 100))), time)
+            const tx = await storefrontWithSigner(signer).createOrder(addresses.nft, label, tokenId, ZERO_ADDRESS, ethers.utils.parseEther(String(Number(price) * (1 + (state.fee.buyer) / 100))), time)
             await tx.wait();
             toast(translateLang('listing_success'), {position: "top-right", autoClose: 2000})
             navigate(`/domain/${name}`)
@@ -189,7 +189,7 @@ export default function ColumnAuction({name}: Props) {
         setLoading(true)
         try {
             // const time = Math.round(new Date(date).getTime() / 1000)
-            const tx = await await storefrontWithSigner(signer).updateOrder(domain.orderId, ethers.utils.parseEther(String(Number(price) * (1 + (state.fee.buyer || config.buyerFee) / 100))), '0x' + domain.orderExpires.toString(16))
+            const tx = await await storefrontWithSigner(signer).updateOrder(domain.orderId, ethers.utils.parseEther(String(Number(price) * (1 + (state.fee.buyer) / 100))), '0x' + domain.orderExpires.toString(16))
             await tx.wait()
             navigate(`/domain/${name}`)
         } catch (error) {
@@ -241,7 +241,7 @@ export default function ColumnAuction({name}: Props) {
                                     {/* <h5>{translateLang('fees')}</h5>
                                     <div className="fee">
                                         <p style={{fontWeight: 500}}>{translateLang('servicefee')}</p>
-                                        <p>{(state.fee.seller || config.serviceFee)}%</p>
+                                        <p>{(state.fee.seller)}%</p>
                                     </div> */}
                                 </TabPanel>
                                 <TabPanel>
@@ -283,11 +283,11 @@ export default function ColumnAuction({name}: Props) {
                                                 </div>
                                                 <div>
                                                     <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Service Fee: </span>
-                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number((Number(price) * (state.fee.seller || config.serviceFee) / 100).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span> ({(state.fee.seller || config.serviceFee)}%)
+                                                    <span className="rt-light3 amount"><span><span style={{fontWeight: 400}} className="f-size-25">{Number((Number(price) * (state.fee.seller) / 100).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span> ({(state.fee.seller)}%)
                                                 </div>
                                                 <div>
                                                     <span className="f-size-20 rt-light3" style={{fontWeight: '500'}}>Final Earning: </span>
-                                                    <span className="rt-light3 amount"><span className="f-size-25"><span style={{fontWeight: 600}}>{Number((Number(price) * (1 - (state.fee.seller || config.serviceFee) / 100)).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
+                                                    <span className="rt-light3 amount"><span className="f-size-25"><span style={{fontWeight: 600}}>{Number((Number(price) * (1 - (state.fee.seller) / 100)).toFixed(6))} ETH</span></span><span className="f-size-24"></span></span>
                                                 </div>
                                             </p>
                                         </div>

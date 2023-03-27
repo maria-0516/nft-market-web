@@ -37,7 +37,7 @@ export default function ListedDomains() {
                         collection:     '',
                         label:          i.label,
                         assetId: 		assetId,
-                        price: 			Number((Number(ethers.utils.formatEther(i.price)) / (1 + (state.fee.buyer || config.buyerFee) / 100)).toFixed(6)),
+                        price: 			Number((Number(ethers.utils.formatEther(i.price)) / (1 + (state.fee.buyer) / 100)).toFixed(6)),
                         token: 	        tokens[i.acceptedToken],
                         seller: 	    i.seller,
                         expires:        Number(i.expires),

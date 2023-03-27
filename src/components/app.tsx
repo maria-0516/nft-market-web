@@ -24,16 +24,8 @@ const App = () => {
     const [inited, setInited] = React.useState(false)
     const getFee = async () => {
         try {
-            const fee = Number(await storefront.cutPerMillion()) / 1e4
-            let seller = 0
-            let buyer = 0
-            if (fee > config.buyerFee) {
-                buyer = config.buyerFee
-                seller = fee - config.buyerFee
-            } else {
-                buyer = fee
-            }
-            setFee({buyer, seller})
+            const [buyerFee, sellerFee] = await storefront.getFee()
+            setFee({buyer: buyerFee / 1e4, seller: sellerFee / 1e4})
         } catch (error) {
             console.log("getFee", error)
         }
